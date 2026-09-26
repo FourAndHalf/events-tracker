@@ -17,7 +17,16 @@ final appRouter = GoRouter(
       branches: [
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/', builder: (_, _) => const DashboardPage()),
+            GoRoute(
+              path: '/',
+              builder: (_, _) => const DashboardPage(),
+              routes: [
+                GoRoute(
+                  path: 'settings',
+                  builder: (_, _) => const SettingsPage(),
+                ),
+              ],
+            ),
           ],
         ),
         StatefulShellBranch(
@@ -57,11 +66,6 @@ final appRouter = GoRouter(
                 ),
               ],
             ),
-          ],
-        ),
-        StatefulShellBranch(
-          routes: [
-            GoRoute(path: '/settings', builder: (_, _) => const SettingsPage()),
           ],
         ),
       ],
