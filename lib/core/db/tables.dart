@@ -8,6 +8,11 @@ class Settings extends Table {
   // Minutes after midnight, e.g. 1380 = 23:00.
   IntColumn get targetBedtimeMinutes =>
       integer().withDefault(const Constant(1380))();
+  BoolColumn get weeklyReportEnabled =>
+      boolean().withDefault(const Constant(true))();
+  // Minutes after midnight for the Sunday report notification, e.g. 1140 = 19:00.
+  IntColumn get weeklyReportMinutes =>
+      integer().withDefault(const Constant(1140))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -39,4 +44,31 @@ class Expenses extends Table {
   TextColumn get store => text().nullable()();
   DateTimeColumn get warrantyOrReturnBy => dateTime().nullable()();
   TextColumn get receiptPath => text().nullable()();
+}
+
+class Stocks extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get symbol => text().unique()();
+  TextColumn get name => text()();
+  IntColumn get lastPriceCents => integer().nullable()();
+  DateTimeColumn get priceDate => dateTime().nullable()();
+}
+
+class Trades extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get stockId => integer().references(Stocks, #id)();
+  BoolColumn get isBuy => boolean()();
+  DateTimeColumn get date => dateTime()();
+  IntColumn get quantity => integer()();
+  IntColumn get priceCents => integer()();
+  IntColumn get feesCents => integer().withDefault(const Constant(0))();
+  TextColumn get note => text().nullable()();
+}
+
+class WeeklySnapshots extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  // Monday 00:00 of the week the snapshot belongs to.
+  DateTimeColumn get weekStart => dateTime().unique()();
+  IntColumn get investedCents => integer()();
+  IntColumn get valueCents => integer()();
 }

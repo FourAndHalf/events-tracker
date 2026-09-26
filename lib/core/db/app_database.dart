@@ -14,13 +14,23 @@ const defaultCategories = [
   'Other',
 ];
 
-@DriftDatabase(tables: [Settings, SleepSessions, Categories, Expenses])
+@DriftDatabase(
+  tables: [
+    Settings,
+    SleepSessions,
+    Categories,
+    Expenses,
+    Stocks,
+    Trades,
+    WeeklySnapshots,
+  ],
+)
 class AppDatabase extends _$AppDatabase {
   AppDatabase([QueryExecutor? executor])
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 2;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -32,7 +42,13 @@ class AppDatabase extends _$AppDatabase {
       }
     },
     onUpgrade: (m, from, to) async {
-      // Future migrations go here, one step per version.
+      if (from < 2) {
+        await m.createTable(stocks);
+        await m.createTable(trades);
+        await m.createTable(weeklySnapshots);
+        await m.addColumn(settings, settings.weeklyReportEnabled);
+        await m.addColumn(settings, settings.weeklyReportMinutes);
+      }
     },
   );
 }
