@@ -27,7 +27,10 @@ class AuraCard extends StatelessWidget {
         side: BorderSide(color: borderColor),
       ),
       clipBehavior: Clip.antiAlias,
-      child: InkWell(onTap: onTap, child: Padding(padding: padding, child: child)),
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(padding: padding, child: child),
+      ),
     );
   }
 }
@@ -54,7 +57,9 @@ class PillButton extends StatelessWidget {
     final fg = ghost ? Aura.text : Aura.canvas;
     return Material(
       color: ghost ? Aura.surface : color,
-      shape: StadiumBorder(side: ghost ? const BorderSide(color: Aura.rim) : BorderSide.none),
+      shape: StadiumBorder(
+        side: ghost ? const BorderSide(color: Aura.rim) : BorderSide.none,
+      ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: onPressed,
@@ -64,12 +69,15 @@ class PillButton extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              if (icon != null) ...[Icon(icon, size: 20, color: fg), const SizedBox(width: 8)],
-              Text(label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                        color: fg,
-                        fontWeight: FontWeight.w700,
-                      )),
+              if (icon != null) ...[
+                Icon(icon, size: 20, color: fg),
+                const SizedBox(width: 8),
+              ],
+              Text(
+                label,
+                style: Theme.of(context).textTheme.labelLarge
+                    ?.copyWith(color: fg, fontWeight: FontWeight.w700),
+              ),
             ],
           ),
         ),
@@ -93,16 +101,22 @@ class StatusPill extends StatelessWidget {
         color: color.withValues(alpha: 0.12),
         shape: const StadiumBorder(),
       ),
-      child: Row(mainAxisSize: MainAxisSize.min, children: [
-        Container(
-          width: 6,
-          height: 6,
-          decoration: BoxDecoration(color: color, shape: BoxShape.circle),
-        ),
-        const SizedBox(width: 6),
-        Text(label,
-            style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color)),
-      ]),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 6,
+            height: 6,
+            decoration: BoxDecoration(color: color, shape: BoxShape.circle),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: Theme.of(context).textTheme.labelSmall
+                ?.copyWith(color: color),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -137,14 +151,19 @@ class Overline extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Text(
-        text.toUpperCase(),
-        style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
-      );
+    text.toUpperCase(),
+    style: Theme.of(context).textTheme.labelSmall?.copyWith(color: color),
+  );
 }
 
 /// Round icon badge tinted with an accent.
 class IconBadge extends StatelessWidget {
-  const IconBadge({super.key, required this.icon, required this.color, this.size = 40});
+  const IconBadge({
+    super.key,
+    required this.icon,
+    required this.color,
+    this.size = 40,
+  });
 
   final IconData icon;
   final Color color;
@@ -152,9 +171,12 @@ class IconBadge extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-        width: size,
-        height: size,
-        decoration: BoxDecoration(color: color.withValues(alpha: 0.18), shape: BoxShape.circle),
-        child: Icon(icon, color: color, size: size * 0.5),
-      );
+    width: size,
+    height: size,
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.18),
+      shape: BoxShape.circle,
+    ),
+    child: Icon(icon, color: color, size: size * 0.5),
+  );
 }
