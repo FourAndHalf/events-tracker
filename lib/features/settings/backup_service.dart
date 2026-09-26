@@ -1,0 +1,66 @@
+import 'dart:io';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
+import 'package:share_plus/share_plus.dart';
+
+import '../../core/db/app_database.dart';
+import '../../core/db/providers.dart';
+import 'backup_codec.dart';
+
+class BackupService {
+  BackupService(this._db);
+  final AppDatabase _db;
+
+  Future<BackupData> readAll() async => BackupData(
+    settings: await (_db.select(
+      _db.settings,
+    )..where((s) => s.id.equals(1))).getSingle(),
+    sleepSessions: await _db.select(_db.sleepSessions).get(),
+    categories: await _db.select(_db.categories).get(),
+    expenses: await _db.select(_db.expenses).get(),
+  );
+
+  /// Replaces every table with [d] in one transaction (all or nothing).
+  Future<void> replaceAll(BackupData d) => _db.transaction(() async {
+    await _db.delete(_db.expenses).go();
+    await _db.delete(_db.categories).go();
+    await _db.delete(_db.sleepSessions).go();
+    await _db.delete(_db.settings).go();
+    await _db.into(_db.settings).insert(d.settings.copyWith(id: 1));
+    await _db.batch((b) {
+      b.insertAll(_db.categories, d.categories);
+      b.insertAll(_db.sleepSessions, d.sleepSessions);
+      b.insertAll(_db.expenses, d.expenses);
+    });
+  });
+
+  /// Writes the JSON backup plus one CSV per table and opens the share sheet.
+  Future<void> exportAndShare() async {
+    final data = await readAll();
+    final stamp = DateTime.now().toIso8601String().substring(0, 10);
+    final dir = await Directory(
+      p.join((await getTemporaryDirectory()).path, 'export'),
+    ).create(recursive: true);
+    final files = <XFile>[];
+
+    Future<void> add(String name, String content) async {
+      final f = File(p.join(dir.path, name));
+      await f.writeAsString(content);
+      files.add(XFile(f.path));
+    }
+
+    await add('tracker-backup-$stamp.json', backupToJson(data));
+    for (final e in backupToCsv(data).entries) {
+      await add(e.key, e.value);
+    }
+    await SharePlus.instance.share(
+      ShareParams(files: files, subject: 'Tracker backup $stamp'),
+    );
+  }
+}
+
+final backupServiceProvider = Provider(
+  (ref) => BackupService(ref.watch(databaseProvider)),
+);
