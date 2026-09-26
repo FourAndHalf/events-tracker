@@ -8,6 +8,7 @@ import '../../core/db/settings_repository.dart';
 import '../../core/money/money_format.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import '../../core/widgets/home_button.dart';
 import 'money_repository.dart';
 
 class MoneyPage extends ConsumerStatefulWidget {
@@ -79,6 +80,7 @@ class _MoneyPageState extends ConsumerState<MoneyPage> {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const HomeButton(),
         title: const Text('Money'),
         actions: [
           IconButton(

@@ -7,6 +7,7 @@ import '../../core/db/app_database.dart';
 import '../../core/db/settings_repository.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import '../../core/widgets/home_button.dart';
 import 'sleep_logic.dart';
 import 'sleep_repository.dart';
 import 'sleep_toggle_card.dart';
@@ -21,7 +22,7 @@ class SleepPage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider).value;
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Sleep')),
+      appBar: AppBar(leading: const HomeButton(), title: const Text('Sleep')),
       body: ListView(
         padding: const EdgeInsets.all(Aura.margin),
         children: [

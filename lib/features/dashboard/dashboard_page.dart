@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:intl/intl.dart';
 
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
@@ -19,12 +18,22 @@ class DashboardPage extends StatelessWidget {
         child: ListView(
           padding: const EdgeInsets.all(Aura.margin),
           children: [
-            Text(
-              DateFormat('EEEE, MMM d').format(DateTime.now()).toUpperCase(),
-              style: text.labelSmall,
+            Row(
+              children: [
+                Image.asset(
+                  'assets/icon/splash_logo.png',
+                  width: 40,
+                  height: 40,
+                ),
+                const SizedBox(width: 12),
+                Expanded(child: Text('Events', style: text.headlineMedium)),
+                IconButton(
+                  tooltip: 'Settings',
+                  onPressed: () => context.push('/settings'),
+                  icon: const Icon(Icons.settings_outlined),
+                ),
+              ],
             ),
-            const SizedBox(height: 4),
-            Text('Today', style: text.headlineMedium),
             const SizedBox(height: 20),
             const SleepToggleCard(),
             const SizedBox(height: 12),
