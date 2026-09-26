@@ -15,3 +15,10 @@ int? parseCents(String input) {
       int.parse((m.group(2) ?? '').padRight(2, '0'));
   return cents > 0 ? cents : null;
 }
+
+/// Like [parseCents] but an empty field or "0" means zero (for optional amounts such as fees).
+int? parseCentsOrZero(String input) {
+  final t = input.trim();
+  if (t.isEmpty || RegExp(r'^0+(?:[.,]0{1,2})?$').hasMatch(t)) return 0;
+  return parseCents(t);
+}
