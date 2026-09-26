@@ -15,8 +15,7 @@ class TrackerApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp.router(
       title: 'Tracker',
-      theme: lightTheme,
-      darkTheme: darkTheme,
+      theme: auraTheme,
       routerConfig: appRouter,
     );
   }
