@@ -34,6 +34,11 @@ class PortfolioPage extends ConsumerWidget {
             icon: const Icon(Icons.price_change_outlined),
           ),
           IconButton(
+            tooltip: 'Weekly report',
+            onPressed: () => context.push('/invest/weekly'),
+            icon: const Icon(Icons.insights_outlined),
+          ),
+          IconButton(
             tooltip: 'Trade journal',
             onPressed: () => context.push('/invest/journal'),
             icon: const Icon(Icons.receipt_long_outlined),

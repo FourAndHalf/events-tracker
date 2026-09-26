@@ -1,19 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import 'core/notifications/report_notifier.dart';
 import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/splash_overlay.dart';
+import 'features/investing/report_scheduler.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  final launchRoute = await LocalReportNotifier.instance.init(appRouter.go);
   runApp(const ProviderScope(child: TrackerApp()));
+  if (launchRoute != null) {
+    // Opened by tapping the weekly report notification.
+    WidgetsBinding.instance.addPostFrameCallback(
+      (_) => appRouter.go(launchRoute),
+    );
+  }
 }
 
-class TrackerApp extends StatelessWidget {
+class TrackerApp extends ConsumerWidget {
   const TrackerApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ref.watch(snapshotWriterProvider);
+    ref.watch(reportSchedulerProvider);
     return MaterialApp.router(
       title: 'Events',
       theme: auraTheme,

@@ -6,6 +6,7 @@ import '../../features/investing/portfolio_page.dart';
 import '../../features/investing/prices_page.dart';
 import '../../features/investing/stock_page.dart';
 import '../../features/investing/trade_form_page.dart';
+import '../../features/investing/weekly_page.dart';
 import '../../features/money/categories_page.dart';
 import '../../features/money/expense_form_page.dart';
 import '../../features/money/money_page.dart';
@@ -104,6 +105,7 @@ final appRouter = GoRouter(
                   path: 'journal',
                   builder: (_, _) => const JournalPage(),
                 ),
+                GoRoute(path: 'weekly', builder: (_, _) => const WeeklyPage()),
               ],
             ),
           ],
