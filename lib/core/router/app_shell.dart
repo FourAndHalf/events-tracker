@@ -3,7 +3,7 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/aura_colors.dart';
 
-/// Branch indexes: 0 home (no tab), 1 sleep, 2 money.
+/// Branch indexes: 0 home (no tab), 1 sleep, 2 money, 3 invest.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.shell});
 
@@ -28,6 +28,12 @@ class AppShell extends StatelessWidget {
               label: 'Money',
               selected: i == 2,
               onTap: () => shell.goBranch(2, initialLocation: i == 2),
+            ),
+            _Tab(
+              icon: Icons.show_chart,
+              label: 'Invest',
+              selected: i == 3,
+              onTap: () => shell.goBranch(3, initialLocation: i == 3),
             ),
           ],
         ),
