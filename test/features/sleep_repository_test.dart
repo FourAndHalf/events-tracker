@@ -32,6 +32,9 @@ void main() {
 
   test('database seeds settings and default categories', () async {
     expect((await db.select(db.settings).get()).single.sleepGoalMinutes, 480);
-    expect((await db.select(db.categories).get()).length, defaultCategories.length);
+    expect(
+      (await db.select(db.categories).get()).length,
+      defaultCategories.length,
+    );
   });
 }

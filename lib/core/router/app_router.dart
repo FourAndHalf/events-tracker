@@ -1,6 +1,8 @@
 import 'package:go_router/go_router.dart';
 
 import '../../features/dashboard/dashboard_page.dart';
+import '../../features/money/categories_page.dart';
+import '../../features/money/expense_form_page.dart';
 import '../../features/money/money_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../features/sleep/sleep_edit_page.dart';
@@ -35,7 +37,26 @@ final appRouter = GoRouter(
         ),
         StatefulShellBranch(
           routes: [
-            GoRoute(path: '/money', builder: (_, _) => const MoneyPage()),
+            GoRoute(
+              path: '/money',
+              builder: (_, _) => const MoneyPage(),
+              routes: [
+                GoRoute(
+                  path: 'add',
+                  builder: (_, _) => const ExpenseFormPage(),
+                ),
+                GoRoute(
+                  path: 'edit/:id',
+                  builder: (_, state) => ExpenseFormPage(
+                    id: int.parse(state.pathParameters['id']!),
+                  ),
+                ),
+                GoRoute(
+                  path: 'categories',
+                  builder: (_, _) => const CategoriesPage(),
+                ),
+              ],
+            ),
           ],
         ),
         StatefulShellBranch(
