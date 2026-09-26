@@ -52,12 +52,39 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1380),
   );
+  static const VerificationMeta _weeklyReportEnabledMeta =
+      const VerificationMeta('weeklyReportEnabled');
+  @override
+  late final GeneratedColumn<bool> weeklyReportEnabled = GeneratedColumn<bool>(
+    'weekly_report_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("weekly_report_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  static const VerificationMeta _weeklyReportMinutesMeta =
+      const VerificationMeta('weeklyReportMinutes');
+  @override
+  late final GeneratedColumn<int> weeklyReportMinutes = GeneratedColumn<int>(
+    'weekly_report_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1140),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
     currencySymbol,
     sleepGoalMinutes,
     targetBedtimeMinutes,
+    weeklyReportEnabled,
+    weeklyReportMinutes,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -101,6 +128,24 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         ),
       );
     }
+    if (data.containsKey('weekly_report_enabled')) {
+      context.handle(
+        _weeklyReportEnabledMeta,
+        weeklyReportEnabled.isAcceptableOrUnknown(
+          data['weekly_report_enabled']!,
+          _weeklyReportEnabledMeta,
+        ),
+      );
+    }
+    if (data.containsKey('weekly_report_minutes')) {
+      context.handle(
+        _weeklyReportMinutesMeta,
+        weeklyReportMinutes.isAcceptableOrUnknown(
+          data['weekly_report_minutes']!,
+          _weeklyReportMinutesMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -126,6 +171,14 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         DriftSqlType.int,
         data['${effectivePrefix}target_bedtime_minutes'],
       )!,
+      weeklyReportEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}weekly_report_enabled'],
+      )!,
+      weeklyReportMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}weekly_report_minutes'],
+      )!,
     );
   }
 
@@ -140,11 +193,15 @@ class Setting extends DataClass implements Insertable<Setting> {
   final String currencySymbol;
   final int sleepGoalMinutes;
   final int targetBedtimeMinutes;
+  final bool weeklyReportEnabled;
+  final int weeklyReportMinutes;
   const Setting({
     required this.id,
     required this.currencySymbol,
     required this.sleepGoalMinutes,
     required this.targetBedtimeMinutes,
+    required this.weeklyReportEnabled,
+    required this.weeklyReportMinutes,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -153,6 +210,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     map['currency_symbol'] = Variable<String>(currencySymbol);
     map['sleep_goal_minutes'] = Variable<int>(sleepGoalMinutes);
     map['target_bedtime_minutes'] = Variable<int>(targetBedtimeMinutes);
+    map['weekly_report_enabled'] = Variable<bool>(weeklyReportEnabled);
+    map['weekly_report_minutes'] = Variable<int>(weeklyReportMinutes);
     return map;
   }
 
@@ -162,6 +221,8 @@ class Setting extends DataClass implements Insertable<Setting> {
       currencySymbol: Value(currencySymbol),
       sleepGoalMinutes: Value(sleepGoalMinutes),
       targetBedtimeMinutes: Value(targetBedtimeMinutes),
+      weeklyReportEnabled: Value(weeklyReportEnabled),
+      weeklyReportMinutes: Value(weeklyReportMinutes),
     );
   }
 
@@ -177,6 +238,12 @@ class Setting extends DataClass implements Insertable<Setting> {
       targetBedtimeMinutes: serializer.fromJson<int>(
         json['targetBedtimeMinutes'],
       ),
+      weeklyReportEnabled: serializer.fromJson<bool>(
+        json['weeklyReportEnabled'],
+      ),
+      weeklyReportMinutes: serializer.fromJson<int>(
+        json['weeklyReportMinutes'],
+      ),
     );
   }
   @override
@@ -187,6 +254,8 @@ class Setting extends DataClass implements Insertable<Setting> {
       'currencySymbol': serializer.toJson<String>(currencySymbol),
       'sleepGoalMinutes': serializer.toJson<int>(sleepGoalMinutes),
       'targetBedtimeMinutes': serializer.toJson<int>(targetBedtimeMinutes),
+      'weeklyReportEnabled': serializer.toJson<bool>(weeklyReportEnabled),
+      'weeklyReportMinutes': serializer.toJson<int>(weeklyReportMinutes),
     };
   }
 
@@ -195,11 +264,15 @@ class Setting extends DataClass implements Insertable<Setting> {
     String? currencySymbol,
     int? sleepGoalMinutes,
     int? targetBedtimeMinutes,
+    bool? weeklyReportEnabled,
+    int? weeklyReportMinutes,
   }) => Setting(
     id: id ?? this.id,
     currencySymbol: currencySymbol ?? this.currencySymbol,
     sleepGoalMinutes: sleepGoalMinutes ?? this.sleepGoalMinutes,
     targetBedtimeMinutes: targetBedtimeMinutes ?? this.targetBedtimeMinutes,
+    weeklyReportEnabled: weeklyReportEnabled ?? this.weeklyReportEnabled,
+    weeklyReportMinutes: weeklyReportMinutes ?? this.weeklyReportMinutes,
   );
   Setting copyWithCompanion(SettingsCompanion data) {
     return Setting(
@@ -213,6 +286,12 @@ class Setting extends DataClass implements Insertable<Setting> {
       targetBedtimeMinutes: data.targetBedtimeMinutes.present
           ? data.targetBedtimeMinutes.value
           : this.targetBedtimeMinutes,
+      weeklyReportEnabled: data.weeklyReportEnabled.present
+          ? data.weeklyReportEnabled.value
+          : this.weeklyReportEnabled,
+      weeklyReportMinutes: data.weeklyReportMinutes.present
+          ? data.weeklyReportMinutes.value
+          : this.weeklyReportMinutes,
     );
   }
 
@@ -222,14 +301,22 @@ class Setting extends DataClass implements Insertable<Setting> {
           ..write('id: $id, ')
           ..write('currencySymbol: $currencySymbol, ')
           ..write('sleepGoalMinutes: $sleepGoalMinutes, ')
-          ..write('targetBedtimeMinutes: $targetBedtimeMinutes')
+          ..write('targetBedtimeMinutes: $targetBedtimeMinutes, ')
+          ..write('weeklyReportEnabled: $weeklyReportEnabled, ')
+          ..write('weeklyReportMinutes: $weeklyReportMinutes')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, currencySymbol, sleepGoalMinutes, targetBedtimeMinutes);
+  int get hashCode => Object.hash(
+    id,
+    currencySymbol,
+    sleepGoalMinutes,
+    targetBedtimeMinutes,
+    weeklyReportEnabled,
+    weeklyReportMinutes,
+  );
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -237,7 +324,9 @@ class Setting extends DataClass implements Insertable<Setting> {
           other.id == this.id &&
           other.currencySymbol == this.currencySymbol &&
           other.sleepGoalMinutes == this.sleepGoalMinutes &&
-          other.targetBedtimeMinutes == this.targetBedtimeMinutes);
+          other.targetBedtimeMinutes == this.targetBedtimeMinutes &&
+          other.weeklyReportEnabled == this.weeklyReportEnabled &&
+          other.weeklyReportMinutes == this.weeklyReportMinutes);
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
@@ -245,23 +334,31 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<String> currencySymbol;
   final Value<int> sleepGoalMinutes;
   final Value<int> targetBedtimeMinutes;
+  final Value<bool> weeklyReportEnabled;
+  final Value<int> weeklyReportMinutes;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.currencySymbol = const Value.absent(),
     this.sleepGoalMinutes = const Value.absent(),
     this.targetBedtimeMinutes = const Value.absent(),
+    this.weeklyReportEnabled = const Value.absent(),
+    this.weeklyReportMinutes = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
     this.currencySymbol = const Value.absent(),
     this.sleepGoalMinutes = const Value.absent(),
     this.targetBedtimeMinutes = const Value.absent(),
+    this.weeklyReportEnabled = const Value.absent(),
+    this.weeklyReportMinutes = const Value.absent(),
   });
   static Insertable<Setting> custom({
     Expression<int>? id,
     Expression<String>? currencySymbol,
     Expression<int>? sleepGoalMinutes,
     Expression<int>? targetBedtimeMinutes,
+    Expression<bool>? weeklyReportEnabled,
+    Expression<int>? weeklyReportMinutes,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -269,6 +366,10 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
       if (sleepGoalMinutes != null) 'sleep_goal_minutes': sleepGoalMinutes,
       if (targetBedtimeMinutes != null)
         'target_bedtime_minutes': targetBedtimeMinutes,
+      if (weeklyReportEnabled != null)
+        'weekly_report_enabled': weeklyReportEnabled,
+      if (weeklyReportMinutes != null)
+        'weekly_report_minutes': weeklyReportMinutes,
     });
   }
 
@@ -277,12 +378,16 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Value<String>? currencySymbol,
     Value<int>? sleepGoalMinutes,
     Value<int>? targetBedtimeMinutes,
+    Value<bool>? weeklyReportEnabled,
+    Value<int>? weeklyReportMinutes,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
       currencySymbol: currencySymbol ?? this.currencySymbol,
       sleepGoalMinutes: sleepGoalMinutes ?? this.sleepGoalMinutes,
       targetBedtimeMinutes: targetBedtimeMinutes ?? this.targetBedtimeMinutes,
+      weeklyReportEnabled: weeklyReportEnabled ?? this.weeklyReportEnabled,
+      weeklyReportMinutes: weeklyReportMinutes ?? this.weeklyReportMinutes,
     );
   }
 
@@ -301,6 +406,12 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     if (targetBedtimeMinutes.present) {
       map['target_bedtime_minutes'] = Variable<int>(targetBedtimeMinutes.value);
     }
+    if (weeklyReportEnabled.present) {
+      map['weekly_report_enabled'] = Variable<bool>(weeklyReportEnabled.value);
+    }
+    if (weeklyReportMinutes.present) {
+      map['weekly_report_minutes'] = Variable<int>(weeklyReportMinutes.value);
+    }
     return map;
   }
 
@@ -310,7 +421,9 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           ..write('id: $id, ')
           ..write('currencySymbol: $currencySymbol, ')
           ..write('sleepGoalMinutes: $sleepGoalMinutes, ')
-          ..write('targetBedtimeMinutes: $targetBedtimeMinutes')
+          ..write('targetBedtimeMinutes: $targetBedtimeMinutes, ')
+          ..write('weeklyReportEnabled: $weeklyReportEnabled, ')
+          ..write('weeklyReportMinutes: $weeklyReportMinutes')
           ..write(')'))
         .toString();
   }
@@ -1586,6 +1699,1176 @@ class ExpensesCompanion extends UpdateCompanion<Expense> {
   }
 }
 
+class $StocksTable extends Stocks with TableInfo<$StocksTable, Stock> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $StocksTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _symbolMeta = const VerificationMeta('symbol');
+  @override
+  late final GeneratedColumn<String> symbol = GeneratedColumn<String>(
+    'symbol',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastPriceCentsMeta = const VerificationMeta(
+    'lastPriceCents',
+  );
+  @override
+  late final GeneratedColumn<int> lastPriceCents = GeneratedColumn<int>(
+    'last_price_cents',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _priceDateMeta = const VerificationMeta(
+    'priceDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> priceDate = GeneratedColumn<DateTime>(
+    'price_date',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    symbol,
+    name,
+    lastPriceCents,
+    priceDate,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'stocks';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Stock> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('symbol')) {
+      context.handle(
+        _symbolMeta,
+        symbol.isAcceptableOrUnknown(data['symbol']!, _symbolMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_symbolMeta);
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('last_price_cents')) {
+      context.handle(
+        _lastPriceCentsMeta,
+        lastPriceCents.isAcceptableOrUnknown(
+          data['last_price_cents']!,
+          _lastPriceCentsMeta,
+        ),
+      );
+    }
+    if (data.containsKey('price_date')) {
+      context.handle(
+        _priceDateMeta,
+        priceDate.isAcceptableOrUnknown(data['price_date']!, _priceDateMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Stock map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Stock(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      symbol: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}symbol'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      lastPriceCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}last_price_cents'],
+      ),
+      priceDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}price_date'],
+      ),
+    );
+  }
+
+  @override
+  $StocksTable createAlias(String alias) {
+    return $StocksTable(attachedDatabase, alias);
+  }
+}
+
+class Stock extends DataClass implements Insertable<Stock> {
+  final int id;
+  final String symbol;
+  final String name;
+  final int? lastPriceCents;
+  final DateTime? priceDate;
+  const Stock({
+    required this.id,
+    required this.symbol,
+    required this.name,
+    this.lastPriceCents,
+    this.priceDate,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['symbol'] = Variable<String>(symbol);
+    map['name'] = Variable<String>(name);
+    if (!nullToAbsent || lastPriceCents != null) {
+      map['last_price_cents'] = Variable<int>(lastPriceCents);
+    }
+    if (!nullToAbsent || priceDate != null) {
+      map['price_date'] = Variable<DateTime>(priceDate);
+    }
+    return map;
+  }
+
+  StocksCompanion toCompanion(bool nullToAbsent) {
+    return StocksCompanion(
+      id: Value(id),
+      symbol: Value(symbol),
+      name: Value(name),
+      lastPriceCents: lastPriceCents == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastPriceCents),
+      priceDate: priceDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(priceDate),
+    );
+  }
+
+  factory Stock.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Stock(
+      id: serializer.fromJson<int>(json['id']),
+      symbol: serializer.fromJson<String>(json['symbol']),
+      name: serializer.fromJson<String>(json['name']),
+      lastPriceCents: serializer.fromJson<int?>(json['lastPriceCents']),
+      priceDate: serializer.fromJson<DateTime?>(json['priceDate']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'symbol': serializer.toJson<String>(symbol),
+      'name': serializer.toJson<String>(name),
+      'lastPriceCents': serializer.toJson<int?>(lastPriceCents),
+      'priceDate': serializer.toJson<DateTime?>(priceDate),
+    };
+  }
+
+  Stock copyWith({
+    int? id,
+    String? symbol,
+    String? name,
+    Value<int?> lastPriceCents = const Value.absent(),
+    Value<DateTime?> priceDate = const Value.absent(),
+  }) => Stock(
+    id: id ?? this.id,
+    symbol: symbol ?? this.symbol,
+    name: name ?? this.name,
+    lastPriceCents: lastPriceCents.present
+        ? lastPriceCents.value
+        : this.lastPriceCents,
+    priceDate: priceDate.present ? priceDate.value : this.priceDate,
+  );
+  Stock copyWithCompanion(StocksCompanion data) {
+    return Stock(
+      id: data.id.present ? data.id.value : this.id,
+      symbol: data.symbol.present ? data.symbol.value : this.symbol,
+      name: data.name.present ? data.name.value : this.name,
+      lastPriceCents: data.lastPriceCents.present
+          ? data.lastPriceCents.value
+          : this.lastPriceCents,
+      priceDate: data.priceDate.present ? data.priceDate.value : this.priceDate,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Stock(')
+          ..write('id: $id, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('lastPriceCents: $lastPriceCents, ')
+          ..write('priceDate: $priceDate')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, symbol, name, lastPriceCents, priceDate);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Stock &&
+          other.id == this.id &&
+          other.symbol == this.symbol &&
+          other.name == this.name &&
+          other.lastPriceCents == this.lastPriceCents &&
+          other.priceDate == this.priceDate);
+}
+
+class StocksCompanion extends UpdateCompanion<Stock> {
+  final Value<int> id;
+  final Value<String> symbol;
+  final Value<String> name;
+  final Value<int?> lastPriceCents;
+  final Value<DateTime?> priceDate;
+  const StocksCompanion({
+    this.id = const Value.absent(),
+    this.symbol = const Value.absent(),
+    this.name = const Value.absent(),
+    this.lastPriceCents = const Value.absent(),
+    this.priceDate = const Value.absent(),
+  });
+  StocksCompanion.insert({
+    this.id = const Value.absent(),
+    required String symbol,
+    required String name,
+    this.lastPriceCents = const Value.absent(),
+    this.priceDate = const Value.absent(),
+  }) : symbol = Value(symbol),
+       name = Value(name);
+  static Insertable<Stock> custom({
+    Expression<int>? id,
+    Expression<String>? symbol,
+    Expression<String>? name,
+    Expression<int>? lastPriceCents,
+    Expression<DateTime>? priceDate,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (symbol != null) 'symbol': symbol,
+      if (name != null) 'name': name,
+      if (lastPriceCents != null) 'last_price_cents': lastPriceCents,
+      if (priceDate != null) 'price_date': priceDate,
+    });
+  }
+
+  StocksCompanion copyWith({
+    Value<int>? id,
+    Value<String>? symbol,
+    Value<String>? name,
+    Value<int?>? lastPriceCents,
+    Value<DateTime?>? priceDate,
+  }) {
+    return StocksCompanion(
+      id: id ?? this.id,
+      symbol: symbol ?? this.symbol,
+      name: name ?? this.name,
+      lastPriceCents: lastPriceCents ?? this.lastPriceCents,
+      priceDate: priceDate ?? this.priceDate,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (symbol.present) {
+      map['symbol'] = Variable<String>(symbol.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (lastPriceCents.present) {
+      map['last_price_cents'] = Variable<int>(lastPriceCents.value);
+    }
+    if (priceDate.present) {
+      map['price_date'] = Variable<DateTime>(priceDate.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('StocksCompanion(')
+          ..write('id: $id, ')
+          ..write('symbol: $symbol, ')
+          ..write('name: $name, ')
+          ..write('lastPriceCents: $lastPriceCents, ')
+          ..write('priceDate: $priceDate')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TradesTable extends Trades with TableInfo<$TradesTable, Trade> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TradesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _stockIdMeta = const VerificationMeta(
+    'stockId',
+  );
+  @override
+  late final GeneratedColumn<int> stockId = GeneratedColumn<int>(
+    'stock_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES stocks (id)',
+    ),
+  );
+  static const VerificationMeta _isBuyMeta = const VerificationMeta('isBuy');
+  @override
+  late final GeneratedColumn<bool> isBuy = GeneratedColumn<bool>(
+    'is_buy',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_buy" IN (0, 1))',
+    ),
+  );
+  static const VerificationMeta _dateMeta = const VerificationMeta('date');
+  @override
+  late final GeneratedColumn<DateTime> date = GeneratedColumn<DateTime>(
+    'date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _quantityMeta = const VerificationMeta(
+    'quantity',
+  );
+  @override
+  late final GeneratedColumn<int> quantity = GeneratedColumn<int>(
+    'quantity',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _priceCentsMeta = const VerificationMeta(
+    'priceCents',
+  );
+  @override
+  late final GeneratedColumn<int> priceCents = GeneratedColumn<int>(
+    'price_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _feesCentsMeta = const VerificationMeta(
+    'feesCents',
+  );
+  @override
+  late final GeneratedColumn<int> feesCents = GeneratedColumn<int>(
+    'fees_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    stockId,
+    isBuy,
+    date,
+    quantity,
+    priceCents,
+    feesCents,
+    note,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'trades';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Trade> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('stock_id')) {
+      context.handle(
+        _stockIdMeta,
+        stockId.isAcceptableOrUnknown(data['stock_id']!, _stockIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_stockIdMeta);
+    }
+    if (data.containsKey('is_buy')) {
+      context.handle(
+        _isBuyMeta,
+        isBuy.isAcceptableOrUnknown(data['is_buy']!, _isBuyMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_isBuyMeta);
+    }
+    if (data.containsKey('date')) {
+      context.handle(
+        _dateMeta,
+        date.isAcceptableOrUnknown(data['date']!, _dateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dateMeta);
+    }
+    if (data.containsKey('quantity')) {
+      context.handle(
+        _quantityMeta,
+        quantity.isAcceptableOrUnknown(data['quantity']!, _quantityMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_quantityMeta);
+    }
+    if (data.containsKey('price_cents')) {
+      context.handle(
+        _priceCentsMeta,
+        priceCents.isAcceptableOrUnknown(data['price_cents']!, _priceCentsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_priceCentsMeta);
+    }
+    if (data.containsKey('fees_cents')) {
+      context.handle(
+        _feesCentsMeta,
+        feesCents.isAcceptableOrUnknown(data['fees_cents']!, _feesCentsMeta),
+      );
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Trade map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Trade(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      stockId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}stock_id'],
+      )!,
+      isBuy: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_buy'],
+      )!,
+      date: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}date'],
+      )!,
+      quantity: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}quantity'],
+      )!,
+      priceCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}price_cents'],
+      )!,
+      feesCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}fees_cents'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+    );
+  }
+
+  @override
+  $TradesTable createAlias(String alias) {
+    return $TradesTable(attachedDatabase, alias);
+  }
+}
+
+class Trade extends DataClass implements Insertable<Trade> {
+  final int id;
+  final int stockId;
+  final bool isBuy;
+  final DateTime date;
+  final int quantity;
+  final int priceCents;
+  final int feesCents;
+  final String? note;
+  const Trade({
+    required this.id,
+    required this.stockId,
+    required this.isBuy,
+    required this.date,
+    required this.quantity,
+    required this.priceCents,
+    required this.feesCents,
+    this.note,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['stock_id'] = Variable<int>(stockId);
+    map['is_buy'] = Variable<bool>(isBuy);
+    map['date'] = Variable<DateTime>(date);
+    map['quantity'] = Variable<int>(quantity);
+    map['price_cents'] = Variable<int>(priceCents);
+    map['fees_cents'] = Variable<int>(feesCents);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    return map;
+  }
+
+  TradesCompanion toCompanion(bool nullToAbsent) {
+    return TradesCompanion(
+      id: Value(id),
+      stockId: Value(stockId),
+      isBuy: Value(isBuy),
+      date: Value(date),
+      quantity: Value(quantity),
+      priceCents: Value(priceCents),
+      feesCents: Value(feesCents),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+    );
+  }
+
+  factory Trade.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Trade(
+      id: serializer.fromJson<int>(json['id']),
+      stockId: serializer.fromJson<int>(json['stockId']),
+      isBuy: serializer.fromJson<bool>(json['isBuy']),
+      date: serializer.fromJson<DateTime>(json['date']),
+      quantity: serializer.fromJson<int>(json['quantity']),
+      priceCents: serializer.fromJson<int>(json['priceCents']),
+      feesCents: serializer.fromJson<int>(json['feesCents']),
+      note: serializer.fromJson<String?>(json['note']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'stockId': serializer.toJson<int>(stockId),
+      'isBuy': serializer.toJson<bool>(isBuy),
+      'date': serializer.toJson<DateTime>(date),
+      'quantity': serializer.toJson<int>(quantity),
+      'priceCents': serializer.toJson<int>(priceCents),
+      'feesCents': serializer.toJson<int>(feesCents),
+      'note': serializer.toJson<String?>(note),
+    };
+  }
+
+  Trade copyWith({
+    int? id,
+    int? stockId,
+    bool? isBuy,
+    DateTime? date,
+    int? quantity,
+    int? priceCents,
+    int? feesCents,
+    Value<String?> note = const Value.absent(),
+  }) => Trade(
+    id: id ?? this.id,
+    stockId: stockId ?? this.stockId,
+    isBuy: isBuy ?? this.isBuy,
+    date: date ?? this.date,
+    quantity: quantity ?? this.quantity,
+    priceCents: priceCents ?? this.priceCents,
+    feesCents: feesCents ?? this.feesCents,
+    note: note.present ? note.value : this.note,
+  );
+  Trade copyWithCompanion(TradesCompanion data) {
+    return Trade(
+      id: data.id.present ? data.id.value : this.id,
+      stockId: data.stockId.present ? data.stockId.value : this.stockId,
+      isBuy: data.isBuy.present ? data.isBuy.value : this.isBuy,
+      date: data.date.present ? data.date.value : this.date,
+      quantity: data.quantity.present ? data.quantity.value : this.quantity,
+      priceCents: data.priceCents.present
+          ? data.priceCents.value
+          : this.priceCents,
+      feesCents: data.feesCents.present ? data.feesCents.value : this.feesCents,
+      note: data.note.present ? data.note.value : this.note,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Trade(')
+          ..write('id: $id, ')
+          ..write('stockId: $stockId, ')
+          ..write('isBuy: $isBuy, ')
+          ..write('date: $date, ')
+          ..write('quantity: $quantity, ')
+          ..write('priceCents: $priceCents, ')
+          ..write('feesCents: $feesCents, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    stockId,
+    isBuy,
+    date,
+    quantity,
+    priceCents,
+    feesCents,
+    note,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Trade &&
+          other.id == this.id &&
+          other.stockId == this.stockId &&
+          other.isBuy == this.isBuy &&
+          other.date == this.date &&
+          other.quantity == this.quantity &&
+          other.priceCents == this.priceCents &&
+          other.feesCents == this.feesCents &&
+          other.note == this.note);
+}
+
+class TradesCompanion extends UpdateCompanion<Trade> {
+  final Value<int> id;
+  final Value<int> stockId;
+  final Value<bool> isBuy;
+  final Value<DateTime> date;
+  final Value<int> quantity;
+  final Value<int> priceCents;
+  final Value<int> feesCents;
+  final Value<String?> note;
+  const TradesCompanion({
+    this.id = const Value.absent(),
+    this.stockId = const Value.absent(),
+    this.isBuy = const Value.absent(),
+    this.date = const Value.absent(),
+    this.quantity = const Value.absent(),
+    this.priceCents = const Value.absent(),
+    this.feesCents = const Value.absent(),
+    this.note = const Value.absent(),
+  });
+  TradesCompanion.insert({
+    this.id = const Value.absent(),
+    required int stockId,
+    required bool isBuy,
+    required DateTime date,
+    required int quantity,
+    required int priceCents,
+    this.feesCents = const Value.absent(),
+    this.note = const Value.absent(),
+  }) : stockId = Value(stockId),
+       isBuy = Value(isBuy),
+       date = Value(date),
+       quantity = Value(quantity),
+       priceCents = Value(priceCents);
+  static Insertable<Trade> custom({
+    Expression<int>? id,
+    Expression<int>? stockId,
+    Expression<bool>? isBuy,
+    Expression<DateTime>? date,
+    Expression<int>? quantity,
+    Expression<int>? priceCents,
+    Expression<int>? feesCents,
+    Expression<String>? note,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (stockId != null) 'stock_id': stockId,
+      if (isBuy != null) 'is_buy': isBuy,
+      if (date != null) 'date': date,
+      if (quantity != null) 'quantity': quantity,
+      if (priceCents != null) 'price_cents': priceCents,
+      if (feesCents != null) 'fees_cents': feesCents,
+      if (note != null) 'note': note,
+    });
+  }
+
+  TradesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? stockId,
+    Value<bool>? isBuy,
+    Value<DateTime>? date,
+    Value<int>? quantity,
+    Value<int>? priceCents,
+    Value<int>? feesCents,
+    Value<String?>? note,
+  }) {
+    return TradesCompanion(
+      id: id ?? this.id,
+      stockId: stockId ?? this.stockId,
+      isBuy: isBuy ?? this.isBuy,
+      date: date ?? this.date,
+      quantity: quantity ?? this.quantity,
+      priceCents: priceCents ?? this.priceCents,
+      feesCents: feesCents ?? this.feesCents,
+      note: note ?? this.note,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (stockId.present) {
+      map['stock_id'] = Variable<int>(stockId.value);
+    }
+    if (isBuy.present) {
+      map['is_buy'] = Variable<bool>(isBuy.value);
+    }
+    if (date.present) {
+      map['date'] = Variable<DateTime>(date.value);
+    }
+    if (quantity.present) {
+      map['quantity'] = Variable<int>(quantity.value);
+    }
+    if (priceCents.present) {
+      map['price_cents'] = Variable<int>(priceCents.value);
+    }
+    if (feesCents.present) {
+      map['fees_cents'] = Variable<int>(feesCents.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TradesCompanion(')
+          ..write('id: $id, ')
+          ..write('stockId: $stockId, ')
+          ..write('isBuy: $isBuy, ')
+          ..write('date: $date, ')
+          ..write('quantity: $quantity, ')
+          ..write('priceCents: $priceCents, ')
+          ..write('feesCents: $feesCents, ')
+          ..write('note: $note')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $WeeklySnapshotsTable extends WeeklySnapshots
+    with TableInfo<$WeeklySnapshotsTable, WeeklySnapshot> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $WeeklySnapshotsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _weekStartMeta = const VerificationMeta(
+    'weekStart',
+  );
+  @override
+  late final GeneratedColumn<DateTime> weekStart = GeneratedColumn<DateTime>(
+    'week_start',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways('UNIQUE'),
+  );
+  static const VerificationMeta _investedCentsMeta = const VerificationMeta(
+    'investedCents',
+  );
+  @override
+  late final GeneratedColumn<int> investedCents = GeneratedColumn<int>(
+    'invested_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _valueCentsMeta = const VerificationMeta(
+    'valueCents',
+  );
+  @override
+  late final GeneratedColumn<int> valueCents = GeneratedColumn<int>(
+    'value_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    weekStart,
+    investedCents,
+    valueCents,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'weekly_snapshots';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<WeeklySnapshot> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('week_start')) {
+      context.handle(
+        _weekStartMeta,
+        weekStart.isAcceptableOrUnknown(data['week_start']!, _weekStartMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_weekStartMeta);
+    }
+    if (data.containsKey('invested_cents')) {
+      context.handle(
+        _investedCentsMeta,
+        investedCents.isAcceptableOrUnknown(
+          data['invested_cents']!,
+          _investedCentsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_investedCentsMeta);
+    }
+    if (data.containsKey('value_cents')) {
+      context.handle(
+        _valueCentsMeta,
+        valueCents.isAcceptableOrUnknown(data['value_cents']!, _valueCentsMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_valueCentsMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  WeeklySnapshot map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return WeeklySnapshot(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      weekStart: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}week_start'],
+      )!,
+      investedCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}invested_cents'],
+      )!,
+      valueCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}value_cents'],
+      )!,
+    );
+  }
+
+  @override
+  $WeeklySnapshotsTable createAlias(String alias) {
+    return $WeeklySnapshotsTable(attachedDatabase, alias);
+  }
+}
+
+class WeeklySnapshot extends DataClass implements Insertable<WeeklySnapshot> {
+  final int id;
+  final DateTime weekStart;
+  final int investedCents;
+  final int valueCents;
+  const WeeklySnapshot({
+    required this.id,
+    required this.weekStart,
+    required this.investedCents,
+    required this.valueCents,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['week_start'] = Variable<DateTime>(weekStart);
+    map['invested_cents'] = Variable<int>(investedCents);
+    map['value_cents'] = Variable<int>(valueCents);
+    return map;
+  }
+
+  WeeklySnapshotsCompanion toCompanion(bool nullToAbsent) {
+    return WeeklySnapshotsCompanion(
+      id: Value(id),
+      weekStart: Value(weekStart),
+      investedCents: Value(investedCents),
+      valueCents: Value(valueCents),
+    );
+  }
+
+  factory WeeklySnapshot.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return WeeklySnapshot(
+      id: serializer.fromJson<int>(json['id']),
+      weekStart: serializer.fromJson<DateTime>(json['weekStart']),
+      investedCents: serializer.fromJson<int>(json['investedCents']),
+      valueCents: serializer.fromJson<int>(json['valueCents']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'weekStart': serializer.toJson<DateTime>(weekStart),
+      'investedCents': serializer.toJson<int>(investedCents),
+      'valueCents': serializer.toJson<int>(valueCents),
+    };
+  }
+
+  WeeklySnapshot copyWith({
+    int? id,
+    DateTime? weekStart,
+    int? investedCents,
+    int? valueCents,
+  }) => WeeklySnapshot(
+    id: id ?? this.id,
+    weekStart: weekStart ?? this.weekStart,
+    investedCents: investedCents ?? this.investedCents,
+    valueCents: valueCents ?? this.valueCents,
+  );
+  WeeklySnapshot copyWithCompanion(WeeklySnapshotsCompanion data) {
+    return WeeklySnapshot(
+      id: data.id.present ? data.id.value : this.id,
+      weekStart: data.weekStart.present ? data.weekStart.value : this.weekStart,
+      investedCents: data.investedCents.present
+          ? data.investedCents.value
+          : this.investedCents,
+      valueCents: data.valueCents.present
+          ? data.valueCents.value
+          : this.valueCents,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklySnapshot(')
+          ..write('id: $id, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('investedCents: $investedCents, ')
+          ..write('valueCents: $valueCents')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, weekStart, investedCents, valueCents);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is WeeklySnapshot &&
+          other.id == this.id &&
+          other.weekStart == this.weekStart &&
+          other.investedCents == this.investedCents &&
+          other.valueCents == this.valueCents);
+}
+
+class WeeklySnapshotsCompanion extends UpdateCompanion<WeeklySnapshot> {
+  final Value<int> id;
+  final Value<DateTime> weekStart;
+  final Value<int> investedCents;
+  final Value<int> valueCents;
+  const WeeklySnapshotsCompanion({
+    this.id = const Value.absent(),
+    this.weekStart = const Value.absent(),
+    this.investedCents = const Value.absent(),
+    this.valueCents = const Value.absent(),
+  });
+  WeeklySnapshotsCompanion.insert({
+    this.id = const Value.absent(),
+    required DateTime weekStart,
+    required int investedCents,
+    required int valueCents,
+  }) : weekStart = Value(weekStart),
+       investedCents = Value(investedCents),
+       valueCents = Value(valueCents);
+  static Insertable<WeeklySnapshot> custom({
+    Expression<int>? id,
+    Expression<DateTime>? weekStart,
+    Expression<int>? investedCents,
+    Expression<int>? valueCents,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (weekStart != null) 'week_start': weekStart,
+      if (investedCents != null) 'invested_cents': investedCents,
+      if (valueCents != null) 'value_cents': valueCents,
+    });
+  }
+
+  WeeklySnapshotsCompanion copyWith({
+    Value<int>? id,
+    Value<DateTime>? weekStart,
+    Value<int>? investedCents,
+    Value<int>? valueCents,
+  }) {
+    return WeeklySnapshotsCompanion(
+      id: id ?? this.id,
+      weekStart: weekStart ?? this.weekStart,
+      investedCents: investedCents ?? this.investedCents,
+      valueCents: valueCents ?? this.valueCents,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (weekStart.present) {
+      map['week_start'] = Variable<DateTime>(weekStart.value);
+    }
+    if (investedCents.present) {
+      map['invested_cents'] = Variable<int>(investedCents.value);
+    }
+    if (valueCents.present) {
+      map['value_cents'] = Variable<int>(valueCents.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('WeeklySnapshotsCompanion(')
+          ..write('id: $id, ')
+          ..write('weekStart: $weekStart, ')
+          ..write('investedCents: $investedCents, ')
+          ..write('valueCents: $valueCents')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -1593,6 +2876,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   late final $SleepSessionsTable sleepSessions = $SleepSessionsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $ExpensesTable expenses = $ExpensesTable(this);
+  late final $StocksTable stocks = $StocksTable(this);
+  late final $TradesTable trades = $TradesTable(this);
+  late final $WeeklySnapshotsTable weeklySnapshots = $WeeklySnapshotsTable(
+    this,
+  );
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -1602,6 +2890,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     sleepSessions,
     categories,
     expenses,
+    stocks,
+    trades,
+    weeklySnapshots,
   ];
 }
 
@@ -1610,12 +2901,16 @@ typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   Value<String> currencySymbol,
   Value<int> sleepGoalMinutes,
   Value<int> targetBedtimeMinutes,
+  Value<bool> weeklyReportEnabled,
+  Value<int> weeklyReportMinutes,
 });
 typedef $$SettingsTableUpdateCompanionBuilder = SettingsCompanion Function({
   Value<int> id,
   Value<String> currencySymbol,
   Value<int> sleepGoalMinutes,
   Value<int> targetBedtimeMinutes,
+  Value<bool> weeklyReportEnabled,
+  Value<int> weeklyReportMinutes,
 });
 
 class $$SettingsTableFilterComposer
@@ -1644,6 +2939,16 @@ class $$SettingsTableFilterComposer
 
   ColumnFilters<int> get targetBedtimeMinutes => $composableBuilder(
     column: $table.targetBedtimeMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get weeklyReportEnabled => $composableBuilder(
+    column: $table.weeklyReportEnabled,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get weeklyReportMinutes => $composableBuilder(
+    column: $table.weeklyReportMinutes,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -1676,6 +2981,16 @@ class $$SettingsTableOrderingComposer
     column: $table.targetBedtimeMinutes,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<bool> get weeklyReportEnabled => $composableBuilder(
+    column: $table.weeklyReportEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get weeklyReportMinutes => $composableBuilder(
+    column: $table.weeklyReportMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SettingsTableAnnotationComposer
@@ -1702,6 +3017,16 @@ class $$SettingsTableAnnotationComposer
 
   GeneratedColumn<int> get targetBedtimeMinutes => $composableBuilder(
     column: $table.targetBedtimeMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get weeklyReportEnabled => $composableBuilder(
+    column: $table.weeklyReportEnabled,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get weeklyReportMinutes => $composableBuilder(
+    column: $table.weeklyReportMinutes,
     builder: (column) => column,
   );
 }
@@ -1738,11 +3063,15 @@ class $$SettingsTableTableManager
                 Value<String> currencySymbol = const Value.absent(),
                 Value<int> sleepGoalMinutes = const Value.absent(),
                 Value<int> targetBedtimeMinutes = const Value.absent(),
+                Value<bool> weeklyReportEnabled = const Value.absent(),
+                Value<int> weeklyReportMinutes = const Value.absent(),
               }) => SettingsCompanion(
                 id: id,
                 currencySymbol: currencySymbol,
                 sleepGoalMinutes: sleepGoalMinutes,
                 targetBedtimeMinutes: targetBedtimeMinutes,
+                weeklyReportEnabled: weeklyReportEnabled,
+                weeklyReportMinutes: weeklyReportMinutes,
               ),
           createCompanionCallback:
               ({
@@ -1750,11 +3079,15 @@ class $$SettingsTableTableManager
                 Value<String> currencySymbol = const Value.absent(),
                 Value<int> sleepGoalMinutes = const Value.absent(),
                 Value<int> targetBedtimeMinutes = const Value.absent(),
+                Value<bool> weeklyReportEnabled = const Value.absent(),
+                Value<int> weeklyReportMinutes = const Value.absent(),
               }) => SettingsCompanion.insert(
                 id: id,
                 currencySymbol: currencySymbol,
                 sleepGoalMinutes: sleepGoalMinutes,
                 targetBedtimeMinutes: targetBedtimeMinutes,
+                weeklyReportEnabled: weeklyReportEnabled,
+                weeklyReportMinutes: weeklyReportMinutes,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -2677,6 +4010,856 @@ typedef $$ExpensesTableProcessedTableManager =
       Expense,
       PrefetchHooks Function({bool categoryId})
     >;
+typedef $$StocksTableCreateCompanionBuilder = StocksCompanion Function({
+  Value<int> id,
+  required String symbol,
+  required String name,
+  Value<int?> lastPriceCents,
+  Value<DateTime?> priceDate,
+});
+typedef $$StocksTableUpdateCompanionBuilder = StocksCompanion Function({
+  Value<int> id,
+  Value<String> symbol,
+  Value<String> name,
+  Value<int?> lastPriceCents,
+  Value<DateTime?> priceDate,
+});
+
+final class $$StocksTableReferences
+    extends BaseReferences<_$AppDatabase, $StocksTable, Stock> {
+  $$StocksTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TradesTable, List<Trade>> _tradesRefsTable(
+    _$AppDatabase db,
+  ) => MultiTypedResultKey.fromTable(
+    db.trades,
+    aliasName: 'stocks__id__trades__stock_id',
+  );
+
+  $$TradesTableProcessedTableManager get tradesRefs {
+    final manager = $$TradesTableTableManager(
+      $_db,
+      $_db.trades,
+    ).filter((f) => f.stockId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_tradesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$StocksTableFilterComposer
+    extends Composer<_$AppDatabase, $StocksTable> {
+  $$StocksTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get lastPriceCents => $composableBuilder(
+    column: $table.lastPriceCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get priceDate => $composableBuilder(
+    column: $table.priceDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> tradesRefs(
+    Expression<bool> Function($$TradesTableFilterComposer f) f,
+  ) {
+    final $$TradesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trades,
+      getReferencedColumn: (t) => t.stockId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TradesTableFilterComposer(
+            $db: $db,
+            $table: $db.trades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$StocksTableOrderingComposer
+    extends Composer<_$AppDatabase, $StocksTable> {
+  $$StocksTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get symbol => $composableBuilder(
+    column: $table.symbol,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get lastPriceCents => $composableBuilder(
+    column: $table.lastPriceCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get priceDate => $composableBuilder(
+    column: $table.priceDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$StocksTableAnnotationComposer
+    extends Composer<_$AppDatabase, $StocksTable> {
+  $$StocksTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get symbol =>
+      $composableBuilder(column: $table.symbol, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<int> get lastPriceCents => $composableBuilder(
+    column: $table.lastPriceCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get priceDate =>
+      $composableBuilder(column: $table.priceDate, builder: (column) => column);
+
+  Expression<T> tradesRefs<T extends Object>(
+    Expression<T> Function($$TradesTableAnnotationComposer a) f,
+  ) {
+    final $$TradesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trades,
+      getReferencedColumn: (t) => t.stockId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TradesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trades,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$StocksTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $StocksTable,
+          Stock,
+          $$StocksTableFilterComposer,
+          $$StocksTableOrderingComposer,
+          $$StocksTableAnnotationComposer,
+          $$StocksTableCreateCompanionBuilder,
+          $$StocksTableUpdateCompanionBuilder,
+          (Stock, $$StocksTableReferences),
+          Stock,
+          PrefetchHooks Function({bool tradesRefs})
+        > {
+  $$StocksTableTableManager(_$AppDatabase db, $StocksTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$StocksTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$StocksTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$StocksTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> symbol = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<int?> lastPriceCents = const Value.absent(),
+                Value<DateTime?> priceDate = const Value.absent(),
+              }) => StocksCompanion(
+                id: id,
+                symbol: symbol,
+                name: name,
+                lastPriceCents: lastPriceCents,
+                priceDate: priceDate,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String symbol,
+                required String name,
+                Value<int?> lastPriceCents = const Value.absent(),
+                Value<DateTime?> priceDate = const Value.absent(),
+              }) => StocksCompanion.insert(
+                id: id,
+                symbol: symbol,
+                name: name,
+                lastPriceCents: lastPriceCents,
+                priceDate: priceDate,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$StocksTable, Stock>(table),
+                  $$StocksTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({tradesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (tradesRefs) db.trades],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (tradesRefs)
+                    await $_getPrefetchedData<Stock, $StocksTable, Trade>(
+                      currentTable: table,
+                      referencedTable: $$StocksTableReferences._tradesRefsTable(
+                        db,
+                      ),
+                      managerFromTypedResult: (p0) =>
+                          $$StocksTableReferences(db, table, p0).tradesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.stockId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$StocksTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $StocksTable,
+      Stock,
+      $$StocksTableFilterComposer,
+      $$StocksTableOrderingComposer,
+      $$StocksTableAnnotationComposer,
+      $$StocksTableCreateCompanionBuilder,
+      $$StocksTableUpdateCompanionBuilder,
+      (Stock, $$StocksTableReferences),
+      Stock,
+      PrefetchHooks Function({bool tradesRefs})
+    >;
+typedef $$TradesTableCreateCompanionBuilder = TradesCompanion Function({
+  Value<int> id,
+  required int stockId,
+  required bool isBuy,
+  required DateTime date,
+  required int quantity,
+  required int priceCents,
+  Value<int> feesCents,
+  Value<String?> note,
+});
+typedef $$TradesTableUpdateCompanionBuilder = TradesCompanion Function({
+  Value<int> id,
+  Value<int> stockId,
+  Value<bool> isBuy,
+  Value<DateTime> date,
+  Value<int> quantity,
+  Value<int> priceCents,
+  Value<int> feesCents,
+  Value<String?> note,
+});
+
+final class $$TradesTableReferences
+    extends BaseReferences<_$AppDatabase, $TradesTable, Trade> {
+  $$TradesTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $StocksTable _stockIdTable(_$AppDatabase db) =>
+      db.stocks.createAlias('trades__stock_id__stocks__id');
+
+  $$StocksTableProcessedTableManager get stockId {
+    final $_column = $_itemColumn<int>('stock_id')!;
+
+    final manager = $$StocksTableTableManager(
+      $_db,
+      $_db.stocks,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_stockIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TradesTableFilterComposer
+    extends Composer<_$AppDatabase, $TradesTable> {
+  $$TradesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isBuy => $composableBuilder(
+    column: $table.isBuy,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get priceCents => $composableBuilder(
+    column: $table.priceCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get feesCents => $composableBuilder(
+    column: $table.feesCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$StocksTableFilterComposer get stockId {
+    final $$StocksTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stockId,
+      referencedTable: $db.stocks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StocksTableFilterComposer(
+            $db: $db,
+            $table: $db.stocks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TradesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TradesTable> {
+  $$TradesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isBuy => $composableBuilder(
+    column: $table.isBuy,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get date => $composableBuilder(
+    column: $table.date,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get quantity => $composableBuilder(
+    column: $table.quantity,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get priceCents => $composableBuilder(
+    column: $table.priceCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get feesCents => $composableBuilder(
+    column: $table.feesCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$StocksTableOrderingComposer get stockId {
+    final $$StocksTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stockId,
+      referencedTable: $db.stocks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StocksTableOrderingComposer(
+            $db: $db,
+            $table: $db.stocks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TradesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TradesTable> {
+  $$TradesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<bool> get isBuy =>
+      $composableBuilder(column: $table.isBuy, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get date =>
+      $composableBuilder(column: $table.date, builder: (column) => column);
+
+  GeneratedColumn<int> get quantity =>
+      $composableBuilder(column: $table.quantity, builder: (column) => column);
+
+  GeneratedColumn<int> get priceCents => $composableBuilder(
+    column: $table.priceCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get feesCents =>
+      $composableBuilder(column: $table.feesCents, builder: (column) => column);
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  $$StocksTableAnnotationComposer get stockId {
+    final $$StocksTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.stockId,
+      referencedTable: $db.stocks,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$StocksTableAnnotationComposer(
+            $db: $db,
+            $table: $db.stocks,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TradesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TradesTable,
+          Trade,
+          $$TradesTableFilterComposer,
+          $$TradesTableOrderingComposer,
+          $$TradesTableAnnotationComposer,
+          $$TradesTableCreateCompanionBuilder,
+          $$TradesTableUpdateCompanionBuilder,
+          (Trade, $$TradesTableReferences),
+          Trade,
+          PrefetchHooks Function({bool stockId})
+        > {
+  $$TradesTableTableManager(_$AppDatabase db, $TradesTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TradesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TradesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TradesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> stockId = const Value.absent(),
+                Value<bool> isBuy = const Value.absent(),
+                Value<DateTime> date = const Value.absent(),
+                Value<int> quantity = const Value.absent(),
+                Value<int> priceCents = const Value.absent(),
+                Value<int> feesCents = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => TradesCompanion(
+                id: id,
+                stockId: stockId,
+                isBuy: isBuy,
+                date: date,
+                quantity: quantity,
+                priceCents: priceCents,
+                feesCents: feesCents,
+                note: note,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int stockId,
+                required bool isBuy,
+                required DateTime date,
+                required int quantity,
+                required int priceCents,
+                Value<int> feesCents = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+              }) => TradesCompanion.insert(
+                id: id,
+                stockId: stockId,
+                isBuy: isBuy,
+                date: date,
+                quantity: quantity,
+                priceCents: priceCents,
+                feesCents: feesCents,
+                note: note,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TradesTable, Trade>(table),
+                  $$TradesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({stockId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (stockId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.stockId,
+                        referencedTable: $$TradesTableReferences._stockIdTable(
+                          db,
+                        ),
+                        referencedColumn: $$TradesTableReferences
+                            ._stockIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TradesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TradesTable,
+      Trade,
+      $$TradesTableFilterComposer,
+      $$TradesTableOrderingComposer,
+      $$TradesTableAnnotationComposer,
+      $$TradesTableCreateCompanionBuilder,
+      $$TradesTableUpdateCompanionBuilder,
+      (Trade, $$TradesTableReferences),
+      Trade,
+      PrefetchHooks Function({bool stockId})
+    >;
+typedef $$WeeklySnapshotsTableCreateCompanionBuilder =
+    WeeklySnapshotsCompanion Function({
+      Value<int> id,
+      required DateTime weekStart,
+      required int investedCents,
+      required int valueCents,
+    });
+typedef $$WeeklySnapshotsTableUpdateCompanionBuilder =
+    WeeklySnapshotsCompanion Function({
+      Value<int> id,
+      Value<DateTime> weekStart,
+      Value<int> investedCents,
+      Value<int> valueCents,
+    });
+
+class $$WeeklySnapshotsTableFilterComposer
+    extends Composer<_$AppDatabase, $WeeklySnapshotsTable> {
+  $$WeeklySnapshotsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get investedCents => $composableBuilder(
+    column: $table.investedCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get valueCents => $composableBuilder(
+    column: $table.valueCents,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$WeeklySnapshotsTableOrderingComposer
+    extends Composer<_$AppDatabase, $WeeklySnapshotsTable> {
+  $$WeeklySnapshotsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get weekStart => $composableBuilder(
+    column: $table.weekStart,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get investedCents => $composableBuilder(
+    column: $table.investedCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get valueCents => $composableBuilder(
+    column: $table.valueCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$WeeklySnapshotsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $WeeklySnapshotsTable> {
+  $$WeeklySnapshotsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get weekStart =>
+      $composableBuilder(column: $table.weekStart, builder: (column) => column);
+
+  GeneratedColumn<int> get investedCents => $composableBuilder(
+    column: $table.investedCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get valueCents => $composableBuilder(
+    column: $table.valueCents,
+    builder: (column) => column,
+  );
+}
+
+class $$WeeklySnapshotsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $WeeklySnapshotsTable,
+          WeeklySnapshot,
+          $$WeeklySnapshotsTableFilterComposer,
+          $$WeeklySnapshotsTableOrderingComposer,
+          $$WeeklySnapshotsTableAnnotationComposer,
+          $$WeeklySnapshotsTableCreateCompanionBuilder,
+          $$WeeklySnapshotsTableUpdateCompanionBuilder,
+          (
+            WeeklySnapshot,
+            BaseReferences<
+              _$AppDatabase,
+              $WeeklySnapshotsTable,
+              WeeklySnapshot
+            >,
+          ),
+          WeeklySnapshot,
+          PrefetchHooks Function()
+        > {
+  $$WeeklySnapshotsTableTableManager(
+    _$AppDatabase db,
+    $WeeklySnapshotsTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$WeeklySnapshotsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$WeeklySnapshotsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$WeeklySnapshotsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<DateTime> weekStart = const Value.absent(),
+                Value<int> investedCents = const Value.absent(),
+                Value<int> valueCents = const Value.absent(),
+              }) => WeeklySnapshotsCompanion(
+                id: id,
+                weekStart: weekStart,
+                investedCents: investedCents,
+                valueCents: valueCents,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required DateTime weekStart,
+                required int investedCents,
+                required int valueCents,
+              }) => WeeklySnapshotsCompanion.insert(
+                id: id,
+                weekStart: weekStart,
+                investedCents: investedCents,
+                valueCents: valueCents,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$WeeklySnapshotsTable, WeeklySnapshot>(table),
+                  BaseReferences<
+                    _$AppDatabase,
+                    $WeeklySnapshotsTable,
+                    WeeklySnapshot
+                  >(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$WeeklySnapshotsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $WeeklySnapshotsTable,
+      WeeklySnapshot,
+      $$WeeklySnapshotsTableFilterComposer,
+      $$WeeklySnapshotsTableOrderingComposer,
+      $$WeeklySnapshotsTableAnnotationComposer,
+      $$WeeklySnapshotsTableCreateCompanionBuilder,
+      $$WeeklySnapshotsTableUpdateCompanionBuilder,
+      (
+        WeeklySnapshot,
+        BaseReferences<_$AppDatabase, $WeeklySnapshotsTable, WeeklySnapshot>,
+      ),
+      WeeklySnapshot,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -2689,4 +4872,10 @@ class $AppDatabaseManager {
       $$CategoriesTableTableManager(_db, _db.categories);
   $$ExpensesTableTableManager get expenses =>
       $$ExpensesTableTableManager(_db, _db.expenses);
+  $$StocksTableTableManager get stocks =>
+      $$StocksTableTableManager(_db, _db.stocks);
+  $$TradesTableTableManager get trades =>
+      $$TradesTableTableManager(_db, _db.trades);
+  $$WeeklySnapshotsTableTableManager get weeklySnapshots =>
+      $$WeeklySnapshotsTableTableManager(_db, _db.weeklySnapshots);
 }
