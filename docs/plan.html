@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tracker Build Plan</title>
+<style>
+  :root {
+    --bg: #f7f6f3; --card: #ffffff; --text: #1f2328; --muted: #6b7280;
+    --line: #e5e3de; --accent: #2f6f5e; --accent-soft: #e3efe9; --done: #9ca3af;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #151719; --card: #1e2124; --text: #e6e6e6; --muted: #9aa0a6;
+      --line: #2e3236; --accent: #6cc3a5; --accent-soft: #1f3a31; --done: #6b7280;
+    }
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 32px 16px 64px; }
+  h1 { font-size: 1.7rem; margin: 0 0 4px; }
+  .sub { color: var(--muted); margin: 0 0 24px; }
+  h2 { font-size: 1.15rem; margin: 0; }
+  h3 { font-size: .8rem; text-transform: uppercase; letter-spacing: .06em;
+       color: var(--muted); margin: 20px 0 6px; }
+  .card { background: var(--card); border: 1px solid var(--line);
+          border-radius: 12px; padding: 18px 18px 12px; margin-bottom: 16px; }
+  .head { display: flex; justify-content: space-between; align-items: baseline;
+          gap: 12px; flex-wrap: wrap; }
+  .count { color: var(--muted); font-variant-numeric: tabular-nums; font-size: .9rem; }
+  .bar { height: 6px; background: var(--line); border-radius: 3px; margin: 10px 0 4px; overflow: hidden; }
+  .bar > div { height: 100%; background: var(--accent); width: 0; transition: width .2s; }
+  .overall { position: sticky; top: 0; z-index: 1; background: var(--bg);
+             padding: 10px 0 8px; margin-bottom: 8px; }
+  .overall .bar { height: 10px; border-radius: 5px; }
+  ul { list-style: none; padding: 0; margin: 0; }
+  li label { display: flex; gap: 10px; align-items: flex-start; padding: 6px 4px;
+             border-radius: 6px; cursor: pointer; }
+  li label:hover { background: var(--accent-soft); }
+  input[type=checkbox] { accent-color: var(--accent); width: 18px; height: 18px;
+                         margin-top: 2px; flex: none; }
+  input:checked + span { color: var(--done); text-decoration: line-through; }
+  .ref { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; }
+  .ref ul li { padding: 3px 0; }
+  .ref ul li::before { content: "·"; color: var(--accent); margin-right: 8px; font-weight: 700; }
+  code { font-family: ui-monospace, "SF Mono", Consolas, monospace; font-size: .88em;
+         background: var(--accent-soft); padding: 1px 5px; border-radius: 4px; }
+  .actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 8px; }
+  button { font: inherit; font-size: .85rem; background: none; color: var(--muted);
+           border: 1px solid var(--line); border-radius: 6px; padding: 4px 10px; cursor: pointer; }
+  button:hover { color: var(--text); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>Personal Tracker: Build Checklist</h1>
+  <p class="sub">A Flutter app for Android. Every feature we agreed on is listed below, grouped by phase. Ticks are saved in this browser.</p>
+
+  <div class="overall">
+    <div class="head"><strong>Overall progress</strong><span class="count" id="overall-count"></span></div>
+    <div class="bar"><div id="overall-bar"></div></div>
+  </div>
+
+  <div id="phases"></div>
+
+  <div class="card">
+    <h2>Reference</h2>
+    <div class="ref">
+      <div>
+        <h3>Decisions</h3>
+        <ul>
+          <li>Dedicated modules plus a custom tracker builder</li>
+          <li>Local SQLite only; manual export/import (JSON + CSV)</li>
+          <li>A purchase is an expense with optional item details</li>
+          <li>One currency, set in Settings</li>
+          <li>Home screen is the Today dashboard</li>
+          <li>Phased MVP rollout</li>
+          <li>Investing: prices updated by hand, the app stays offline</li>
+          <li>Investing: FIFO lots (oldest shares sold first)</li>
+          <li>Investing: short-term if held under 1 year, long-term otherwise</li>
+          <li>Investments are kept apart from expenses and budgets</li>
+          <li>Weekly report: an in-app page plus a Sunday-evening notification</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Not in v1</h3>
+        <ul>
+          <li>App lock (PIN or fingerprint)</li>
+          <li>Income tracking</li>
+          <li>Multiple currencies</li>
+          <li>Naps</li>
+          <li>Counter and number custom trackers</li>
+          <li>Automatic sleep detection</li>
+          <li>Cloud sync</li>
+          <li>Automatic stock prices from the internet</li>
+          <li>Importing trades from a broker</li>
+          <li>Dividends, stock splits and bonus shares</li>
+          <li>Options, futures and short selling</li>
+          <li>Tax reports</li>
+          <li>Exporting the weekly report as an image or PDF</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Tech stack</h3>
+        <ul>
+          <li>State: <code>flutter_riverpod</code></li>
+          <li>Routing: <code>go_router</code></li>
+          <li>Database: <code>drift</code> (SQLite)</li>
+          <li>Charts: <code>fl_chart</code></li>
+          <li>Widget: <code>home_widget</code></li>
+          <li>Notifications: <code>flutter_local_notifications</code></li>
+          <li>Photos: <code>image_picker</code></li>
+          <li>Export: <code>share_plus</code>, <code>file_picker</code></li>
+        </ul>
+      </div>
+    </div>
+    <div class="actions"><button id="reset">Clear all ticks</button></div>
+  </div>
+</div>
+
+<script>
+const PLAN = [
+  { id: "p1", title: "Phase 1: Core, Sleep and Money", groups: [
+    { name: "Core", items: [
+      ["core-scaffold", "Flutter project scaffold (Android), feature-folder structure"],
+      ["core-db", "Drift database setup with migrations"],
+      ["core-nav", "App navigation (go_router) and theme (light/dark)"],
+      ["core-dash", "Today dashboard shell with big action buttons"],
+      ["core-settings", "Settings screen: currency, categories, sleep goal"],
+      ["core-export", "Export all data to JSON and CSV (share sheet)"],
+      ["core-import", "Import from a JSON backup"],
+    ]},
+    { name: "Sleep", items: [
+      ["sleep-buttons", "One-tap “Going to sleep” and “I'm awake” buttons"],
+      ["sleep-quality", "Prompt on wake: quality rating 1–5 plus optional note"],
+      ["sleep-edit", "Edit or correct sleep and wake times"],
+      ["sleep-goal", "Sleep goal: target hours and target bedtime"],
+      ["sleep-hitmiss", "Hit/miss against the goal for each night"],
+      ["sleep-history", "Sleep history list"],
+      ["sleep-dash", "Dashboard card: last night's sleep"],
+    ]},
+    { name: "Money", items: [
+      ["money-add", "Add expense: amount, category, date, payment method, note"],
+      ["money-purchase", "Optional purchase details: item, store, warranty or return-by date"],
+      ["money-photo", "Receipt photo from camera or gallery"],
+      ["money-cats", "Manage categories"],
+      ["money-budget", "Monthly budget per category"],
+      ["money-warn", "Budget warnings at 80% and 100%"],
+      ["money-list", "Expense list with filters and edit/delete"],
+      ["money-dash", "Dashboard card: today's and this month's spend vs budget"],
+    ]},
+    { name: "Tests", items: [
+      ["p1-test-sleep", "Unit test: sleep duration across midnight"],
+      ["p1-test-budget", "Unit test: budget percentage and warnings"],
+      ["p1-test-export", "Manual check: export, reinstall, import, data restored"],
+    ]},
+  ]},
+  { id: "p2", title: "Phase 2: Investing", groups: [
+    { name: "Data & calculations", items: [
+      ["inv-db", "Database tables: stocks (symbol, name, last price, price date), trades (buy/sell, date, qty, price, fees, note), weekly snapshots; migration from v1"],
+      ["inv-fifo", "FIFO lot matching: each sale uses up the oldest bought shares first, including partial sells"],
+      ["inv-realized", "Realized profit/loss per sale: sale proceeds − sale fees − cost of matched shares (buy fees included)"],
+      ["inv-holding", "Holding time per sale (days held for each matched lot), labelled short-term or long-term"],
+      ["inv-unrealized", "Unrealized profit/loss on open shares: (last price − average cost) × quantity"],
+      ["inv-guard", "Reject a sale bigger than the shares held, including when editing or deleting old trades"],
+      ["inv-snapshot", "Weekly snapshot of invested amount and portfolio value, used for week-on-week change"],
+    ]},
+    { name: "Pages", items: [
+      ["inv-page-portfolio", "Portfolio page: totals (invested, current value, unrealized and realized P/L) plus every holding at a glance (qty, avg cost, last price, value, P/L %, days held)"],
+      ["inv-page-trade", "Buy/Sell form: stock, date, qty, price, fees, note. Sell shows P/L and days held before saving"],
+      ["inv-page-stock", "Stock details page: current position, open lots, full trade history, closed sales with P/L and days held"],
+      ["inv-page-prices", "Update prices page: every holding in one list to type today's prices, with a stale-price warning"],
+      ["inv-page-history", "Trade journal page: all buys and sells, filter by stock, date or win/loss; edit and delete"],
+      ["inv-page-weekly", "Weekly report page: this week's report plus a list of past weeks"],
+    ]},
+    { name: "Weekly report", items: [
+      ["inv-week-trades", "Trades that week: number of buys and sells, money invested and money taken out"],
+      ["inv-week-pl", "Realized P/L for the week and running total for the year"],
+      ["inv-week-win", "Win rate, best and worst closed trade, average holding time"],
+      ["inv-week-value", "Portfolio value change from last week (as of the last price update)"],
+      ["inv-week-notify", "Sunday-evening notification with the headline numbers; tapping opens the report"],
+    ]},
+    { name: "Dashboard, settings & backup", items: [
+      ["inv-dash", "Dashboard card: portfolio value, unrealized P/L, week's realized P/L, “prices are N days old” prompt"],
+      ["inv-settings", "Settings: weekly report on/off and notification time"],
+      ["inv-backup", "Include stocks, trades and snapshots in JSON/CSV export and import"],
+    ]},
+    { name: "Tests", items: [
+      ["inv-test-fifo", "Unit test: FIFO matching across several buys and partial sells"],
+      ["inv-test-pl", "Unit test: realized P/L with fees, and days held"],
+      ["inv-test-guard", "Unit test: selling more than held is rejected, including after editing old trades"],
+      ["inv-test-week", "Unit test: weekly report numbers (week boundaries, win rate)"],
+      ["inv-test-manual", "Manual check: buy twice, sell part, update price, confirm portfolio and weekly report"],
+    ]},
+  ]},
+  { id: "p3", title: "Phase 3: Reading and Custom Trackers", groups: [
+    { name: "Reading", items: [
+      ["read-library", "Library: add book with title, author, total pages"],
+      ["read-status", "Status: want-to-read, reading, finished, abandoned"],
+      ["read-rating", "Rating when a book is finished"],
+      ["read-timer", "Session timer: start/stop from a book"],
+      ["read-timer-persist", "Timer survives the app being closed"],
+      ["read-pages", "Log end page per session, progress % per book"],
+      ["read-notes", "Notes and quotes per session or per book"],
+      ["read-stats", "Stats: time per day/week, pages per day, streak"],
+      ["read-dash", "Dashboard card: today's reading time and active timer"],
+    ]},
+    { name: "Custom trackers", items: [
+      ["custom-create", "Create a tracker: name, icon, type"],
+      ["custom-habit", "Yes/No habit type with daily check-off"],
+      ["custom-streak", "Streaks for habits"],
+      ["custom-duration", "Duration/timer type with start/stop"],
+      ["custom-dash", "Dashboard quick-taps and running timers"],
+    ]},
+    { name: "Money", items: [
+      ["money-recurring", "Recurring expenses added automatically each period"],
+    ]},
+    { name: "Tests", items: [
+      ["p2-test-streak", "Unit test: streak calculation"],
+      ["p2-test-recurring", "Unit test: recurring expense generation"],
+      ["p2-test-timer", "Manual check: start timer, kill app, timer still running"],
+    ]},
+  ]},
+  { id: "p4", title: "Phase 4: Widget, Reminders and Charts", groups: [
+    { name: "Home-screen widget", items: [
+      ["widget-sleep", "Sleep/Wake toggle"],
+      ["widget-read", "Start/stop reading"],
+      ["widget-expense", "Add expense shortcut"],
+    ]},
+    { name: "Reminders", items: [
+      ["remind-bed", "Bedtime reminder"],
+      ["remind-expense", "Daily “log today's expenses” reminder"],
+      ["remind-custom", "Optional reminder per custom tracker"],
+      ["remind-settings", "Reminder settings screen"],
+    ]},
+    { name: "Charts & stats", items: [
+      ["chart-sleep", "Sleep charts: hours, bedtime consistency (week/month)"],
+      ["chart-read", "Reading charts: time and pages (week/month)"],
+      ["chart-money", "Money charts: monthly total, by category, budget vs actual"],
+      ["chart-custom", "Custom tracker charts"],
+      ["chart-invest", "Investing charts: portfolio value by week, realized P/L per week, allocation by stock"],
+    ]},
+    { name: "Polish", items: [
+      ["polish-dash", "Dashboard refinements"],
+      ["polish-widget-tests", "Widget tests for main forms and dashboard"],
+      ["polish-device", "Full manual pass on a real phone"],
+    ]},
+  ]},
+];
+
+const KEY = "tracker-plan-checks";
+let checks = {};
+try { checks = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
+const save = () => { try { localStorage.setItem(KEY, JSON.stringify(checks)); } catch (e) {} };
+
+const root = document.getElementById("phases");
+for (const phase of PLAN) {
+  const card = document.createElement("section");
+  card.className = "card";
+  card.innerHTML = `<div class="head"><h2>${phase.title}</h2><span class="count" data-count="${phase.id}"></span></div>
+    <div class="bar"><div data-bar="${phase.id}"></div></div>`;
+  for (const g of phase.groups) {
+    const h = document.createElement("h3");
+    h.textContent = g.name;
+    const ul = document.createElement("ul");
+    for (const [id, text] of g.items) {
+      const li = document.createElement("li");
+      li.innerHTML = `<label><input type="checkbox" data-id="${id}" data-phase="${phase.id}"><span></span></label>`;
+      li.querySelector("span").textContent = text;
+      const cb = li.querySelector("input");
+      cb.checked = !!checks[id];
+      cb.addEventListener("change", () => { checks[id] = cb.checked; save(); update(); });
+      ul.appendChild(li);
+    }
+    card.append(h, ul);
+  }
+  root.appendChild(card);
+}
+
+function update() {
+  const all = [...document.querySelectorAll("input[data-id]")];
+  const pct = (d, t) => t ? Math.round(d / t * 100) : 0;
+  for (const phase of PLAN) {
+    const boxes = all.filter(b => b.dataset.phase === phase.id);
+    const done = boxes.filter(b => b.checked).length;
+    document.querySelector(`[data-count="${phase.id}"]`).textContent = `${done}/${boxes.length}`;
+    document.querySelector(`[data-bar="${phase.id}"]`).style.width = pct(done, boxes.length) + "%";
+  }
+  const done = all.filter(b => b.checked).length;
+  document.getElementById("overall-count").textContent = `${done}/${all.length} · ${pct(done, all.length)}%`;
+  document.getElementById("overall-bar").style.width = pct(done, all.length) + "%";
+}
+
+let armed = false;
+document.getElementById("reset").addEventListener("click", e => {
+  if (!armed) { armed = true; e.target.textContent = "Click again to confirm"; return; }
+  checks = {}; save();
+  document.querySelectorAll("input[data-id]").forEach(b => b.checked = false);
+  armed = false; e.target.textContent = "Clear all ticks";
+  update();
+});
+
+update();
+</script>
+</body>
+</html>
