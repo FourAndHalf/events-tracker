@@ -251,6 +251,11 @@ const PLAN = [
   ]},
 ];
 
+// Item ids finished in code. Claude updates this list after each feature; ticks made in the browser are added on top.
+const DONE = new Set([
+  "core-scaffold", "core-db", "core-nav",
+]);
+
 const KEY = "tracker-plan-checks";
 let checks = {};
 try { checks = JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) {}
@@ -271,7 +276,7 @@ for (const phase of PLAN) {
       li.innerHTML = `<label><input type="checkbox" data-id="${id}" data-phase="${phase.id}"><span></span></label>`;
       li.querySelector("span").textContent = text;
       const cb = li.querySelector("input");
-      cb.checked = !!checks[id];
+      cb.checked = DONE.has(id) || !!checks[id];
       cb.addEventListener("change", () => { checks[id] = cb.checked; save(); update(); });
       ul.appendChild(li);
     }

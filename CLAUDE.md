@@ -8,6 +8,7 @@ The build checklist and decisions live in `docs/plan.html` (read it before start
 - Never commit directly to `main`. Do every feature on its own branch (`feature/<short-name>`).
 - When a feature is complete (`flutter analyze` clean and `flutter test` passing), merge it into `main`, then delete the feature branch.
 - Steps: `git switch main && git merge --no-ff feature/<name> && git branch -d feature/<name>`.
+- Before merging, tick the finished items: add their ids to the `DONE` set in the script of `docs/plan.html` and commit that on the feature branch. Only tick items that are fully implemented, not shells or placeholders.
 - Only merge finished, verified work. Leave unfinished work on its branch.
 - If the repo isn't initialised yet, `git init -b main` and make an initial commit on `main` first.
 
