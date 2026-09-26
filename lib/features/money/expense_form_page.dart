@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
@@ -11,6 +14,7 @@ import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
 import 'budget_logic.dart';
 import 'money_repository.dart';
+import 'receipt_storage.dart';
 
 /// Add (id == null) or edit an expense.
 class ExpenseFormPage extends ConsumerStatefulWidget {
@@ -31,6 +35,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
   DateTime _date = DateTime.now();
   String _method = paymentMethods.first;
   DateTime? _warranty;
+  String? _receipt;
   Expense? _existing;
   bool _loaded = false;
 
@@ -53,6 +58,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
           _date = e.date;
           _method = e.paymentMethod;
           _warranty = e.warrantyOrReturnBy;
+          _receipt = e.receiptPath;
           _loaded = true;
         });
       });
@@ -83,6 +89,11 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     setState(() => warranty ? _warranty = d : _date = d);
   }
 
+  Future<void> _addReceipt(ImageSource source) async {
+    final path = await pickReceipt(source);
+    if (path != null && mounted) setState(() => _receipt = path);
+  }
+
   Future<void> _save() async {
     final cents = parseCents(_amount.text);
     if (cents == null) {
@@ -107,6 +118,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
           item: Value(_clean(_item)),
           store: Value(_clean(_store)),
           warrantyOrReturnBy: Value(_warranty),
+          receiptPath: Value(_receipt),
         ),
       );
     } else {
@@ -120,6 +132,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
           item: Value(_clean(_item)),
           store: Value(_clean(_store)),
           warrantyOrReturnBy: Value(_warranty),
+          receiptPath: Value(_receipt),
         ),
       );
     }
@@ -239,7 +252,8 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                     initiallyExpanded:
                         _item.text.isNotEmpty ||
                         _store.text.isNotEmpty ||
-                        _warranty != null,
+                        _warranty != null ||
+                        _receipt != null,
                     title: Text(
                       'Purchase details',
                       style: Theme.of(context).textTheme.labelLarge,
@@ -275,6 +289,58 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                             ),
                         ],
                       ),
+                      const SizedBox(height: 12),
+                      if (_receipt != null)
+                        Stack(
+                          alignment: Alignment.topRight,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(
+                                Aura.innerRadius,
+                              ),
+                              child: Image.file(
+                                File(_receipt!),
+                                height: 200,
+                                width: double.infinity,
+                                fit: BoxFit.cover,
+                                errorBuilder: (_, _, _) => const SizedBox(
+                                  height: 80,
+                                  child: Center(
+                                    child: Text('Receipt file missing'),
+                                  ),
+                                ),
+                              ),
+                            ),
+                            IconButton.filled(
+                              onPressed: () => setState(() => _receipt = null),
+                              icon: const Icon(Icons.close),
+                            ),
+                          ],
+                        )
+                      else
+                        Row(
+                          spacing: 8,
+                          children: [
+                            Expanded(
+                              child: PillButton(
+                                ghost: true,
+                                icon: Icons.photo_camera_outlined,
+                                label: 'Camera',
+                                onPressed: () =>
+                                    _addReceipt(ImageSource.camera),
+                              ),
+                            ),
+                            Expanded(
+                              child: PillButton(
+                                ghost: true,
+                                icon: Icons.photo_library_outlined,
+                                label: 'Gallery',
+                                onPressed: () =>
+                                    _addReceipt(ImageSource.gallery),
+                              ),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                 ),
