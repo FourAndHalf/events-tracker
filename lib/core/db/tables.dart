@@ -3,9 +3,11 @@ import 'package:drift/drift.dart';
 class Settings extends Table {
   IntColumn get id => integer()();
   TextColumn get currencySymbol => text().withDefault(const Constant('\$'))();
-  IntColumn get sleepGoalMinutes => integer().withDefault(const Constant(480))();
+  IntColumn get sleepGoalMinutes =>
+      integer().withDefault(const Constant(480))();
   // Minutes after midnight, e.g. 1380 = 23:00.
-  IntColumn get targetBedtimeMinutes => integer().withDefault(const Constant(1380))();
+  IntColumn get targetBedtimeMinutes =>
+      integer().withDefault(const Constant(1380))();
 
   @override
   Set<Column> get primaryKey => {id};

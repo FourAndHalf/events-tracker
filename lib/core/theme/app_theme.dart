@@ -4,17 +4,21 @@ import 'aura_colors.dart';
 
 const _font = 'PlusJakartaSans';
 
-TextStyle _t(double size, double height, FontWeight w, double spacingEm,
-        [Color color = Aura.text]) =>
-    TextStyle(
-      fontFamily: _font,
-      fontSize: size,
-      height: height / size,
-      fontWeight: w,
-      letterSpacing: size * spacingEm,
-      color: color,
-      fontFeatures: const [FontFeature.tabularFigures()],
-    );
+TextStyle _t(
+  double size,
+  double height,
+  FontWeight w,
+  double spacingEm, [
+  Color color = Aura.text,
+]) => TextStyle(
+  fontFamily: _font,
+  fontSize: size,
+  height: height / size,
+  fontWeight: w,
+  letterSpacing: size * spacingEm,
+  color: color,
+  fontFeatures: const [FontFeature.tabularFigures()],
+);
 
 final auraTheme = ThemeData(
   useMaterial3: true,
