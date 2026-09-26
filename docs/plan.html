@@ -83,6 +83,9 @@
           <li>Investing: short-term if held under 1 year, long-term otherwise</li>
           <li>Investments are kept apart from expenses and budgets</li>
           <li>Weekly report: an in-app page plus a Sunday-evening notification</li>
+          <li>Memories: yearly occasions and one-time events (past or future) in one module</li>
+          <li>Memories: photos and videos are copied into the app's own storage</li>
+          <li>Memories: past events may have an approximate date (year or month only)</li>
         </ul>
       </div>
       <div>
@@ -101,6 +104,10 @@
           <li>Options, futures and short selling</li>
           <li>Tax reports</li>
           <li>Exporting the weekly report as an image or PDF</li>
+          <li>Cloud backup of photos and videos</li>
+          <li>Importing birthdays from contacts</li>
+          <li>Sharing memories with other people</li>
+          <li>Editing or trimming photos and videos</li>
         </ul>
       </div>
       <div>
@@ -114,6 +121,8 @@
           <li>Notifications: <code>flutter_local_notifications</code></li>
           <li>Photos: <code>image_picker</code></li>
           <li>Export: <code>share_plus</code>, <code>file_picker</code></li>
+          <li>Video: <code>video_player</code> plus a thumbnail package</li>
+          <li>Zip backup: <code>archive</code></li>
         </ul>
       </div>
     </div>
@@ -150,7 +159,7 @@ const PLAN = [
       ["money-budget", "Monthly budget per category"],
       ["money-warn", "Budget warnings at 80% and 100%"],
       ["money-list", "Expense list with filters and edit/delete"],
-      ["money-dash", "money-photo", "Dashboard card: today's and this month's spend vs budget"],
+      ["money-dash", "Dashboard card: today's and this month's spend vs budget"],
     ]},
     { name: "Tests", items: [
       ["p1-test-sleep", "Unit test: sleep duration across midnight"],
@@ -247,6 +256,50 @@ const PLAN = [
       ["polish-dash", "Dashboard refinements"],
       ["polish-widget-tests", "Widget tests for main forms and dashboard"],
       ["polish-device", "Full manual pass on a real phone"],
+    ]},
+  ]},
+  { id: "p5", title: "Phase 5: Important Dates & Memories", groups: [
+    { name: "Data & logic", items: [
+      ["mem-db", "Database tables: events (title, kind, date, date precision, person, category, place, description, cover) and media (event, file, photo/video, thumbnail, order); migration from the previous version"],
+      ["mem-kinds", "Two kinds of entry: yearly occasions that repeat (birthdays, anniversaries) and one-time events (past or upcoming)"],
+      ["mem-approx", "Past events can have an approximate date (year only, or month and year); shown as such and sorted correctly in the timeline"],
+      ["mem-next", "Next date for each yearly occasion, with a days-left countdown; Feb 29 falls on Feb 28 in other years"],
+      ["mem-count", "“Nth birthday” / “Nth anniversary” when the starting year is known"],
+      ["mem-onthisday", "“On this day”: events from earlier years that happened on today's date"],
+      ["mem-storage", "Photos and videos copied into the app's own storage, so deleting them from the gallery doesn't lose them; deleting an event or media item removes its files"],
+    ]},
+    { name: "Pages", items: [
+      ["mem-page-home", "Memories page: “Coming up” (occasions in the next 30 days with countdowns), then a timeline of past events grouped by year and month with cover thumbnails"],
+      ["mem-page-form", "Add/Edit event form: title, kind, date (exact, month or year only), person, category, place, description, reminders, attached photos and videos"],
+      ["mem-page-detail", "Event details page: date, countdown or “N years ago”, description, photo/video grid, add or remove media, choose cover"],
+      ["mem-page-viewer", "Media viewer: full screen, swipe between photos and videos, pinch to zoom, play videos"],
+      ["mem-page-calendar", "Calendar page: month grid marking days with occasions and events; tap a day to see them"],
+      ["mem-page-search", "Search and filters: text, category, person, year, “has photos/videos”"],
+    ]},
+    { name: "Photos & videos", items: [
+      ["mem-media-pick", "Add several photos and videos at once from the gallery"],
+      ["mem-media-camera", "Take a photo or record a video straight from the camera"],
+      ["mem-media-thumb", "Video thumbnails with a duration badge in grids"],
+      ["mem-media-size", "Warning before adding very large videos; total media storage shown in Settings"],
+      ["mem-media-cover", "Cover photo per event (first photo by default)"],
+    ]},
+    { name: "Categories & reminders", items: [
+      ["mem-cats", "Categories: birthday, anniversary, milestone, travel, family, other; add your own"],
+      ["mem-remind", "Reminders per occasion: on the day and/or 1, 3 or 7 days before"],
+      ["mem-remind-onthisday", "Optional morning “On this day” notification when an old memory matches today"],
+      ["mem-remind-resched", "Reminders rescheduled after editing, deleting or importing events"],
+    ]},
+    { name: "Dashboard & backup", items: [
+      ["mem-dash", "Dashboard card: next occasion with countdown, plus today's “On this day” memory with its thumbnail"],
+      ["mem-backup-json", "Include events in the JSON/CSV export and import"],
+      ["mem-backup-zip", "Full backup as a .zip with all photos and videos; importing it restores the media"],
+    ]},
+    { name: "Tests", items: [
+      ["mem-test-next", "Unit test: next occurrence across year end and for Feb 29"],
+      ["mem-test-count", "Unit test: Nth birthday / anniversary count"],
+      ["mem-test-onthisday", "Unit test: “On this day” matching, approximate dates handled"],
+      ["mem-test-backup", "Unit test: zip backup round trip restores events and media files"],
+      ["mem-test-manual", "Manual check: add a birthday with a reminder and a past trip with photos and a video; view, back up, reinstall, restore"],
     ]},
   ]},
 ];
