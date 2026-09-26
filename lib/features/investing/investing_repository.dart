@@ -37,6 +37,32 @@ class InvestingRepository {
           ]))
           .watch();
 
+  Stream<List<WeeklySnapshot>> watchSnapshots() => (_db.select(
+    _db.weeklySnapshots,
+  )..orderBy([(s) => OrderingTerm.desc(s.weekStart)])).watch();
+
+  /// Saves the snapshot for [weekStart], replacing an earlier one for the same week.
+  Future<void> upsertSnapshot(
+    DateTime weekStart,
+    int investedCents,
+    int valueCents,
+  ) => _db
+      .into(_db.weeklySnapshots)
+      .insert(
+        WeeklySnapshotsCompanion.insert(
+          weekStart: weekStart,
+          investedCents: investedCents,
+          valueCents: valueCents,
+        ),
+        onConflict: DoUpdate(
+          (_) => WeeklySnapshotsCompanion(
+            investedCents: Value(investedCents),
+            valueCents: Value(valueCents),
+          ),
+          target: [_db.weeklySnapshots.weekStart],
+        ),
+      );
+
   Future<int> addStock(String symbol, String name) => _db
       .into(_db.stocks)
       .insert(
@@ -100,6 +126,9 @@ final investingRepositoryProvider = Provider(
 );
 final stocksProvider = StreamProvider(
   (ref) => ref.watch(investingRepositoryProvider).watchStocks(),
+);
+final snapshotsProvider = StreamProvider(
+  (ref) => ref.watch(investingRepositoryProvider).watchSnapshots(),
 );
 final tradesProvider = StreamProvider(
   (ref) => ref.watch(investingRepositoryProvider).watchTrades(),

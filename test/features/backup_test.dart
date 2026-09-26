@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
+import 'package:events_tracker/features/investing/investing_repository.dart';
 import 'package:events_tracker/features/settings/backup_codec.dart';
 import 'package:events_tracker/features/settings/backup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -91,5 +92,87 @@ void main() {
     expect(sleepCsv[1], contains('2026-01-01T23:00:00'));
     expect(sleepCsv[1], contains('"said ""ok"", fine"'));
     expect(csv.keys, containsAll(['categories.csv', 'expenses.csv']));
+  });
+
+  test(
+    'investing data (stocks, trades, snapshots) survives export -> import',
+    () async {
+      final src = await _seeded();
+      final repo = InvestingRepository(src);
+      final stockId = await repo.addStock('AAPL', 'Apple');
+      await repo.setPrice(stockId, 15025, DateTime(2026, 3, 1));
+      await repo.addTrade(
+        TradesCompanion.insert(
+          stockId: stockId,
+          isBuy: true,
+          date: DateTime(2026, 1, 5),
+          quantity: 10,
+          priceCents: 14000,
+          feesCents: const Value(150),
+          note: const Value('first buy'),
+        ),
+      );
+      await repo.upsertSnapshot(DateTime(2026, 3, 2), 140150, 150250);
+      final json = backupToJson(await BackupService(src).readAll());
+      await src.close();
+
+      final dst = AppDatabase(NativeDatabase.memory());
+      addTearDown(dst.close);
+      await BackupService(dst).replaceAll(backupFromJson(json));
+
+      final stock = await dst.select(dst.stocks).getSingle();
+      expect(stock.symbol, 'AAPL');
+      expect(stock.lastPriceCents, 15025);
+      final trade = await dst.select(dst.trades).getSingle();
+      expect(trade.stockId, stock.id);
+      expect(trade.feesCents, 150);
+      expect(trade.note, 'first buy');
+      final snap = await dst.select(dst.weeklySnapshots).getSingle();
+      expect(snap.valueCents, 150250);
+    },
+  );
+
+  test('a backup made before Investing existed still imports', () async {
+    const old = '''
+{"format":"events-tracker-backup","version":1,
+ "settings":{"id":1,"currencySymbol":"€","sleepGoalMinutes":450,"targetBedtimeMinutes":1380},
+ "sleepSessions":[],"categories":[{"id":1,"name":"Food","budgetCents":null,"archived":false}],
+ "expenses":[]}''';
+    final data = backupFromJson(old);
+    expect(data.stocks, isEmpty);
+    expect(data.trades, isEmpty);
+    expect(data.settings.weeklyReportEnabled, isTrue);
+    expect(data.settings.weeklyReportMinutes, 1140);
+
+    final dst = AppDatabase(NativeDatabase.memory());
+    addTearDown(dst.close);
+    await BackupService(dst).replaceAll(data);
+    expect((await dst.select(dst.settings).getSingle()).currencySymbol, '€');
+  });
+
+  test('CSV export includes the investing tables', () async {
+    final db = await _seeded();
+    addTearDown(db.close);
+    final repo = InvestingRepository(db);
+    final id = await repo.addStock('MSFT', 'Microsoft');
+    await repo.addTrade(
+      TradesCompanion.insert(
+        stockId: id,
+        isBuy: true,
+        date: DateTime(2026, 1, 5),
+        quantity: 2,
+        priceCents: 100,
+      ),
+    );
+    final csv = backupToCsv(await BackupService(db).readAll());
+    expect(
+      csv.keys,
+      containsAll(['stocks.csv', 'trades.csv', 'weekly_snapshots.csv']),
+    );
+    expect(
+      csv['trades.csv']!.split('\n').first,
+      startsWith('id,stockId,isBuy,date'),
+    );
+    expect(csv['stocks.csv'], contains('MSFT'));
   });
 }

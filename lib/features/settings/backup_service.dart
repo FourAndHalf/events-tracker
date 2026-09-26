@@ -20,10 +20,16 @@ class BackupService {
     sleepSessions: await _db.select(_db.sleepSessions).get(),
     categories: await _db.select(_db.categories).get(),
     expenses: await _db.select(_db.expenses).get(),
+    stocks: await _db.select(_db.stocks).get(),
+    trades: await _db.select(_db.trades).get(),
+    snapshots: await _db.select(_db.weeklySnapshots).get(),
   );
 
   /// Replaces every table with [d] in one transaction (all or nothing).
   Future<void> replaceAll(BackupData d) => _db.transaction(() async {
+    await _db.delete(_db.trades).go();
+    await _db.delete(_db.weeklySnapshots).go();
+    await _db.delete(_db.stocks).go();
     await _db.delete(_db.expenses).go();
     await _db.delete(_db.categories).go();
     await _db.delete(_db.sleepSessions).go();
@@ -33,6 +39,9 @@ class BackupService {
       b.insertAll(_db.categories, d.categories);
       b.insertAll(_db.sleepSessions, d.sleepSessions);
       b.insertAll(_db.expenses, d.expenses);
+      b.insertAll(_db.stocks, d.stocks);
+      b.insertAll(_db.trades, d.trades);
+      b.insertAll(_db.weeklySnapshots, d.snapshots);
     });
   });
 

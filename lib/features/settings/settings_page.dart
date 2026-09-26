@@ -9,6 +9,7 @@ import 'package:go_router/go_router.dart';
 
 import '../../core/db/providers.dart';
 import '../../core/db/settings_repository.dart';
+import '../../core/notifications/report_notifier.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
@@ -50,7 +51,7 @@ class SettingsPage extends ConsumerWidget {
         title: const Text('Replace all data?'),
         content: Text(
           'This replaces everything in the app with the backup: '
-          '${data.sleepSessions.length} sleep entries and ${data.expenses.length} expenses. '
+          '${data.sleepSessions.length} sleep entries, ${data.expenses.length} expenses and ${data.trades.length} trades. '
           'Receipt photos are not part of the backup.',
         ),
         actions: [
@@ -175,6 +176,62 @@ class SettingsPage extends ConsumerWidget {
                     label: 'Categories & budgets',
                     value: 'Manage',
                     onTap: () => context.push('/money/categories'),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Overline('Investing'),
+                const SizedBox(height: 8),
+                AuraCard(
+                  child: Column(
+                    children: [
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('Sunday weekly report'),
+                        subtitle: const Text(
+                          'A notification with your week in numbers',
+                        ),
+                        value: s.weeklyReportEnabled,
+                        onChanged: (v) async {
+                          if (v) {
+                            await ref
+                                .read(reportNotifierProvider)
+                                .requestPermission();
+                          }
+                          await updateSettings(
+                            db,
+                            SettingsCompanion(weeklyReportEnabled: Value(v)),
+                          );
+                        },
+                      ),
+                      if (s.weeklyReportEnabled) ...[
+                        const Divider(color: Aura.rim),
+                        _Row(
+                          label: 'Notification time (Sunday)',
+                          value: TimeOfDay(
+                            hour: s.weeklyReportMinutes ~/ 60,
+                            minute: s.weeklyReportMinutes % 60,
+                          ).format(context),
+                          onTap: () async {
+                            final t = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay(
+                                hour: s.weeklyReportMinutes ~/ 60,
+                                minute: s.weeklyReportMinutes % 60,
+                              ),
+                            );
+                            if (t == null) return;
+                            await updateSettings(
+                              db,
+                              SettingsCompanion(
+                                weeklyReportMinutes: Value(
+                                  t.hour * 60 + t.minute,
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
+                    ],
                   ),
                 ),
                 const SizedBox(height: 24),

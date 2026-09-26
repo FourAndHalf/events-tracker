@@ -49,7 +49,9 @@ void main() {
     await tester.tap(find.text('Invest'));
     await tester.pump(const Duration(milliseconds: 300));
     // Let the database streams deliver in real time, then rebuild.
-    await tester.runAsync(() => Future.delayed(const Duration(milliseconds: 300)));
+    await tester.runAsync(
+      () => Future.delayed(const Duration(milliseconds: 300)),
+    );
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('AAPL'), findsOneWidget);
