@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../core/db/providers.dart';
 import '../../core/db/settings_repository.dart';
@@ -105,6 +106,16 @@ class SettingsPage extends ConsumerWidget {
                         ),
                       ),
                   ],
+                ),
+                const SizedBox(height: 24),
+                const Overline('Money'),
+                const SizedBox(height: 8),
+                AuraCard(
+                  child: _Row(
+                    label: 'Categories & budgets',
+                    value: 'Manage',
+                    onTap: () => context.push('/money/categories'),
+                  ),
                 ),
               ],
             ),
