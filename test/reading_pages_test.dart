@@ -86,6 +86,19 @@ void main() {
       expect(find.text('Start reading'), findsOneWidget);
       expect(find.textContaining('Page 100 of 400'), findsOneWidget);
       expect(find.textContaining('25%'), findsOneWidget);
+
+      // Dashboard card shows a streak once a session exists.
+      await tester.pageBack();
+      await tester.pump(const Duration(milliseconds: 300));
+      await tester.tap(find.byTooltip('Home'));
+      await tester.pump(const Duration(milliseconds: 300));
+      await _settle(tester);
+      await tester.scrollUntilVisible(
+        find.textContaining('day streak'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(find.textContaining('day streak'), findsOneWidget);
       await _teardown(tester, db);
     },
   );

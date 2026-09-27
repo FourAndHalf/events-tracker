@@ -1,5 +1,6 @@
 import '../../core/db/app_database.dart';
 import 'reading_logic.dart';
+import 'reading_stats.dart';
 
 /// Pages read per session id. [ascending] must be sorted oldest first and
 /// contain one book's sessions; each is measured from the previous end page.
@@ -20,4 +21,34 @@ int? currentPage(List<ReadingSession> ascending) {
     if (s.endPage != null) return s.endPage;
   }
   return null;
+}
+
+/// Sessions reduced to time and pages for the stats. A running session counts
+/// up to [now] only when [includeRunning] is set (dashboard); the stats page
+/// waits until it is stopped so its page count is known.
+List<SessionStat> sessionStats(
+  List<ReadingSession> all,
+  DateTime now, {
+  bool includeRunning = false,
+}) {
+  final byBook = <int, List<ReadingSession>>{};
+  for (final s in all) {
+    byBook.putIfAbsent(s.bookId, () => []).add(s);
+  }
+  final out = <SessionStat>[];
+  for (final sessions in byBook.values) {
+    sessions.sort((a, b) => a.startAt.compareTo(b.startAt));
+    final pages = pagesBySession(sessions);
+    for (final s in sessions) {
+      if (s.endAt == null && !includeRunning) continue;
+      out.add(
+        SessionStat(
+          start: s.startAt,
+          duration: sessionDuration(s.startAt, s.endAt, now),
+          pages: pages[s.id] ?? 0,
+        ),
+      );
+    }
+  }
+  return out;
 }

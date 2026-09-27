@@ -13,6 +13,7 @@ import '../../features/money/money_page.dart';
 import '../../features/reading/book_form_page.dart';
 import '../../features/reading/book_page.dart';
 import '../../features/reading/reading_page.dart';
+import '../../features/reading/reading_stats_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../features/sleep/sleep_edit_page.dart';
 import '../../features/sleep/sleep_page.dart';
@@ -124,6 +125,10 @@ final appRouter = GoRouter(
                   path: 'edit/:id',
                   builder: (_, state) =>
                       BookFormPage(id: int.parse(state.pathParameters['id']!)),
+                ),
+                GoRoute(
+                  path: 'stats',
+                  builder: (_, _) => const ReadingStatsPage(),
                 ),
                 GoRoute(
                   path: 'book/:id',
