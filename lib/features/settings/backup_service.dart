@@ -29,10 +29,16 @@ class BackupService {
     memoryCategories: await _db.select(_db.memoryCategories).get(),
     memoryEvents: await _db.select(_db.memoryEvents).get(),
     memoryMedia: await _db.select(_db.memoryMedia).get(),
+    trackers: await _db.select(_db.trackers).get(),
+    trackerEntries: await _db.select(_db.trackerEntries).get(),
+    recurringExpenses: await _db.select(_db.recurringExpenses).get(),
   );
 
   /// Replaces every table with [d] in one transaction (all or nothing).
   Future<void> replaceAll(BackupData d) => _db.transaction(() async {
+    await _db.delete(_db.recurringExpenses).go();
+    await _db.delete(_db.trackerEntries).go();
+    await _db.delete(_db.trackers).go();
     await _db.delete(_db.memoryMedia).go();
     await _db.delete(_db.memoryEvents).go();
     await _db.delete(_db.memoryCategories).go();
@@ -73,6 +79,9 @@ class BackupService {
       );
       b.insertAll(_db.memoryEvents, d.memoryEvents);
       b.insertAll(_db.memoryMedia, d.memoryMedia);
+      b.insertAll(_db.trackers, d.trackers);
+      b.insertAll(_db.trackerEntries, d.trackerEntries);
+      b.insertAll(_db.recurringExpenses, d.recurringExpenses);
     });
   });
 

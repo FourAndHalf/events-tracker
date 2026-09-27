@@ -5825,6 +5825,1352 @@ class MemoryMediaCompanion extends UpdateCompanion<MemoryMediaItem> {
   }
 }
 
+class $TrackersTable extends Trackers with TableInfo<$TrackersTable, Tracker> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackersTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _iconMeta = const VerificationMeta('icon');
+  @override
+  late final GeneratedColumn<String> icon = GeneratedColumn<String>(
+    'icon',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('star'),
+  );
+  static const VerificationMeta _typeMeta = const VerificationMeta('type');
+  @override
+  late final GeneratedColumn<String> type = GeneratedColumn<String>(
+    'type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('habit'),
+  );
+  static const VerificationMeta _archivedMeta = const VerificationMeta(
+    'archived',
+  );
+  @override
+  late final GeneratedColumn<bool> archived = GeneratedColumn<bool>(
+    'archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("archived" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, icon, type, archived];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'trackers';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<Tracker> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('icon')) {
+      context.handle(
+        _iconMeta,
+        icon.isAcceptableOrUnknown(data['icon']!, _iconMeta),
+      );
+    }
+    if (data.containsKey('type')) {
+      context.handle(
+        _typeMeta,
+        type.isAcceptableOrUnknown(data['type']!, _typeMeta),
+      );
+    }
+    if (data.containsKey('archived')) {
+      context.handle(
+        _archivedMeta,
+        archived.isAcceptableOrUnknown(data['archived']!, _archivedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Tracker map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Tracker(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      icon: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}icon'],
+      )!,
+      type: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}type'],
+      )!,
+      archived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}archived'],
+      )!,
+    );
+  }
+
+  @override
+  $TrackersTable createAlias(String alias) {
+    return $TrackersTable(attachedDatabase, alias);
+  }
+}
+
+class Tracker extends DataClass implements Insertable<Tracker> {
+  final int id;
+  final String name;
+  final String icon;
+  final String type;
+  final bool archived;
+  const Tracker({
+    required this.id,
+    required this.name,
+    required this.icon,
+    required this.type,
+    required this.archived,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['icon'] = Variable<String>(icon);
+    map['type'] = Variable<String>(type);
+    map['archived'] = Variable<bool>(archived);
+    return map;
+  }
+
+  TrackersCompanion toCompanion(bool nullToAbsent) {
+    return TrackersCompanion(
+      id: Value(id),
+      name: Value(name),
+      icon: Value(icon),
+      type: Value(type),
+      archived: Value(archived),
+    );
+  }
+
+  factory Tracker.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Tracker(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      icon: serializer.fromJson<String>(json['icon']),
+      type: serializer.fromJson<String>(json['type']),
+      archived: serializer.fromJson<bool>(json['archived']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'icon': serializer.toJson<String>(icon),
+      'type': serializer.toJson<String>(type),
+      'archived': serializer.toJson<bool>(archived),
+    };
+  }
+
+  Tracker copyWith({
+    int? id,
+    String? name,
+    String? icon,
+    String? type,
+    bool? archived,
+  }) => Tracker(
+    id: id ?? this.id,
+    name: name ?? this.name,
+    icon: icon ?? this.icon,
+    type: type ?? this.type,
+    archived: archived ?? this.archived,
+  );
+  Tracker copyWithCompanion(TrackersCompanion data) {
+    return Tracker(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      icon: data.icon.present ? data.icon.value : this.icon,
+      type: data.type.present ? data.type.value : this.type,
+      archived: data.archived.present ? data.archived.value : this.archived,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Tracker(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('icon: $icon, ')
+          ..write('type: $type, ')
+          ..write('archived: $archived')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, icon, type, archived);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Tracker &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.icon == this.icon &&
+          other.type == this.type &&
+          other.archived == this.archived);
+}
+
+class TrackersCompanion extends UpdateCompanion<Tracker> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<String> icon;
+  final Value<String> type;
+  final Value<bool> archived;
+  const TrackersCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.icon = const Value.absent(),
+    this.type = const Value.absent(),
+    this.archived = const Value.absent(),
+  });
+  TrackersCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.icon = const Value.absent(),
+    this.type = const Value.absent(),
+    this.archived = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<Tracker> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<String>? icon,
+    Expression<String>? type,
+    Expression<bool>? archived,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (icon != null) 'icon': icon,
+      if (type != null) 'type': type,
+      if (archived != null) 'archived': archived,
+    });
+  }
+
+  TrackersCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<String>? icon,
+    Value<String>? type,
+    Value<bool>? archived,
+  }) {
+    return TrackersCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      icon: icon ?? this.icon,
+      type: type ?? this.type,
+      archived: archived ?? this.archived,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (icon.present) {
+      map['icon'] = Variable<String>(icon.value);
+    }
+    if (type.present) {
+      map['type'] = Variable<String>(type.value);
+    }
+    if (archived.present) {
+      map['archived'] = Variable<bool>(archived.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackersCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('icon: $icon, ')
+          ..write('type: $type, ')
+          ..write('archived: $archived')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $TrackerEntriesTable extends TrackerEntries
+    with TableInfo<$TrackerEntriesTable, TrackerEntry> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $TrackerEntriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _trackerIdMeta = const VerificationMeta(
+    'trackerId',
+  );
+  @override
+  late final GeneratedColumn<int> trackerId = GeneratedColumn<int>(
+    'tracker_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES trackers (id)',
+    ),
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<DateTime> day = GeneratedColumn<DateTime>(
+    'day',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _startAtMeta = const VerificationMeta(
+    'startAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startAt = GeneratedColumn<DateTime>(
+    'start_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _endAtMeta = const VerificationMeta('endAt');
+  @override
+  late final GeneratedColumn<DateTime> endAt = GeneratedColumn<DateTime>(
+    'end_at',
+    aliasedName,
+    true,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, trackerId, day, startAt, endAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'tracker_entries';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<TrackerEntry> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('tracker_id')) {
+      context.handle(
+        _trackerIdMeta,
+        trackerId.isAcceptableOrUnknown(data['tracker_id']!, _trackerIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_trackerIdMeta);
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_dayMeta);
+    }
+    if (data.containsKey('start_at')) {
+      context.handle(
+        _startAtMeta,
+        startAt.isAcceptableOrUnknown(data['start_at']!, _startAtMeta),
+      );
+    }
+    if (data.containsKey('end_at')) {
+      context.handle(
+        _endAtMeta,
+        endAt.isAcceptableOrUnknown(data['end_at']!, _endAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  TrackerEntry map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return TrackerEntry(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      trackerId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}tracker_id'],
+      )!,
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}day'],
+      )!,
+      startAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_at'],
+      ),
+      endAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}end_at'],
+      ),
+    );
+  }
+
+  @override
+  $TrackerEntriesTable createAlias(String alias) {
+    return $TrackerEntriesTable(attachedDatabase, alias);
+  }
+}
+
+class TrackerEntry extends DataClass implements Insertable<TrackerEntry> {
+  final int id;
+  final int trackerId;
+  final DateTime day;
+  final DateTime? startAt;
+  final DateTime? endAt;
+  const TrackerEntry({
+    required this.id,
+    required this.trackerId,
+    required this.day,
+    this.startAt,
+    this.endAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['tracker_id'] = Variable<int>(trackerId);
+    map['day'] = Variable<DateTime>(day);
+    if (!nullToAbsent || startAt != null) {
+      map['start_at'] = Variable<DateTime>(startAt);
+    }
+    if (!nullToAbsent || endAt != null) {
+      map['end_at'] = Variable<DateTime>(endAt);
+    }
+    return map;
+  }
+
+  TrackerEntriesCompanion toCompanion(bool nullToAbsent) {
+    return TrackerEntriesCompanion(
+      id: Value(id),
+      trackerId: Value(trackerId),
+      day: Value(day),
+      startAt: startAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(startAt),
+      endAt: endAt == null && nullToAbsent
+          ? const Value.absent()
+          : Value(endAt),
+    );
+  }
+
+  factory TrackerEntry.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return TrackerEntry(
+      id: serializer.fromJson<int>(json['id']),
+      trackerId: serializer.fromJson<int>(json['trackerId']),
+      day: serializer.fromJson<DateTime>(json['day']),
+      startAt: serializer.fromJson<DateTime?>(json['startAt']),
+      endAt: serializer.fromJson<DateTime?>(json['endAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'trackerId': serializer.toJson<int>(trackerId),
+      'day': serializer.toJson<DateTime>(day),
+      'startAt': serializer.toJson<DateTime?>(startAt),
+      'endAt': serializer.toJson<DateTime?>(endAt),
+    };
+  }
+
+  TrackerEntry copyWith({
+    int? id,
+    int? trackerId,
+    DateTime? day,
+    Value<DateTime?> startAt = const Value.absent(),
+    Value<DateTime?> endAt = const Value.absent(),
+  }) => TrackerEntry(
+    id: id ?? this.id,
+    trackerId: trackerId ?? this.trackerId,
+    day: day ?? this.day,
+    startAt: startAt.present ? startAt.value : this.startAt,
+    endAt: endAt.present ? endAt.value : this.endAt,
+  );
+  TrackerEntry copyWithCompanion(TrackerEntriesCompanion data) {
+    return TrackerEntry(
+      id: data.id.present ? data.id.value : this.id,
+      trackerId: data.trackerId.present ? data.trackerId.value : this.trackerId,
+      day: data.day.present ? data.day.value : this.day,
+      startAt: data.startAt.present ? data.startAt.value : this.startAt,
+      endAt: data.endAt.present ? data.endAt.value : this.endAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackerEntry(')
+          ..write('id: $id, ')
+          ..write('trackerId: $trackerId, ')
+          ..write('day: $day, ')
+          ..write('startAt: $startAt, ')
+          ..write('endAt: $endAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, trackerId, day, startAt, endAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is TrackerEntry &&
+          other.id == this.id &&
+          other.trackerId == this.trackerId &&
+          other.day == this.day &&
+          other.startAt == this.startAt &&
+          other.endAt == this.endAt);
+}
+
+class TrackerEntriesCompanion extends UpdateCompanion<TrackerEntry> {
+  final Value<int> id;
+  final Value<int> trackerId;
+  final Value<DateTime> day;
+  final Value<DateTime?> startAt;
+  final Value<DateTime?> endAt;
+  const TrackerEntriesCompanion({
+    this.id = const Value.absent(),
+    this.trackerId = const Value.absent(),
+    this.day = const Value.absent(),
+    this.startAt = const Value.absent(),
+    this.endAt = const Value.absent(),
+  });
+  TrackerEntriesCompanion.insert({
+    this.id = const Value.absent(),
+    required int trackerId,
+    required DateTime day,
+    this.startAt = const Value.absent(),
+    this.endAt = const Value.absent(),
+  }) : trackerId = Value(trackerId),
+       day = Value(day);
+  static Insertable<TrackerEntry> custom({
+    Expression<int>? id,
+    Expression<int>? trackerId,
+    Expression<DateTime>? day,
+    Expression<DateTime>? startAt,
+    Expression<DateTime>? endAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (trackerId != null) 'tracker_id': trackerId,
+      if (day != null) 'day': day,
+      if (startAt != null) 'start_at': startAt,
+      if (endAt != null) 'end_at': endAt,
+    });
+  }
+
+  TrackerEntriesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? trackerId,
+    Value<DateTime>? day,
+    Value<DateTime?>? startAt,
+    Value<DateTime?>? endAt,
+  }) {
+    return TrackerEntriesCompanion(
+      id: id ?? this.id,
+      trackerId: trackerId ?? this.trackerId,
+      day: day ?? this.day,
+      startAt: startAt ?? this.startAt,
+      endAt: endAt ?? this.endAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (trackerId.present) {
+      map['tracker_id'] = Variable<int>(trackerId.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<DateTime>(day.value);
+    }
+    if (startAt.present) {
+      map['start_at'] = Variable<DateTime>(startAt.value);
+    }
+    if (endAt.present) {
+      map['end_at'] = Variable<DateTime>(endAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('TrackerEntriesCompanion(')
+          ..write('id: $id, ')
+          ..write('trackerId: $trackerId, ')
+          ..write('day: $day, ')
+          ..write('startAt: $startAt, ')
+          ..write('endAt: $endAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $RecurringExpensesTable extends RecurringExpenses
+    with TableInfo<$RecurringExpensesTable, RecurringExpense> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $RecurringExpensesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _amountCentsMeta = const VerificationMeta(
+    'amountCents',
+  );
+  @override
+  late final GeneratedColumn<int> amountCents = GeneratedColumn<int>(
+    'amount_cents',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+    'category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES categories (id)',
+    ),
+  );
+  static const VerificationMeta _paymentMethodMeta = const VerificationMeta(
+    'paymentMethod',
+  );
+  @override
+  late final GeneratedColumn<String> paymentMethod = GeneratedColumn<String>(
+    'payment_method',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _noteMeta = const VerificationMeta('note');
+  @override
+  late final GeneratedColumn<String> note = GeneratedColumn<String>(
+    'note',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _itemMeta = const VerificationMeta('item');
+  @override
+  late final GeneratedColumn<String> item = GeneratedColumn<String>(
+    'item',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _storeMeta = const VerificationMeta('store');
+  @override
+  late final GeneratedColumn<String> store = GeneratedColumn<String>(
+    'store',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _frequencyMeta = const VerificationMeta(
+    'frequency',
+  );
+  @override
+  late final GeneratedColumn<String> frequency = GeneratedColumn<String>(
+    'frequency',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('monthly'),
+  );
+  static const VerificationMeta _startDateMeta = const VerificationMeta(
+    'startDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> startDate = GeneratedColumn<DateTime>(
+    'start_date',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _lastGeneratedDateMeta = const VerificationMeta(
+    'lastGeneratedDate',
+  );
+  @override
+  late final GeneratedColumn<DateTime> lastGeneratedDate =
+      GeneratedColumn<DateTime>(
+        'last_generated_date',
+        aliasedName,
+        true,
+        type: DriftSqlType.dateTime,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _activeMeta = const VerificationMeta('active');
+  @override
+  late final GeneratedColumn<bool> active = GeneratedColumn<bool>(
+    'active',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("active" IN (0, 1))',
+    ),
+    defaultValue: const Constant(true),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    amountCents,
+    categoryId,
+    paymentMethod,
+    note,
+    item,
+    store,
+    frequency,
+    startDate,
+    lastGeneratedDate,
+    active,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'recurring_expenses';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<RecurringExpense> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('amount_cents')) {
+      context.handle(
+        _amountCentsMeta,
+        amountCents.isAcceptableOrUnknown(
+          data['amount_cents']!,
+          _amountCentsMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_amountCentsMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('payment_method')) {
+      context.handle(
+        _paymentMethodMeta,
+        paymentMethod.isAcceptableOrUnknown(
+          data['payment_method']!,
+          _paymentMethodMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_paymentMethodMeta);
+    }
+    if (data.containsKey('note')) {
+      context.handle(
+        _noteMeta,
+        note.isAcceptableOrUnknown(data['note']!, _noteMeta),
+      );
+    }
+    if (data.containsKey('item')) {
+      context.handle(
+        _itemMeta,
+        item.isAcceptableOrUnknown(data['item']!, _itemMeta),
+      );
+    }
+    if (data.containsKey('store')) {
+      context.handle(
+        _storeMeta,
+        store.isAcceptableOrUnknown(data['store']!, _storeMeta),
+      );
+    }
+    if (data.containsKey('frequency')) {
+      context.handle(
+        _frequencyMeta,
+        frequency.isAcceptableOrUnknown(data['frequency']!, _frequencyMeta),
+      );
+    }
+    if (data.containsKey('start_date')) {
+      context.handle(
+        _startDateMeta,
+        startDate.isAcceptableOrUnknown(data['start_date']!, _startDateMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_startDateMeta);
+    }
+    if (data.containsKey('last_generated_date')) {
+      context.handle(
+        _lastGeneratedDateMeta,
+        lastGeneratedDate.isAcceptableOrUnknown(
+          data['last_generated_date']!,
+          _lastGeneratedDateMeta,
+        ),
+      );
+    }
+    if (data.containsKey('active')) {
+      context.handle(
+        _activeMeta,
+        active.isAcceptableOrUnknown(data['active']!, _activeMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  RecurringExpense map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return RecurringExpense(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      amountCents: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}amount_cents'],
+      )!,
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}category_id'],
+      )!,
+      paymentMethod: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}payment_method'],
+      )!,
+      note: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}note'],
+      ),
+      item: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item'],
+      ),
+      store: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}store'],
+      ),
+      frequency: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}frequency'],
+      )!,
+      startDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}start_date'],
+      )!,
+      lastGeneratedDate: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}last_generated_date'],
+      ),
+      active: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}active'],
+      )!,
+    );
+  }
+
+  @override
+  $RecurringExpensesTable createAlias(String alias) {
+    return $RecurringExpensesTable(attachedDatabase, alias);
+  }
+}
+
+class RecurringExpense extends DataClass
+    implements Insertable<RecurringExpense> {
+  final int id;
+  final int amountCents;
+  final int categoryId;
+  final String paymentMethod;
+  final String? note;
+  final String? item;
+  final String? store;
+  final String frequency;
+  final DateTime startDate;
+  final DateTime? lastGeneratedDate;
+  final bool active;
+  const RecurringExpense({
+    required this.id,
+    required this.amountCents,
+    required this.categoryId,
+    required this.paymentMethod,
+    this.note,
+    this.item,
+    this.store,
+    required this.frequency,
+    required this.startDate,
+    this.lastGeneratedDate,
+    required this.active,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['amount_cents'] = Variable<int>(amountCents);
+    map['category_id'] = Variable<int>(categoryId);
+    map['payment_method'] = Variable<String>(paymentMethod);
+    if (!nullToAbsent || note != null) {
+      map['note'] = Variable<String>(note);
+    }
+    if (!nullToAbsent || item != null) {
+      map['item'] = Variable<String>(item);
+    }
+    if (!nullToAbsent || store != null) {
+      map['store'] = Variable<String>(store);
+    }
+    map['frequency'] = Variable<String>(frequency);
+    map['start_date'] = Variable<DateTime>(startDate);
+    if (!nullToAbsent || lastGeneratedDate != null) {
+      map['last_generated_date'] = Variable<DateTime>(lastGeneratedDate);
+    }
+    map['active'] = Variable<bool>(active);
+    return map;
+  }
+
+  RecurringExpensesCompanion toCompanion(bool nullToAbsent) {
+    return RecurringExpensesCompanion(
+      id: Value(id),
+      amountCents: Value(amountCents),
+      categoryId: Value(categoryId),
+      paymentMethod: Value(paymentMethod),
+      note: note == null && nullToAbsent ? const Value.absent() : Value(note),
+      item: item == null && nullToAbsent ? const Value.absent() : Value(item),
+      store: store == null && nullToAbsent
+          ? const Value.absent()
+          : Value(store),
+      frequency: Value(frequency),
+      startDate: Value(startDate),
+      lastGeneratedDate: lastGeneratedDate == null && nullToAbsent
+          ? const Value.absent()
+          : Value(lastGeneratedDate),
+      active: Value(active),
+    );
+  }
+
+  factory RecurringExpense.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return RecurringExpense(
+      id: serializer.fromJson<int>(json['id']),
+      amountCents: serializer.fromJson<int>(json['amountCents']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+      paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
+      note: serializer.fromJson<String?>(json['note']),
+      item: serializer.fromJson<String?>(json['item']),
+      store: serializer.fromJson<String?>(json['store']),
+      frequency: serializer.fromJson<String>(json['frequency']),
+      startDate: serializer.fromJson<DateTime>(json['startDate']),
+      lastGeneratedDate: serializer.fromJson<DateTime?>(
+        json['lastGeneratedDate'],
+      ),
+      active: serializer.fromJson<bool>(json['active']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'amountCents': serializer.toJson<int>(amountCents),
+      'categoryId': serializer.toJson<int>(categoryId),
+      'paymentMethod': serializer.toJson<String>(paymentMethod),
+      'note': serializer.toJson<String?>(note),
+      'item': serializer.toJson<String?>(item),
+      'store': serializer.toJson<String?>(store),
+      'frequency': serializer.toJson<String>(frequency),
+      'startDate': serializer.toJson<DateTime>(startDate),
+      'lastGeneratedDate': serializer.toJson<DateTime?>(lastGeneratedDate),
+      'active': serializer.toJson<bool>(active),
+    };
+  }
+
+  RecurringExpense copyWith({
+    int? id,
+    int? amountCents,
+    int? categoryId,
+    String? paymentMethod,
+    Value<String?> note = const Value.absent(),
+    Value<String?> item = const Value.absent(),
+    Value<String?> store = const Value.absent(),
+    String? frequency,
+    DateTime? startDate,
+    Value<DateTime?> lastGeneratedDate = const Value.absent(),
+    bool? active,
+  }) => RecurringExpense(
+    id: id ?? this.id,
+    amountCents: amountCents ?? this.amountCents,
+    categoryId: categoryId ?? this.categoryId,
+    paymentMethod: paymentMethod ?? this.paymentMethod,
+    note: note.present ? note.value : this.note,
+    item: item.present ? item.value : this.item,
+    store: store.present ? store.value : this.store,
+    frequency: frequency ?? this.frequency,
+    startDate: startDate ?? this.startDate,
+    lastGeneratedDate: lastGeneratedDate.present
+        ? lastGeneratedDate.value
+        : this.lastGeneratedDate,
+    active: active ?? this.active,
+  );
+  RecurringExpense copyWithCompanion(RecurringExpensesCompanion data) {
+    return RecurringExpense(
+      id: data.id.present ? data.id.value : this.id,
+      amountCents: data.amountCents.present
+          ? data.amountCents.value
+          : this.amountCents,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
+      paymentMethod: data.paymentMethod.present
+          ? data.paymentMethod.value
+          : this.paymentMethod,
+      note: data.note.present ? data.note.value : this.note,
+      item: data.item.present ? data.item.value : this.item,
+      store: data.store.present ? data.store.value : this.store,
+      frequency: data.frequency.present ? data.frequency.value : this.frequency,
+      startDate: data.startDate.present ? data.startDate.value : this.startDate,
+      lastGeneratedDate: data.lastGeneratedDate.present
+          ? data.lastGeneratedDate.value
+          : this.lastGeneratedDate,
+      active: data.active.present ? data.active.value : this.active,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringExpense(')
+          ..write('id: $id, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('paymentMethod: $paymentMethod, ')
+          ..write('note: $note, ')
+          ..write('item: $item, ')
+          ..write('store: $store, ')
+          ..write('frequency: $frequency, ')
+          ..write('startDate: $startDate, ')
+          ..write('lastGeneratedDate: $lastGeneratedDate, ')
+          ..write('active: $active')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    amountCents,
+    categoryId,
+    paymentMethod,
+    note,
+    item,
+    store,
+    frequency,
+    startDate,
+    lastGeneratedDate,
+    active,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is RecurringExpense &&
+          other.id == this.id &&
+          other.amountCents == this.amountCents &&
+          other.categoryId == this.categoryId &&
+          other.paymentMethod == this.paymentMethod &&
+          other.note == this.note &&
+          other.item == this.item &&
+          other.store == this.store &&
+          other.frequency == this.frequency &&
+          other.startDate == this.startDate &&
+          other.lastGeneratedDate == this.lastGeneratedDate &&
+          other.active == this.active);
+}
+
+class RecurringExpensesCompanion extends UpdateCompanion<RecurringExpense> {
+  final Value<int> id;
+  final Value<int> amountCents;
+  final Value<int> categoryId;
+  final Value<String> paymentMethod;
+  final Value<String?> note;
+  final Value<String?> item;
+  final Value<String?> store;
+  final Value<String> frequency;
+  final Value<DateTime> startDate;
+  final Value<DateTime?> lastGeneratedDate;
+  final Value<bool> active;
+  const RecurringExpensesCompanion({
+    this.id = const Value.absent(),
+    this.amountCents = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.paymentMethod = const Value.absent(),
+    this.note = const Value.absent(),
+    this.item = const Value.absent(),
+    this.store = const Value.absent(),
+    this.frequency = const Value.absent(),
+    this.startDate = const Value.absent(),
+    this.lastGeneratedDate = const Value.absent(),
+    this.active = const Value.absent(),
+  });
+  RecurringExpensesCompanion.insert({
+    this.id = const Value.absent(),
+    required int amountCents,
+    required int categoryId,
+    required String paymentMethod,
+    this.note = const Value.absent(),
+    this.item = const Value.absent(),
+    this.store = const Value.absent(),
+    this.frequency = const Value.absent(),
+    required DateTime startDate,
+    this.lastGeneratedDate = const Value.absent(),
+    this.active = const Value.absent(),
+  }) : amountCents = Value(amountCents),
+       categoryId = Value(categoryId),
+       paymentMethod = Value(paymentMethod),
+       startDate = Value(startDate);
+  static Insertable<RecurringExpense> custom({
+    Expression<int>? id,
+    Expression<int>? amountCents,
+    Expression<int>? categoryId,
+    Expression<String>? paymentMethod,
+    Expression<String>? note,
+    Expression<String>? item,
+    Expression<String>? store,
+    Expression<String>? frequency,
+    Expression<DateTime>? startDate,
+    Expression<DateTime>? lastGeneratedDate,
+    Expression<bool>? active,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (amountCents != null) 'amount_cents': amountCents,
+      if (categoryId != null) 'category_id': categoryId,
+      if (paymentMethod != null) 'payment_method': paymentMethod,
+      if (note != null) 'note': note,
+      if (item != null) 'item': item,
+      if (store != null) 'store': store,
+      if (frequency != null) 'frequency': frequency,
+      if (startDate != null) 'start_date': startDate,
+      if (lastGeneratedDate != null) 'last_generated_date': lastGeneratedDate,
+      if (active != null) 'active': active,
+    });
+  }
+
+  RecurringExpensesCompanion copyWith({
+    Value<int>? id,
+    Value<int>? amountCents,
+    Value<int>? categoryId,
+    Value<String>? paymentMethod,
+    Value<String?>? note,
+    Value<String?>? item,
+    Value<String?>? store,
+    Value<String>? frequency,
+    Value<DateTime>? startDate,
+    Value<DateTime?>? lastGeneratedDate,
+    Value<bool>? active,
+  }) {
+    return RecurringExpensesCompanion(
+      id: id ?? this.id,
+      amountCents: amountCents ?? this.amountCents,
+      categoryId: categoryId ?? this.categoryId,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+      note: note ?? this.note,
+      item: item ?? this.item,
+      store: store ?? this.store,
+      frequency: frequency ?? this.frequency,
+      startDate: startDate ?? this.startDate,
+      lastGeneratedDate: lastGeneratedDate ?? this.lastGeneratedDate,
+      active: active ?? this.active,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (amountCents.present) {
+      map['amount_cents'] = Variable<int>(amountCents.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (paymentMethod.present) {
+      map['payment_method'] = Variable<String>(paymentMethod.value);
+    }
+    if (note.present) {
+      map['note'] = Variable<String>(note.value);
+    }
+    if (item.present) {
+      map['item'] = Variable<String>(item.value);
+    }
+    if (store.present) {
+      map['store'] = Variable<String>(store.value);
+    }
+    if (frequency.present) {
+      map['frequency'] = Variable<String>(frequency.value);
+    }
+    if (startDate.present) {
+      map['start_date'] = Variable<DateTime>(startDate.value);
+    }
+    if (lastGeneratedDate.present) {
+      map['last_generated_date'] = Variable<DateTime>(lastGeneratedDate.value);
+    }
+    if (active.present) {
+      map['active'] = Variable<bool>(active.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('RecurringExpensesCompanion(')
+          ..write('id: $id, ')
+          ..write('amountCents: $amountCents, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('paymentMethod: $paymentMethod, ')
+          ..write('note: $note, ')
+          ..write('item: $item, ')
+          ..write('store: $store, ')
+          ..write('frequency: $frequency, ')
+          ..write('startDate: $startDate, ')
+          ..write('lastGeneratedDate: $lastGeneratedDate, ')
+          ..write('active: $active')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -5847,6 +7193,10 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   );
   late final $MemoryEventsTable memoryEvents = $MemoryEventsTable(this);
   late final $MemoryMediaTable memoryMedia = $MemoryMediaTable(this);
+  late final $TrackersTable trackers = $TrackersTable(this);
+  late final $TrackerEntriesTable trackerEntries = $TrackerEntriesTable(this);
+  late final $RecurringExpensesTable recurringExpenses =
+      $RecurringExpensesTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -5865,6 +7215,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     memoryCategories,
     memoryEvents,
     memoryMedia,
+    trackers,
+    trackerEntries,
+    recurringExpenses,
   ];
 }
 
@@ -6372,6 +7725,27 @@ final class $$CategoriesTableReferences
       manager.$state.copyWith(prefetchedData: cache),
     );
   }
+
+  static MultiTypedResultKey<$RecurringExpensesTable, List<RecurringExpense>>
+  _recurringExpensesRefsTable(_$AppDatabase db) =>
+      MultiTypedResultKey.fromTable(
+        db.recurringExpenses,
+        aliasName: 'categories__id__recurring_expenses__category_id',
+      );
+
+  $$RecurringExpensesTableProcessedTableManager get recurringExpensesRefs {
+    final manager = $$RecurringExpensesTableTableManager(
+      $_db,
+      $_db.recurringExpenses,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(
+      _recurringExpensesRefsTable($_db),
+    );
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
 }
 
 class $$CategoriesTableFilterComposer
@@ -6419,6 +7793,31 @@ class $$CategoriesTableFilterComposer
           }) => $$ExpensesTableFilterComposer(
             $db: $db,
             $table: $db.expenses,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+
+  Expression<bool> recurringExpensesRefs(
+    Expression<bool> Function($$RecurringExpensesTableFilterComposer f) f,
+  ) {
+    final $$RecurringExpensesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.recurringExpenses,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$RecurringExpensesTableFilterComposer(
+            $db: $db,
+            $table: $db.recurringExpenses,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -6506,6 +7905,32 @@ class $$CategoriesTableAnnotationComposer
     );
     return f(composer);
   }
+
+  Expression<T> recurringExpensesRefs<T extends Object>(
+    Expression<T> Function($$RecurringExpensesTableAnnotationComposer a) f,
+  ) {
+    final $$RecurringExpensesTableAnnotationComposer composer =
+        $composerBuilder(
+          composer: this,
+          getCurrentColumn: (t) => t.id,
+          referencedTable: $db.recurringExpenses,
+          getReferencedColumn: (t) => t.categoryId,
+          builder:
+              (
+                joinBuilder, {
+                $addJoinBuilderToRootComposer,
+                $removeJoinBuilderFromRootComposer,
+              }) => $$RecurringExpensesTableAnnotationComposer(
+                $db: $db,
+                $table: $db.recurringExpenses,
+                $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+                joinBuilder: joinBuilder,
+                $removeJoinBuilderFromRootComposer:
+                    $removeJoinBuilderFromRootComposer,
+              ),
+        );
+    return f(composer);
+  }
 }
 
 class $$CategoriesTableTableManager
@@ -6521,7 +7946,10 @@ class $$CategoriesTableTableManager
           $$CategoriesTableUpdateCompanionBuilder,
           (Category, $$CategoriesTableReferences),
           Category,
-          PrefetchHooks Function({bool expensesRefs})
+          PrefetchHooks Function({
+            bool expensesRefs,
+            bool recurringExpensesRefs,
+          })
         > {
   $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
     : super(
@@ -6566,36 +7994,63 @@ class $$CategoriesTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({expensesRefs = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [if (expensesRefs) db.expenses],
-              addJoins: null,
-              getPrefetchedDataCallback: (items) async {
-                return [
-                  if (expensesRefs)
-                    await $_getPrefetchedData<
-                      Category,
-                      $CategoriesTable,
-                      Expense
-                    >(
-                      currentTable: table,
-                      referencedTable: $$CategoriesTableReferences
-                          ._expensesRefsTable(db),
-                      managerFromTypedResult: (p0) =>
-                          $$CategoriesTableReferences(
-                            db,
-                            table,
-                            p0,
-                          ).expensesRefs,
-                      referencedItemsForCurrentItem: (item, referencedItems) =>
-                          referencedItems.where((e) => e.categoryId == item.id),
-                      typedResults: items,
-                    ),
-                ];
+          prefetchHooksCallback:
+              ({expensesRefs = false, recurringExpensesRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (expensesRefs) db.expenses,
+                    if (recurringExpensesRefs) db.recurringExpenses,
+                  ],
+                  addJoins: null,
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (expensesRefs)
+                        await $_getPrefetchedData<
+                          Category,
+                          $CategoriesTable,
+                          Expense
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences
+                              ._expensesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).expensesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                      if (recurringExpensesRefs)
+                        await $_getPrefetchedData<
+                          Category,
+                          $CategoriesTable,
+                          RecurringExpense
+                        >(
+                          currentTable: table,
+                          referencedTable: $$CategoriesTableReferences
+                              ._recurringExpensesRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$CategoriesTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).recurringExpensesRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.categoryId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
               },
-            );
-          },
         ),
       );
 }
@@ -6612,7 +8067,7 @@ typedef $$CategoriesTableProcessedTableManager =
       $$CategoriesTableUpdateCompanionBuilder,
       (Category, $$CategoriesTableReferences),
       Category,
-      PrefetchHooks Function({bool expensesRefs})
+      PrefetchHooks Function({bool expensesRefs, bool recurringExpensesRefs})
     >;
 typedef $$ExpensesTableCreateCompanionBuilder = ExpensesCompanion Function({
   Value<int> id,
@@ -10377,6 +11832,1058 @@ typedef $$MemoryMediaTableProcessedTableManager =
       MemoryMediaItem,
       PrefetchHooks Function({bool eventId})
     >;
+typedef $$TrackersTableCreateCompanionBuilder = TrackersCompanion Function({
+  Value<int> id,
+  required String name,
+  Value<String> icon,
+  Value<String> type,
+  Value<bool> archived,
+});
+typedef $$TrackersTableUpdateCompanionBuilder = TrackersCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<String> icon,
+  Value<String> type,
+  Value<bool> archived,
+});
+
+final class $$TrackersTableReferences
+    extends BaseReferences<_$AppDatabase, $TrackersTable, Tracker> {
+  $$TrackersTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static MultiTypedResultKey<$TrackerEntriesTable, List<TrackerEntry>>
+  _trackerEntriesRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.trackerEntries,
+    aliasName: 'trackers__id__tracker_entries__tracker_id',
+  );
+
+  $$TrackerEntriesTableProcessedTableManager get trackerEntriesRefs {
+    final manager = $$TrackerEntriesTableTableManager(
+      $_db,
+      $_db.trackerEntries,
+    ).filter((f) => f.trackerId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_trackerEntriesRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$TrackersTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackersTable> {
+  $$TrackersTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get icon => $composableBuilder(
+    column: $table.icon,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get archived => $composableBuilder(
+    column: $table.archived,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> trackerEntriesRefs(
+    Expression<bool> Function($$TrackerEntriesTableFilterComposer f) f,
+  ) {
+    final $$TrackerEntriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trackerEntries,
+      getReferencedColumn: (t) => t.trackerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackerEntriesTableFilterComposer(
+            $db: $db,
+            $table: $db.trackerEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TrackersTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackersTable> {
+  $$TrackersTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get icon => $composableBuilder(
+    column: $table.icon,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get type => $composableBuilder(
+    column: $table.type,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get archived => $composableBuilder(
+    column: $table.archived,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$TrackersTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackersTable> {
+  $$TrackersTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<String> get icon =>
+      $composableBuilder(column: $table.icon, builder: (column) => column);
+
+  GeneratedColumn<String> get type =>
+      $composableBuilder(column: $table.type, builder: (column) => column);
+
+  GeneratedColumn<bool> get archived =>
+      $composableBuilder(column: $table.archived, builder: (column) => column);
+
+  Expression<T> trackerEntriesRefs<T extends Object>(
+    Expression<T> Function($$TrackerEntriesTableAnnotationComposer a) f,
+  ) {
+    final $$TrackerEntriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.trackerEntries,
+      getReferencedColumn: (t) => t.trackerId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackerEntriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackerEntries,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$TrackersTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackersTable,
+          Tracker,
+          $$TrackersTableFilterComposer,
+          $$TrackersTableOrderingComposer,
+          $$TrackersTableAnnotationComposer,
+          $$TrackersTableCreateCompanionBuilder,
+          $$TrackersTableUpdateCompanionBuilder,
+          (Tracker, $$TrackersTableReferences),
+          Tracker,
+          PrefetchHooks Function({bool trackerEntriesRefs})
+        > {
+  $$TrackersTableTableManager(_$AppDatabase db, $TrackersTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackersTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TrackersTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TrackersTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<String> icon = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<bool> archived = const Value.absent(),
+              }) => TrackersCompanion(
+                id: id,
+                name: name,
+                icon: icon,
+                type: type,
+                archived: archived,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<String> icon = const Value.absent(),
+                Value<String> type = const Value.absent(),
+                Value<bool> archived = const Value.absent(),
+              }) => TrackersCompanion.insert(
+                id: id,
+                name: name,
+                icon: icon,
+                type: type,
+                archived: archived,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TrackersTable, Tracker>(table),
+                  $$TrackersTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackerEntriesRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [
+                if (trackerEntriesRefs) db.trackerEntries,
+              ],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (trackerEntriesRefs)
+                    await $_getPrefetchedData<
+                      Tracker,
+                      $TrackersTable,
+                      TrackerEntry
+                    >(
+                      currentTable: table,
+                      referencedTable: $$TrackersTableReferences
+                          ._trackerEntriesRefsTable(db),
+                      managerFromTypedResult: (p0) => $$TrackersTableReferences(
+                        db,
+                        table,
+                        p0,
+                      ).trackerEntriesRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.trackerId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackersTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackersTable,
+      Tracker,
+      $$TrackersTableFilterComposer,
+      $$TrackersTableOrderingComposer,
+      $$TrackersTableAnnotationComposer,
+      $$TrackersTableCreateCompanionBuilder,
+      $$TrackersTableUpdateCompanionBuilder,
+      (Tracker, $$TrackersTableReferences),
+      Tracker,
+      PrefetchHooks Function({bool trackerEntriesRefs})
+    >;
+typedef $$TrackerEntriesTableCreateCompanionBuilder =
+    TrackerEntriesCompanion Function({
+      Value<int> id,
+      required int trackerId,
+      required DateTime day,
+      Value<DateTime?> startAt,
+      Value<DateTime?> endAt,
+    });
+typedef $$TrackerEntriesTableUpdateCompanionBuilder =
+    TrackerEntriesCompanion Function({
+      Value<int> id,
+      Value<int> trackerId,
+      Value<DateTime> day,
+      Value<DateTime?> startAt,
+      Value<DateTime?> endAt,
+    });
+
+final class $$TrackerEntriesTableReferences
+    extends BaseReferences<_$AppDatabase, $TrackerEntriesTable, TrackerEntry> {
+  $$TrackerEntriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $TrackersTable _trackerIdTable(_$AppDatabase db) =>
+      db.trackers.createAlias('tracker_entries__tracker_id__trackers__id');
+
+  $$TrackersTableProcessedTableManager get trackerId {
+    final $_column = $_itemColumn<int>('tracker_id')!;
+
+    final manager = $$TrackersTableTableManager(
+      $_db,
+      $_db.trackers,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_trackerIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$TrackerEntriesTableFilterComposer
+    extends Composer<_$AppDatabase, $TrackerEntriesTable> {
+  $$TrackerEntriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startAt => $composableBuilder(
+    column: $table.startAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get endAt => $composableBuilder(
+    column: $table.endAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$TrackersTableFilterComposer get trackerId {
+    final $$TrackersTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackerId,
+      referencedTable: $db.trackers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackersTableFilterComposer(
+            $db: $db,
+            $table: $db.trackers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackerEntriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $TrackerEntriesTable> {
+  $$TrackerEntriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startAt => $composableBuilder(
+    column: $table.startAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get endAt => $composableBuilder(
+    column: $table.endAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$TrackersTableOrderingComposer get trackerId {
+    final $$TrackersTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackerId,
+      referencedTable: $db.trackers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackersTableOrderingComposer(
+            $db: $db,
+            $table: $db.trackers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackerEntriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $TrackerEntriesTable> {
+  $$TrackerEntriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startAt =>
+      $composableBuilder(column: $table.startAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get endAt =>
+      $composableBuilder(column: $table.endAt, builder: (column) => column);
+
+  $$TrackersTableAnnotationComposer get trackerId {
+    final $$TrackersTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.trackerId,
+      referencedTable: $db.trackers,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$TrackersTableAnnotationComposer(
+            $db: $db,
+            $table: $db.trackers,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$TrackerEntriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $TrackerEntriesTable,
+          TrackerEntry,
+          $$TrackerEntriesTableFilterComposer,
+          $$TrackerEntriesTableOrderingComposer,
+          $$TrackerEntriesTableAnnotationComposer,
+          $$TrackerEntriesTableCreateCompanionBuilder,
+          $$TrackerEntriesTableUpdateCompanionBuilder,
+          (TrackerEntry, $$TrackerEntriesTableReferences),
+          TrackerEntry,
+          PrefetchHooks Function({bool trackerId})
+        > {
+  $$TrackerEntriesTableTableManager(
+    _$AppDatabase db,
+    $TrackerEntriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$TrackerEntriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$TrackerEntriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$TrackerEntriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> trackerId = const Value.absent(),
+                Value<DateTime> day = const Value.absent(),
+                Value<DateTime?> startAt = const Value.absent(),
+                Value<DateTime?> endAt = const Value.absent(),
+              }) => TrackerEntriesCompanion(
+                id: id,
+                trackerId: trackerId,
+                day: day,
+                startAt: startAt,
+                endAt: endAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int trackerId,
+                required DateTime day,
+                Value<DateTime?> startAt = const Value.absent(),
+                Value<DateTime?> endAt = const Value.absent(),
+              }) => TrackerEntriesCompanion.insert(
+                id: id,
+                trackerId: trackerId,
+                day: day,
+                startAt: startAt,
+                endAt: endAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$TrackerEntriesTable, TrackerEntry>(table),
+                  $$TrackerEntriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({trackerId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (trackerId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.trackerId,
+                        referencedTable: $$TrackerEntriesTableReferences
+                            ._trackerIdTable(db),
+                        referencedColumn: $$TrackerEntriesTableReferences
+                            ._trackerIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$TrackerEntriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $TrackerEntriesTable,
+      TrackerEntry,
+      $$TrackerEntriesTableFilterComposer,
+      $$TrackerEntriesTableOrderingComposer,
+      $$TrackerEntriesTableAnnotationComposer,
+      $$TrackerEntriesTableCreateCompanionBuilder,
+      $$TrackerEntriesTableUpdateCompanionBuilder,
+      (TrackerEntry, $$TrackerEntriesTableReferences),
+      TrackerEntry,
+      PrefetchHooks Function({bool trackerId})
+    >;
+typedef $$RecurringExpensesTableCreateCompanionBuilder =
+    RecurringExpensesCompanion Function({
+      Value<int> id,
+      required int amountCents,
+      required int categoryId,
+      required String paymentMethod,
+      Value<String?> note,
+      Value<String?> item,
+      Value<String?> store,
+      Value<String> frequency,
+      required DateTime startDate,
+      Value<DateTime?> lastGeneratedDate,
+      Value<bool> active,
+    });
+typedef $$RecurringExpensesTableUpdateCompanionBuilder =
+    RecurringExpensesCompanion Function({
+      Value<int> id,
+      Value<int> amountCents,
+      Value<int> categoryId,
+      Value<String> paymentMethod,
+      Value<String?> note,
+      Value<String?> item,
+      Value<String?> store,
+      Value<String> frequency,
+      Value<DateTime> startDate,
+      Value<DateTime?> lastGeneratedDate,
+      Value<bool> active,
+    });
+
+final class $$RecurringExpensesTableReferences
+    extends
+        BaseReferences<
+          _$AppDatabase,
+          $RecurringExpensesTable,
+          RecurringExpense
+        > {
+  $$RecurringExpensesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static $CategoriesTable _categoryIdTable(_$AppDatabase db) => db.categories
+      .createAlias('recurring_expenses__category_id__categories__id');
+
+  $$CategoriesTableProcessedTableManager get categoryId {
+    final $_column = $_itemColumn<int>('category_id')!;
+
+    final manager = $$CategoriesTableTableManager(
+      $_db,
+      $_db.categories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$RecurringExpensesTableFilterComposer
+    extends Composer<_$AppDatabase, $RecurringExpensesTable> {
+  $$RecurringExpensesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get item => $composableBuilder(
+    column: $table.item,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get store => $composableBuilder(
+    column: $table.store,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get lastGeneratedDate => $composableBuilder(
+    column: $table.lastGeneratedDate,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurringExpensesTableOrderingComposer
+    extends Composer<_$AppDatabase, $RecurringExpensesTable> {
+  $$RecurringExpensesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get note => $composableBuilder(
+    column: $table.note,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get item => $composableBuilder(
+    column: $table.item,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get store => $composableBuilder(
+    column: $table.store,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get frequency => $composableBuilder(
+    column: $table.frequency,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get startDate => $composableBuilder(
+    column: $table.startDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get lastGeneratedDate => $composableBuilder(
+    column: $table.lastGeneratedDate,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get active => $composableBuilder(
+    column: $table.active,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurringExpensesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $RecurringExpensesTable> {
+  $$RecurringExpensesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<int> get amountCents => $composableBuilder(
+    column: $table.amountCents,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get paymentMethod => $composableBuilder(
+    column: $table.paymentMethod,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get note =>
+      $composableBuilder(column: $table.note, builder: (column) => column);
+
+  GeneratedColumn<String> get item =>
+      $composableBuilder(column: $table.item, builder: (column) => column);
+
+  GeneratedColumn<String> get store =>
+      $composableBuilder(column: $table.store, builder: (column) => column);
+
+  GeneratedColumn<String> get frequency =>
+      $composableBuilder(column: $table.frequency, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get startDate =>
+      $composableBuilder(column: $table.startDate, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get lastGeneratedDate => $composableBuilder(
+    column: $table.lastGeneratedDate,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get active =>
+      $composableBuilder(column: $table.active, builder: (column) => column);
+
+  $$CategoriesTableAnnotationComposer get categoryId {
+    final $$CategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.categories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$CategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.categories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$RecurringExpensesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $RecurringExpensesTable,
+          RecurringExpense,
+          $$RecurringExpensesTableFilterComposer,
+          $$RecurringExpensesTableOrderingComposer,
+          $$RecurringExpensesTableAnnotationComposer,
+          $$RecurringExpensesTableCreateCompanionBuilder,
+          $$RecurringExpensesTableUpdateCompanionBuilder,
+          (RecurringExpense, $$RecurringExpensesTableReferences),
+          RecurringExpense,
+          PrefetchHooks Function({bool categoryId})
+        > {
+  $$RecurringExpensesTableTableManager(
+    _$AppDatabase db,
+    $RecurringExpensesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$RecurringExpensesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$RecurringExpensesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$RecurringExpensesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> amountCents = const Value.absent(),
+                Value<int> categoryId = const Value.absent(),
+                Value<String> paymentMethod = const Value.absent(),
+                Value<String?> note = const Value.absent(),
+                Value<String?> item = const Value.absent(),
+                Value<String?> store = const Value.absent(),
+                Value<String> frequency = const Value.absent(),
+                Value<DateTime> startDate = const Value.absent(),
+                Value<DateTime?> lastGeneratedDate = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+              }) => RecurringExpensesCompanion(
+                id: id,
+                amountCents: amountCents,
+                categoryId: categoryId,
+                paymentMethod: paymentMethod,
+                note: note,
+                item: item,
+                store: store,
+                frequency: frequency,
+                startDate: startDate,
+                lastGeneratedDate: lastGeneratedDate,
+                active: active,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int amountCents,
+                required int categoryId,
+                required String paymentMethod,
+                Value<String?> note = const Value.absent(),
+                Value<String?> item = const Value.absent(),
+                Value<String?> store = const Value.absent(),
+                Value<String> frequency = const Value.absent(),
+                required DateTime startDate,
+                Value<DateTime?> lastGeneratedDate = const Value.absent(),
+                Value<bool> active = const Value.absent(),
+              }) => RecurringExpensesCompanion.insert(
+                id: id,
+                amountCents: amountCents,
+                categoryId: categoryId,
+                paymentMethod: paymentMethod,
+                note: note,
+                item: item,
+                store: store,
+                frequency: frequency,
+                startDate: startDate,
+                lastGeneratedDate: lastGeneratedDate,
+                active: active,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$RecurringExpensesTable, RecurringExpense>(table),
+                  $$RecurringExpensesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({categoryId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (categoryId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.categoryId,
+                        referencedTable: $$RecurringExpensesTableReferences
+                            ._categoryIdTable(db),
+                        referencedColumn: $$RecurringExpensesTableReferences
+                            ._categoryIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$RecurringExpensesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $RecurringExpensesTable,
+      RecurringExpense,
+      $$RecurringExpensesTableFilterComposer,
+      $$RecurringExpensesTableOrderingComposer,
+      $$RecurringExpensesTableAnnotationComposer,
+      $$RecurringExpensesTableCreateCompanionBuilder,
+      $$RecurringExpensesTableUpdateCompanionBuilder,
+      (RecurringExpense, $$RecurringExpensesTableReferences),
+      RecurringExpense,
+      PrefetchHooks Function({bool categoryId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -10407,4 +12914,10 @@ class $AppDatabaseManager {
       $$MemoryEventsTableTableManager(_db, _db.memoryEvents);
   $$MemoryMediaTableTableManager get memoryMedia =>
       $$MemoryMediaTableTableManager(_db, _db.memoryMedia);
+  $$TrackersTableTableManager get trackers =>
+      $$TrackersTableTableManager(_db, _db.trackers);
+  $$TrackerEntriesTableTableManager get trackerEntries =>
+      $$TrackerEntriesTableTableManager(_db, _db.trackerEntries);
+  $$RecurringExpensesTableTableManager get recurringExpenses =>
+      $$RecurringExpensesTableTableManager(_db, _db.recurringExpenses);
 }

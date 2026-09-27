@@ -3,7 +3,10 @@ import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
 import 'package:events_tracker/features/investing/investing_repository.dart';
 import 'package:events_tracker/features/memories/memories_repository.dart';
+import 'package:events_tracker/features/money/recurring_repository.dart';
 import 'package:events_tracker/features/reading/reading_repository.dart';
+import 'package:events_tracker/features/trackers/tracker_logic.dart';
+import 'package:events_tracker/features/trackers/trackers_repository.dart';
 import 'package:events_tracker/features/settings/backup_codec.dart';
 import 'package:events_tracker/features/settings/backup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -228,6 +231,51 @@ void main() {
           'memory_categories.csv',
           'memory_events.csv',
           'memory_media.csv',
+        ]),
+      );
+    },
+  );
+
+  test(
+    'trackers, entries and recurring rules survive export -> import',
+    () async {
+      final src = await _seeded();
+      final t = TrackersRepository(src);
+      final habit = await t.addTracker('Meditate', 'star', TrackerType.habit);
+      await t.toggleHabit(habit, DateTime(2026, 3, 1));
+      final timer = await t.addTracker('Guitar', 'music', TrackerType.duration);
+      await t.startTimer(timer, DateTime(2026, 3, 1, 20));
+      await t.stopTimer(timer, DateTime(2026, 3, 1, 20, 30));
+      await RecurringRepository(src).add(
+        RecurringExpensesCompanion.insert(
+          amountCents: 999,
+          categoryId: 1,
+          paymentMethod: 'Card',
+          startDate: DateTime(2026, 1, 31),
+          frequency: const Value('monthly'),
+          note: const Value('Netflix'),
+        ),
+      );
+      final data = await BackupService(src).readAll();
+      final json = backupToJson(data);
+      final csv = backupToCsv(data);
+      await src.close();
+
+      final dst = AppDatabase(NativeDatabase.memory());
+      addTearDown(dst.close);
+      await BackupService(dst).replaceAll(backupFromJson(json));
+      expect(await dst.select(dst.trackers).get(), hasLength(2));
+      final entries = await dst.select(dst.trackerEntries).get();
+      expect(entries, hasLength(2));
+      expect(entries.where((e) => e.endAt != null), hasLength(1));
+      final r = await dst.select(dst.recurringExpenses).getSingle();
+      expect((r.amountCents, r.note, r.frequency), (999, 'Netflix', 'monthly'));
+      expect(
+        csv.keys,
+        containsAll([
+          'trackers.csv',
+          'tracker_entries.csv',
+          'recurring_expenses.csv',
         ]),
       );
     },

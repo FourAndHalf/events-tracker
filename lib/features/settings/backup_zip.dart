@@ -63,6 +63,9 @@ ZipPlan planZip(BackupData d, {required bool includeVideos}) {
       memoryCategories: d.memoryCategories,
       memoryEvents: events,
       memoryMedia: rewritten,
+      trackers: d.trackers,
+      trackerEntries: d.trackerEntries,
+      recurringExpenses: d.recurringExpenses,
     ),
     files,
   );
@@ -160,6 +163,9 @@ Future<BackupData> importBackupZip({
         memoryCategories: data.memoryCategories,
         memoryEvents: data.memoryEvents,
         memoryMedia: media,
+        trackers: data.trackers,
+        trackerEntries: data.trackerEntries,
+        recurringExpenses: data.recurringExpenses,
       ),
     );
     final keep = copied.toSet();

@@ -7,6 +7,7 @@ import 'core/theme/app_theme.dart';
 import 'core/widgets/splash_overlay.dart';
 import 'features/investing/report_scheduler.dart';
 import 'features/memories/reminder_scheduler.dart';
+import 'features/money/recurring_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -28,6 +29,7 @@ class TrackerApp extends ConsumerWidget {
     ref.watch(snapshotWriterProvider);
     ref.watch(reportSchedulerProvider);
     ref.watch(memoryReminderSchedulerProvider);
+    ref.watch(recurringGeneratorProvider);
     return MaterialApp.router(
       title: 'Events',
       theme: auraTheme,
