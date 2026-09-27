@@ -18,6 +18,16 @@ class Settings extends Table {
       integer().withDefault(const Constant(540))();
   BoolColumn get onThisDayEnabled =>
       boolean().withDefault(const Constant(false))();
+  // Bedtime reminder fires this many minutes before the target bedtime.
+  BoolColumn get bedtimeReminderEnabled =>
+      boolean().withDefault(const Constant(false))();
+  IntColumn get bedtimeReminderLeadMinutes =>
+      integer().withDefault(const Constant(30))();
+  // Daily "log today's expenses" reminder, minutes after midnight (21:00).
+  BoolColumn get expenseReminderEnabled =>
+      boolean().withDefault(const Constant(false))();
+  IntColumn get expenseReminderMinutes =>
+      integer().withDefault(const Constant(1260))();
 
   @override
   Set<Column> get primaryKey => {id};
@@ -158,6 +168,8 @@ class Trackers extends Table {
   // 'habit' (daily yes/no) or 'duration' (start/stop timer).
   TextColumn get type => text().withDefault(const Constant('habit'))();
   BoolColumn get archived => boolean().withDefault(const Constant(false))();
+  // Daily reminder time in minutes after midnight; null means no reminder.
+  IntColumn get reminderMinutes => integer().nullable()();
 }
 
 class TrackerEntries extends Table {

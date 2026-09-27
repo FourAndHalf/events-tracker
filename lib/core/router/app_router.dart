@@ -21,6 +21,7 @@ import '../../features/reading/book_form_page.dart';
 import '../../features/reading/book_page.dart';
 import '../../features/reading/reading_page.dart';
 import '../../features/reading/reading_stats_page.dart';
+import '../../features/settings/reminders_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../features/trackers/tracker_detail_page.dart';
 import '../../features/trackers/tracker_form_page.dart';
@@ -44,6 +45,12 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'settings',
                   builder: (_, _) => const SettingsPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'reminders',
+                      builder: (_, _) => const RemindersPage(),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'trackers',

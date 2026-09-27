@@ -28,6 +28,22 @@ class FakeNotifier implements ReportNotifier {
     required String body,
     required String route,
   }) async {}
+  final daily =
+      <({int id, int minutes, String title, String body, String route})>[];
+  @override
+  Future<void> scheduleDaily({
+    required int id,
+    required int minutes,
+    required String title,
+    required String body,
+    required String route,
+  }) async => daily.add((
+    id: id,
+    minutes: minutes,
+    title: title,
+    body: body,
+    route: route,
+  ));
   @override
   Future<void> cancelRange(int from, int to) async {}
 }

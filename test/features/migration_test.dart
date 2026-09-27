@@ -37,4 +37,45 @@ void main() {
     expect(await db.select(db.readingSessions).get(), isEmpty);
     expect(await db.select(db.readingNotes).get(), isEmpty);
   });
+
+  test(
+    'v6 database gains the reminder columns and keeps its trackers',
+    () async {
+      final db = AppDatabase(
+        NativeDatabase.memory(
+          setup: (raw) {
+            raw.execute('''
+            CREATE TABLE settings (
+              id INTEGER NOT NULL, currency_symbol TEXT NOT NULL DEFAULT '\$',
+              sleep_goal_minutes INTEGER NOT NULL DEFAULT 480,
+              target_bedtime_minutes INTEGER NOT NULL DEFAULT 1380,
+              weekly_report_enabled INTEGER NOT NULL DEFAULT 1,
+              weekly_report_minutes INTEGER NOT NULL DEFAULT 1140,
+              memory_remind_minutes INTEGER NOT NULL DEFAULT 540,
+              on_this_day_enabled INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (id));
+            INSERT INTO settings (id) VALUES (1);
+            CREATE TABLE trackers (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, name TEXT NOT NULL,
+              icon TEXT NOT NULL DEFAULT 'star', type TEXT NOT NULL DEFAULT 'habit',
+              archived INTEGER NOT NULL DEFAULT 0);
+            INSERT INTO trackers (name) VALUES ('Meditate');
+            PRAGMA user_version = 6;
+          ''');
+          },
+        ),
+      );
+      addTearDown(db.close);
+      final t = await db.select(db.trackers).getSingle();
+      expect((t.name, t.reminderMinutes), ('Meditate', null));
+      final s = await db.select(db.settings).getSingle();
+      expect(
+        (
+          s.bedtimeReminderEnabled,
+          s.bedtimeReminderLeadMinutes,
+          s.expenseReminderMinutes,
+        ),
+        (false, 30, 1260),
+      );
+    },
+  );
 }
