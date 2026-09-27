@@ -19,6 +19,7 @@ abstract final class Aura {
   static const moneyHi = Color(0xFFFBBF24);
   static const reading = Color(0xFF06B6D4);
   static const invest = Color(0xFF38BDF8);
+  static const memory = Color(0xFFF472B6);
   static const gain = Color(0xFF34D399);
   static const loss = Color(0xFFFB7185);
   static const danger = Color(0xFFFFB4AB);

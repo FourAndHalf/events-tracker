@@ -198,3 +198,9 @@ List<int> parseRemindDays(String s) {
 
 String joinRemindDays(Iterable<int> days) =>
     (days.toSet().toList()..sort()).join(',');
+
+String countdownText(int days) => switch (days) {
+  0 => 'Today',
+  1 => 'Tomorrow',
+  _ => 'in $days days',
+};

@@ -180,6 +180,10 @@ void main() {
     expect(formatMemoryDate(ev(kind: 'occasion', month: 3, day: 14)), '14 Mar');
   });
 
+  test('countdown wording', () {
+    expect([0, 1, 5].map(countdownText), ['Today', 'Tomorrow', 'in 5 days']);
+  });
+
   test('years ago and reminder day parsing', () {
     final t = DateTime(2026, 9, 27);
     expect(yearsAgo(ev(year: 2023), t), '3 years ago');

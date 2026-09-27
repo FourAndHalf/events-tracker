@@ -7,6 +7,9 @@ import '../../features/investing/prices_page.dart';
 import '../../features/investing/stock_page.dart';
 import '../../features/investing/trade_form_page.dart';
 import '../../features/investing/weekly_page.dart';
+import '../../features/memories/event_detail_page.dart';
+import '../../features/memories/event_form_page.dart';
+import '../../features/memories/memories_page.dart';
 import '../../features/money/categories_page.dart';
 import '../../features/money/expense_form_page.dart';
 import '../../features/money/money_page.dart';
@@ -34,6 +37,28 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'settings',
                   builder: (_, _) => const SettingsPage(),
+                ),
+                GoRoute(
+                  path: 'memories',
+                  builder: (_, _) => const MemoriesPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      builder: (_, _) => const EventFormPage(),
+                    ),
+                    GoRoute(
+                      path: 'edit/:id',
+                      builder: (_, state) => EventFormPage(
+                        id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'event/:id',
+                      builder: (_, state) => EventDetailPage(
+                        id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
