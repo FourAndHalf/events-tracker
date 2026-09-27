@@ -157,4 +157,64 @@ void main() {
     expect(find.text('July 2021'), findsOneWidget); // back on the timeline
     await _teardown(tester, db);
   });
+
+  testWidgets('calendar marks a day and lists its events when tapped', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final now = DateTime.now();
+    await tester.runAsync(
+      () => MemoriesRepository(db).addEvent(
+        MemoryEventsCompanion.insert(
+          title: 'Anniversary dinner',
+          categoryId: 2,
+          createdAt: now,
+          kind: const Value('occasion'),
+          month: Value(now.month),
+          day: const Value(1),
+        ),
+      ),
+    );
+    await _openMemories(tester, db);
+    await tester.tap(find.byTooltip('Calendar'));
+    await tester.pump(const Duration(milliseconds: 300));
+    await _settle(tester);
+    await tester.tap(find.text('1').first);
+    await tester.pump(const Duration(milliseconds: 300));
+    await tester.scrollUntilVisible(
+      find.text('Anniversary dinner'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Anniversary dinner'), findsOneWidget);
+    expect(find.text('Every year'), findsOneWidget);
+    await _teardown(tester, db);
+  });
+
+  testWidgets('search filters by text', (tester) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    await tester.runAsync(() async {
+      final repo = MemoriesRepository(db);
+      for (final t in ['Goa trip', 'Graduation']) {
+        await repo.addEvent(
+          MemoryEventsCompanion.insert(
+            title: t,
+            categoryId: 3,
+            createdAt: DateTime.now(),
+            year: const Value(2020),
+          ),
+        );
+      }
+    });
+    await _openMemories(tester, db);
+    await tester.tap(find.byTooltip('Search'));
+    await tester.pump(const Duration(milliseconds: 300));
+    await _settle(tester);
+    expect(find.text('2 found'), findsOneWidget);
+    await tester.enterText(find.byType(TextField), 'goa');
+    await tester.pump(const Duration(milliseconds: 300));
+    expect(find.text('1 found'), findsOneWidget);
+    expect(find.text('Graduation'), findsNothing);
+    await _teardown(tester, db);
+  });
 }

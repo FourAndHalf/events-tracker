@@ -39,7 +39,21 @@ class MemoriesPage extends ConsumerWidget {
     final groups = timelineGroups(events);
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Memories')),
+      appBar: AppBar(
+        title: const Text('Memories'),
+        actions: [
+          IconButton(
+            tooltip: 'Search',
+            onPressed: () => context.push('/memories/search'),
+            icon: const Icon(Icons.search),
+          ),
+          IconButton(
+            tooltip: 'Calendar',
+            onPressed: () => context.push('/memories/calendar'),
+            icon: const Icon(Icons.calendar_month_outlined),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/memories/add'),
         backgroundColor: Aura.memory,
