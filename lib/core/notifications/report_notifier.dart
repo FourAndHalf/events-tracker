@@ -25,6 +25,15 @@ abstract class ReportNotifier {
     required String route,
   });
 
+  /// Schedules a notification that repeats every day at [minutes] after midnight.
+  Future<void> scheduleDaily({
+    required int id,
+    required int minutes,
+    required String title,
+    required String body,
+    required String route,
+  });
+
   /// Cancels every pending notification whose id is in [from, to).
   Future<void> cancelRange(int from, int to);
 
@@ -124,6 +133,48 @@ class LocalReportNotifier implements ReportNotifier {
       );
     } catch (e) {
       debugPrint('Could not schedule reminder $id: $e');
+    }
+  }
+
+  @override
+  Future<void> scheduleDaily({
+    required int id,
+    required int minutes,
+    required String title,
+    required String body,
+    required String route,
+  }) async {
+    if (!_ready) return;
+    try {
+      final now = tz.TZDateTime.now(tz.local);
+      var first = tz.TZDateTime(
+        tz.local,
+        now.year,
+        now.month,
+        now.day,
+        minutes ~/ 60,
+        minutes % 60,
+      );
+      if (!first.isAfter(now)) first = first.add(const Duration(days: 1));
+      await _plugin.zonedSchedule(
+        id: id,
+        title: title,
+        body: body,
+        scheduledDate: first,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'daily_reminders',
+            'Daily reminders',
+            channelDescription: 'Bedtime, expenses and tracker reminders',
+            importance: Importance.defaultImportance,
+          ),
+        ),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        matchDateTimeComponents: DateTimeComponents.time,
+        payload: route,
+      );
+    } catch (e) {
+      debugPrint('Could not schedule daily reminder $id: $e');
     }
   }
 

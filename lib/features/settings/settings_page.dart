@@ -281,6 +281,16 @@ class SettingsPage extends ConsumerWidget {
                   ],
                 ),
                 const SizedBox(height: 24),
+                const Overline('Reminders'),
+                const SizedBox(height: 8),
+                AuraCard(
+                  child: _Row(
+                    label: 'Bedtime, expenses, trackers',
+                    value: 'Manage',
+                    onTap: () => context.push('/settings/reminders'),
+                  ),
+                ),
+                const SizedBox(height: 24),
                 const Overline('Money'),
                 const SizedBox(height: 8),
                 AuraCard(
