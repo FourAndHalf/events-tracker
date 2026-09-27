@@ -20,6 +20,16 @@ class FakeNotifier implements ReportNotifier {
   Future<void> cancel() async => cancels++;
   @override
   Future<bool> requestPermission() async => true;
+  @override
+  Future<void> scheduleAt({
+    required int id,
+    required DateTime when,
+    required String title,
+    required String body,
+    required String route,
+  }) async {}
+  @override
+  Future<void> cancelRange(int from, int to) async {}
 }
 
 Future<AppDatabase> _seed(WidgetTester tester) async {

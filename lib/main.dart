@@ -6,13 +6,14 @@ import 'core/router/app_router.dart';
 import 'core/theme/app_theme.dart';
 import 'core/widgets/splash_overlay.dart';
 import 'features/investing/report_scheduler.dart';
+import 'features/memories/reminder_scheduler.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   final launchRoute = await LocalReportNotifier.instance.init(appRouter.go);
   runApp(const ProviderScope(child: TrackerApp()));
   if (launchRoute != null) {
-    // Opened by tapping the weekly report notification.
+    // Opened by tapping a notification.
     WidgetsBinding.instance.addPostFrameCallback(
       (_) => appRouter.go(launchRoute),
     );
@@ -26,6 +27,7 @@ class TrackerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(snapshotWriterProvider);
     ref.watch(reportSchedulerProvider);
+    ref.watch(memoryReminderSchedulerProvider);
     return MaterialApp.router(
       title: 'Events',
       theme: auraTheme,
