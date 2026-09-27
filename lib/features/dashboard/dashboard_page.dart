@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
@@ -30,7 +31,18 @@ class DashboardPage extends StatelessWidget {
                   height: 40,
                 ),
                 const SizedBox(width: 12),
-                Expanded(child: Text('Events', style: text.headlineMedium)),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Events', style: text.headlineMedium),
+                      Text(
+                        DateFormat('EEEE d MMMM').format(DateTime.now()),
+                        style: text.bodySmall,
+                      ),
+                    ],
+                  ),
+                ),
                 IconButton(
                   tooltip: 'Memories',
                   onPressed: () => context.push('/memories'),
@@ -48,13 +60,13 @@ class DashboardPage extends StatelessWidget {
             const SizedBox(height: 12),
             const LastNightCard(),
             const SizedBox(height: 12),
-            const SpendCard(),
-            const SizedBox(height: 12),
-            const InvestCard(),
+            const TrackerCard(),
             const SizedBox(height: 12),
             const ReadingCard(),
             const SizedBox(height: 12),
-            const TrackerCard(),
+            const SpendCard(),
+            const SizedBox(height: 12),
+            const InvestCard(),
             const SizedBox(height: 12),
             const MemoryCard(),
             const SizedBox(height: 12),
