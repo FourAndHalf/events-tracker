@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import '../../core/widgets/elapsed_text.dart';
 import '../sleep/sleep_logic.dart';
 import 'book_actions.dart';
 import 'book_progress.dart';

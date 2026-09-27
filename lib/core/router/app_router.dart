@@ -22,6 +22,9 @@ import '../../features/reading/book_page.dart';
 import '../../features/reading/reading_page.dart';
 import '../../features/reading/reading_stats_page.dart';
 import '../../features/settings/settings_page.dart';
+import '../../features/trackers/tracker_detail_page.dart';
+import '../../features/trackers/tracker_form_page.dart';
+import '../../features/trackers/trackers_page.dart';
 import '../../features/sleep/sleep_edit_page.dart';
 import '../../features/sleep/sleep_page.dart';
 import 'app_shell.dart';
@@ -41,6 +44,28 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'settings',
                   builder: (_, _) => const SettingsPage(),
+                ),
+                GoRoute(
+                  path: 'trackers',
+                  builder: (_, _) => const TrackersPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      builder: (_, _) => const TrackerFormPage(),
+                    ),
+                    GoRoute(
+                      path: 'edit/:id',
+                      builder: (_, state) => TrackerFormPage(
+                        id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                    GoRoute(
+                      path: ':id',
+                      builder: (_, state) => TrackerDetailPage(
+                        id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                  ],
                 ),
                 GoRoute(
                   path: 'memories',
