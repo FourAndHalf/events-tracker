@@ -33,7 +33,17 @@ class _ReadingPageState extends ConsumerState<ReadingPage> {
         .toList();
 
     return Scaffold(
-      appBar: AppBar(leading: const HomeButton(), title: const Text('Reading')),
+      appBar: AppBar(
+        leading: const HomeButton(),
+        title: const Text('Reading'),
+        actions: [
+          IconButton(
+            tooltip: 'Stats',
+            onPressed: () => context.push('/read/stats'),
+            icon: const Icon(Icons.insights_outlined),
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton.extended(
         onPressed: () => context.push('/read/edit'),
         backgroundColor: Aura.reading,
