@@ -23,6 +23,9 @@ const defaultCategories = [
     Stocks,
     Trades,
     WeeklySnapshots,
+    Books,
+    ReadingSessions,
+    ReadingNotes,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -30,7 +33,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 2;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -48,6 +51,11 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(weeklySnapshots);
         await m.addColumn(settings, settings.weeklyReportEnabled);
         await m.addColumn(settings, settings.weeklyReportMinutes);
+      }
+      if (from < 3) {
+        await m.createTable(books);
+        await m.createTable(readingSessions);
+        await m.createTable(readingNotes);
       }
     },
   );

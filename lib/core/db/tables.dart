@@ -72,3 +72,34 @@ class WeeklySnapshots extends Table {
   IntColumn get investedCents => integer()();
   IntColumn get valueCents => integer()();
 }
+
+class Books extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  TextColumn get author => text().withDefault(const Constant(''))();
+  IntColumn get totalPages => integer().nullable()();
+  // One of the names in reading_logic.dart's BookStatus.
+  TextColumn get status => text().withDefault(const Constant('wantToRead'))();
+  IntColumn get rating => integer().nullable()();
+  TextColumn get coverPath => text().nullable()();
+  DateTimeColumn get finishedAt => dateTime().nullable()();
+}
+
+class ReadingSessions extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get bookId => integer().references(Books, #id)();
+  DateTimeColumn get startAt => dateTime()();
+  // Null while the timer is running, so it survives the app being closed.
+  DateTimeColumn get endAt => dateTime().nullable()();
+  IntColumn get endPage => integer().nullable()();
+}
+
+class ReadingNotes extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get bookId => integer().references(Books, #id)();
+  IntColumn get sessionId =>
+      integer().nullable().references(ReadingSessions, #id)();
+  TextColumn get body => text()();
+  BoolColumn get isQuote => boolean().withDefault(const Constant(false))();
+  DateTimeColumn get createdAt => dateTime()();
+}
