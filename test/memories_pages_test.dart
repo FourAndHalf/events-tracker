@@ -136,6 +136,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
     expect(find.text('Choose a month'), findsOneWidget);
 
+    await tester.drag(find.byType(Scrollable).first, const Offset(0, 2000));
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.byType(DropdownButtonFormField<int>));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.tap(find.text('July').last);

@@ -9,6 +9,7 @@ import '../../features/investing/trade_form_page.dart';
 import '../../features/investing/weekly_page.dart';
 import '../../features/memories/event_detail_page.dart';
 import '../../features/memories/event_form_page.dart';
+import '../../features/memories/media_viewer_page.dart';
 import '../../features/memories/memories_page.dart';
 import '../../features/money/categories_page.dart';
 import '../../features/money/expense_form_page.dart';
@@ -50,6 +51,17 @@ final appRouter = GoRouter(
                       path: 'edit/:id',
                       builder: (_, state) => EventFormPage(
                         id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                    GoRoute(
+                      path: 'viewer/:id',
+                      builder: (_, state) => MediaViewerPage(
+                        eventId: int.parse(state.pathParameters['id']!),
+                        initialIndex:
+                            int.tryParse(
+                              state.uri.queryParameters['index'] ?? '',
+                            ) ??
+                            0,
                       ),
                     ),
                     GoRoute(

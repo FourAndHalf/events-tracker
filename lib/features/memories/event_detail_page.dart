@@ -6,6 +6,9 @@ import 'package:intl/intl.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import 'media_logic.dart';
+import 'media_storage.dart';
+import 'media_widgets.dart';
 import 'memories_repository.dart';
 import 'memory_dates.dart';
 
@@ -28,6 +31,11 @@ class EventDetailPage extends ConsumerWidget {
             .firstOrNull
             ?.name ??
         '';
+    final media =
+        (ref.watch(memoryMediaProvider).value ?? const <MemoryMediaItem>[])
+            .where((m) => m.eventId == id)
+            .toList();
+    final cover = coverOf(e, media);
     final text = Theme.of(context).textTheme;
     final today = DateTime.now();
     final occasion = e.kind == MemoryKind.occasion.name;
@@ -111,6 +119,63 @@ class EventDetailPage extends ConsumerWidget {
             const SizedBox(height: 12),
             Text(e.description!, style: text.bodyMedium),
           ],
+          const SizedBox(height: 24),
+          const Overline('Photos and videos', color: Aura.memory),
+          const SizedBox(height: 8),
+          MediaPickButtons(
+            onPicked: (files) async {
+              await importMedia(
+                repo: ref.read(memoriesRepositoryProvider),
+                root: await memoriesRoot(),
+                eventId: e.id,
+                files: files,
+              );
+            },
+          ),
+          const SizedBox(height: 12),
+          if (media.isEmpty)
+            Text('Nothing attached yet.', style: text.bodySmall),
+          GridView.count(
+            crossAxisCount: 3,
+            mainAxisSpacing: 6,
+            crossAxisSpacing: 6,
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            children: [
+              for (var i = 0; i < media.length; i++)
+                GestureDetector(
+                  onTap: () =>
+                      context.push('/memories/viewer/${e.id}?index=$i'),
+                  onLongPress: () =>
+                      _mediaMenu(context, ref, e, media[i], cover),
+                  child: Stack(
+                    fit: StackFit.expand,
+                    children: [
+                      MediaThumb(item: media[i]),
+                      if (cover?.id == media[i].id)
+                        const Positioned(
+                          left: 6,
+                          top: 6,
+                          child: Icon(
+                            Icons.star,
+                            size: 18,
+                            color: Aura.moneyHi,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          if (media.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Text(
+                'Long-press to set the cover or remove. '
+                '${formatBytes(totalMediaBytes(media))} used.',
+                style: text.bodySmall,
+              ),
+            ),
         ],
       ),
     );
@@ -139,7 +204,44 @@ class EventDetailPage extends ConsumerWidget {
       ),
     );
     if (ok != true) return;
-    await ref.read(memoriesRepositoryProvider).deleteEvent(e.id);
+    final gone = await ref.read(memoriesRepositoryProvider).deleteEvent(e.id);
+    await deleteFiles(gone.paths);
     if (context.mounted) context.pop();
+  }
+
+  Future<void> _mediaMenu(
+    BuildContext context,
+    WidgetRef ref,
+    MemoryEvent e,
+    MemoryMediaItem m,
+    MemoryMediaItem? cover,
+  ) async {
+    final repo = ref.read(memoriesRepositoryProvider);
+    final choice = await showModalBottomSheet<String>(
+      context: context,
+      builder: (ctx) => SafeArea(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (cover?.id != m.id && !m.isVideo)
+              ListTile(
+                leading: const Icon(Icons.star_outline),
+                title: const Text('Use as cover'),
+                onTap: () => Navigator.pop(ctx, 'cover'),
+              ),
+            ListTile(
+              leading: const Icon(Icons.delete_outline),
+              title: const Text('Remove'),
+              onTap: () => Navigator.pop(ctx, 'remove'),
+            ),
+          ],
+        ),
+      ),
+    );
+    if (choice == 'cover') await repo.setCover(e.id, m.id);
+    if (choice == 'remove') {
+      final gone = await repo.deleteMedia(m.id);
+      await deleteFiles(gone.paths);
+    }
   }
 }
