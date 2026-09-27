@@ -6,6 +6,8 @@ import 'package:intl/intl.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import 'media_logic.dart';
+import 'media_widgets.dart';
 import 'memories_repository.dart';
 import 'memory_dates.dart';
 
@@ -20,6 +22,10 @@ class MemoriesPage extends ConsumerWidget {
     final cats =
         ref.watch(memoryCategoriesProvider).value ?? const <MemoryCategory>[];
     final catName = {for (final c in cats) c.id: c.name};
+    final allMedia =
+        ref.watch(memoryMediaProvider).value ?? const <MemoryMediaItem>[];
+    MemoryMediaItem? coverFor(MemoryEvent e) =>
+        coverOf(e, allMedia.where((m) => m.eventId == e.id).toList());
     final text = Theme.of(context).textTheme;
     final today = DateTime.now();
     final soon = comingUp(events, today);
@@ -102,6 +108,10 @@ class MemoriesPage extends ConsumerWidget {
             for (final e in g.events)
               ListTile(
                 contentPadding: EdgeInsets.zero,
+                leading: switch (coverFor(e)) {
+                  final c? => MediaThumb(item: c, size: 48, badge: false),
+                  null => null,
+                },
                 title: Text(e.title),
                 subtitle: Text(
                   [formatMemoryDate(e), ?e.place].join(' · '),

@@ -13,6 +13,9 @@ import '../../core/notifications/report_notifier.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import '../memories/media_logic.dart';
+import '../memories/media_storage.dart';
+import '../memories/memories_repository.dart';
 import 'backup_codec.dart';
 import 'backup_service.dart';
 
@@ -176,6 +179,30 @@ class SettingsPage extends ConsumerWidget {
                     label: 'Categories & budgets',
                     value: 'Manage',
                     onTap: () => context.push('/money/categories'),
+                  ),
+                ),
+                const SizedBox(height: 24),
+                const Overline('Memories'),
+                const SizedBox(height: 8),
+                AuraCard(
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          'Photos and videos stored',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ),
+                      Text(
+                        formatBytes(
+                          totalMediaBytes(
+                            ref.watch(memoryMediaProvider).value ?? const [],
+                          ),
+                        ),
+                        style: Theme.of(context).textTheme.labelLarge
+                            ?.copyWith(color: Aura.memory),
+                      ),
+                    ],
                   ),
                 ),
                 const SizedBox(height: 24),

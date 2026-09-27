@@ -2,11 +2,14 @@ import 'package:drift/drift.dart' show Value;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import 'media_storage.dart';
+import 'media_widgets.dart';
 import 'memories_repository.dart';
 import 'memory_dates.dart';
 
@@ -33,6 +36,8 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
   bool _yearKnown = true; // occasions may leave the starting year out
   int? _categoryId;
   MemoryEvent? _existing;
+  // Photos and videos picked here are copied in once the event is saved.
+  final _pending = <XFile>[];
   bool _loaded = false;
 
   @override
@@ -151,8 +156,9 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
 
     final repo = ref.read(memoriesRepositoryProvider);
     final existing = _existing;
+    int eventId;
     if (existing == null) {
-      await repo.addEvent(
+      eventId = await repo.addEvent(
         MemoryEventsCompanion.insert(
           title: title,
           categoryId: cat,
@@ -168,6 +174,7 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
         ),
       );
     } else {
+      eventId = existing.id;
       await repo.updateEvent(
         existing.copyWith(
           title: title,
@@ -181,6 +188,14 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
           place: Value(_clean(_place)),
           description: Value(_clean(_description)),
         ),
+      );
+    }
+    if (_pending.isNotEmpty) {
+      await importMedia(
+        repo: repo,
+        root: await memoriesRoot(),
+        eventId: eventId,
+        files: _pending,
       );
     }
     if (mounted) context.pop();
@@ -344,6 +359,29 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
               labelText: 'Description (optional)',
             ),
           ),
+          const SizedBox(height: 16),
+          const Overline('Photos and videos'),
+          const SizedBox(height: 8),
+          MediaPickButtons(
+            onPicked: (files) async => setState(() => _pending.addAll(files)),
+          ),
+          if (_pending.isNotEmpty)
+            Padding(
+              padding: const EdgeInsets.only(top: 8),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      '${_pending.length} selected, added when you save',
+                    ),
+                  ),
+                  TextButton(
+                    onPressed: () => setState(_pending.clear),
+                    child: const Text('Clear'),
+                  ),
+                ],
+              ),
+            ),
           const SizedBox(height: 24),
           PillButton(label: 'Save', color: Aura.memory, onPressed: _save),
         ],
