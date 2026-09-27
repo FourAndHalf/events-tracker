@@ -163,8 +163,10 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     );
   }
 
-  void _toast(String m) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+  // Replace a message still on screen instead of queueing behind it.
+  void _toast(String m) => ScaffoldMessenger.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(m)));
 
   @override
   Widget build(BuildContext context) {

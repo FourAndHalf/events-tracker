@@ -60,8 +60,10 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
     setState(() => _cover = path);
   }
 
-  void _toast(String m) =>
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(m)));
+  // Replace a message still on screen instead of queueing behind it.
+  void _toast(String m) => ScaffoldMessenger.of(context)
+    ..removeCurrentSnackBar()
+    ..showSnackBar(SnackBar(content: Text(m)));
 
   Future<void> _save() async {
     final title = _title.text.trim();

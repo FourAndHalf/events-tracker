@@ -135,7 +135,12 @@ void main() {
       final db = await _seed(tester);
       await _boot(tester, db, FakeNotifier());
 
-      // Dashboard card
+      // Dashboard card (further down the list since the polish reorder)
+      await tester.scrollUntilVisible(
+        find.text('INVESTING'),
+        200,
+        scrollable: find.byType(Scrollable).first,
+      );
       expect(find.text('INVESTING'), findsOneWidget);
       expect(find.text(r'$72.00'), findsWidgets);
       expect(
