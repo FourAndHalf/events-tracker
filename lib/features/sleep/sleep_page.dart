@@ -22,7 +22,17 @@ class SleepPage extends ConsumerWidget {
     final settings = ref.watch(settingsProvider).value;
 
     return Scaffold(
-      appBar: AppBar(leading: const HomeButton(), title: const Text('Sleep')),
+      appBar: AppBar(
+        leading: const HomeButton(),
+        title: const Text('Sleep'),
+        actions: [
+          IconButton(
+            tooltip: 'Charts',
+            onPressed: () => context.push('/sleep/charts'),
+            icon: const Icon(Icons.bar_chart),
+          ),
+        ],
+      ),
       body: ListView(
         padding: const EdgeInsets.all(Aura.margin),
         children: [

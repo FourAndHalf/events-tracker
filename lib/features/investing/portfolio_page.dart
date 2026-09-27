@@ -29,6 +29,11 @@ class PortfolioPage extends ConsumerWidget {
         title: const Text('Investing'),
         actions: [
           IconButton(
+            tooltip: 'Charts',
+            onPressed: () => context.push('/invest/charts'),
+            icon: const Icon(Icons.bar_chart),
+          ),
+          IconButton(
             tooltip: 'Update prices',
             onPressed: () => context.push('/invest/prices'),
             icon: const Icon(Icons.price_change_outlined),

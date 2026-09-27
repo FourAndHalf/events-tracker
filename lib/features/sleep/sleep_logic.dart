@@ -6,12 +6,12 @@ Duration sleepDuration(DateTime sleepAt, DateTime wakeAt) =>
 int minutesOfDay(DateTime t) => t.hour * 60 + t.minute;
 
 /// Puts after-midnight bedtimes (before noon) after evening ones so they compare correctly.
-int _bedtimeOrder(int minutesOfDay) =>
+int bedtimeOrder(int minutesOfDay) =>
     minutesOfDay < 720 ? minutesOfDay + 1440 : minutesOfDay;
 
 /// True if [bedtime] is at or before [targetBedtimeMinutes] (minutes after midnight).
 bool bedtimeOnTime(DateTime bedtime, int targetBedtimeMinutes) =>
-    _bedtimeOrder(minutesOfDay(bedtime)) <= _bedtimeOrder(targetBedtimeMinutes);
+    bedtimeOrder(minutesOfDay(bedtime)) <= bedtimeOrder(targetBedtimeMinutes);
 
 /// A night is a hit when it meets the sleep goal AND the target bedtime.
 bool hitGoal({

@@ -28,6 +28,10 @@ import '../../features/trackers/tracker_form_page.dart';
 import '../../features/trackers/trackers_page.dart';
 import '../../features/sleep/sleep_edit_page.dart';
 import '../../features/sleep/sleep_page.dart';
+import '../../features/sleep/sleep_charts_page.dart';
+import '../../features/reading/reading_charts_page.dart';
+import '../../features/money/money_charts_page.dart';
+import '../../features/investing/invest_charts_page.dart';
 import 'app_shell.dart';
 
 final appRouter = GoRouter(
@@ -126,6 +130,10 @@ final appRouter = GoRouter(
               builder: (_, _) => const SleepPage(),
               routes: [
                 GoRoute(
+                  path: 'charts',
+                  builder: (_, _) => const SleepChartsPage(),
+                ),
+                GoRoute(
                   path: 'edit/:id',
                   builder: (_, state) =>
                       SleepEditPage(id: int.parse(state.pathParameters['id']!)),
@@ -149,6 +157,10 @@ final appRouter = GoRouter(
                   builder: (_, state) => ExpenseFormPage(
                     id: int.parse(state.pathParameters['id']!),
                   ),
+                ),
+                GoRoute(
+                  path: 'charts',
+                  builder: (_, _) => const MoneyChartsPage(),
                 ),
                 GoRoute(
                   path: 'categories',
@@ -202,6 +214,10 @@ final appRouter = GoRouter(
                 ),
                 GoRoute(path: 'prices', builder: (_, _) => const PricesPage()),
                 GoRoute(
+                  path: 'charts',
+                  builder: (_, _) => const InvestChartsPage(),
+                ),
+                GoRoute(
                   path: 'journal',
                   builder: (_, _) => const JournalPage(),
                 ),
@@ -225,6 +241,10 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'stats',
                   builder: (_, _) => const ReadingStatsPage(),
+                ),
+                GoRoute(
+                  path: 'charts',
+                  builder: (_, _) => const ReadingChartsPage(),
                 ),
                 GoRoute(
                   path: 'book/:id',
