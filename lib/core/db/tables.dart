@@ -149,3 +149,39 @@ class MemoryMedia extends Table {
   IntColumn get sortOrder => integer().withDefault(const Constant(0))();
   IntColumn get sizeBytes => integer().withDefault(const Constant(0))();
 }
+
+class Trackers extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  // Key into the icon list in tracker_icons.dart.
+  TextColumn get icon => text().withDefault(const Constant('star'))();
+  // 'habit' (daily yes/no) or 'duration' (start/stop timer).
+  TextColumn get type => text().withDefault(const Constant('habit'))();
+  BoolColumn get archived => boolean().withDefault(const Constant(false))();
+}
+
+class TrackerEntries extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get trackerId => integer().references(Trackers, #id)();
+  // Local calendar day (midnight) the entry belongs to.
+  DateTimeColumn get day => dateTime()();
+  // Duration entries only; endAt is null while the timer runs.
+  DateTimeColumn get startAt => dateTime().nullable()();
+  DateTimeColumn get endAt => dateTime().nullable()();
+}
+
+class RecurringExpenses extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get amountCents => integer()();
+  IntColumn get categoryId => integer().references(Categories, #id)();
+  TextColumn get paymentMethod => text()();
+  TextColumn get note => text().nullable()();
+  TextColumn get item => text().nullable()();
+  TextColumn get store => text().nullable()();
+  // 'weekly', 'monthly' or 'yearly'.
+  TextColumn get frequency => text().withDefault(const Constant('monthly'))();
+  DateTimeColumn get startDate => dateTime()();
+  // Last date an expense was created for; null before the first one.
+  DateTimeColumn get lastGeneratedDate => dateTime().nullable()();
+  BoolColumn get active => boolean().withDefault(const Constant(true))();
+}

@@ -22,6 +22,9 @@ class BackupData {
     this.memoryCategories = const [],
     this.memoryEvents = const [],
     this.memoryMedia = const [],
+    this.trackers = const [],
+    this.trackerEntries = const [],
+    this.recurringExpenses = const [],
   });
 
   final Setting settings;
@@ -37,6 +40,9 @@ class BackupData {
   final List<MemoryCategory> memoryCategories;
   final List<MemoryEvent> memoryEvents;
   final List<MemoryMediaItem> memoryMedia;
+  final List<Tracker> trackers;
+  final List<TrackerEntry> trackerEntries;
+  final List<RecurringExpense> recurringExpenses;
 }
 
 String backupToJson(BackupData d) =>
@@ -56,6 +62,9 @@ String backupToJson(BackupData d) =>
       'memoryCategories': [for (final r in d.memoryCategories) r.toJson()],
       'memoryEvents': [for (final r in d.memoryEvents) r.toJson()],
       'memoryMedia': [for (final r in d.memoryMedia) r.toJson()],
+      'trackers': [for (final r in d.trackers) r.toJson()],
+      'trackerEntries': [for (final r in d.trackerEntries) r.toJson()],
+      'recurringExpenses': [for (final r in d.recurringExpenses) r.toJson()],
     });
 
 /// Parses a backup file. Throws [FormatException] if it is not a valid backup.
@@ -75,7 +84,7 @@ BackupData backupFromJson(String source) {
   }
   try {
     List<T> rows<T>(String key, T Function(Map<String, dynamic>) f) => [
-      // Older backups (before Investing, Reading or Memories) simply lack these keys.
+      // Older backups (before Investing, Reading, Memories or Trackers) simply lack these keys.
       for (final r in (raw[key] as List?) ?? const [])
         f(r as Map<String, dynamic>),
     ];
@@ -99,6 +108,9 @@ BackupData backupFromJson(String source) {
       memoryCategories: rows('memoryCategories', MemoryCategory.fromJson),
       memoryEvents: rows('memoryEvents', MemoryEvent.fromJson),
       memoryMedia: rows('memoryMedia', MemoryMediaItem.fromJson),
+      trackers: rows('trackers', Tracker.fromJson),
+      trackerEntries: rows('trackerEntries', TrackerEntry.fromJson),
+      recurringExpenses: rows('recurringExpenses', RecurringExpense.fromJson),
     );
   } on TypeError {
     throw const FormatException('Backup file is damaged');
@@ -136,6 +148,13 @@ Map<String, String> backupToCsv(BackupData d) {
     ]),
     'memory_media.csv': _csv([
       for (final r in d.memoryMedia) r.toJson(serializer: s),
+    ]),
+    'trackers.csv': _csv([for (final r in d.trackers) r.toJson(serializer: s)]),
+    'tracker_entries.csv': _csv([
+      for (final r in d.trackerEntries) r.toJson(serializer: s),
+    ]),
+    'recurring_expenses.csv': _csv([
+      for (final r in d.recurringExpenses) r.toJson(serializer: s),
     ]),
   };
 }

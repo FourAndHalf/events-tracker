@@ -38,6 +38,9 @@ const defaultCategories = [
     MemoryCategories,
     MemoryEvents,
     MemoryMedia,
+    Trackers,
+    TrackerEntries,
+    RecurringExpenses,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -45,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 5;
+  int get schemaVersion => 6;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -79,6 +82,11 @@ class AppDatabase extends _$AppDatabase {
       if (from < 5) {
         await m.addColumn(settings, settings.memoryRemindMinutes);
         await m.addColumn(settings, settings.onThisDayEnabled);
+      }
+      if (from < 6) {
+        await m.createTable(trackers);
+        await m.createTable(trackerEntries);
+        await m.createTable(recurringExpenses);
       }
     },
   );
