@@ -30,6 +30,11 @@ class DashboardPage extends StatelessWidget {
                 const SizedBox(width: 12),
                 Expanded(child: Text('Events', style: text.headlineMedium)),
                 IconButton(
+                  tooltip: 'Memories',
+                  onPressed: () => context.push('/memories'),
+                  icon: const Icon(Icons.cake_outlined),
+                ),
+                IconButton(
                   tooltip: 'Settings',
                   onPressed: () => context.push('/settings'),
                   icon: const Icon(Icons.settings_outlined),
