@@ -1,11 +1,9 @@
-import 'dart:async';
 import 'dart:io';
 
 import 'package:flutter/material.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
-import '../sleep/sleep_logic.dart';
 import 'reading_logic.dart';
 
 /// Cover thumbnail, or a tinted placeholder with the title's first letter.
@@ -79,38 +77,4 @@ class RatingStars extends StatelessWidget {
         ),
     ],
   );
-}
-
-/// Live elapsed time of a running session ("0h 12m"), refreshed every second.
-class ElapsedText extends StatefulWidget {
-  const ElapsedText({super.key, required this.start, this.style});
-
-  final DateTime start;
-  final TextStyle? style;
-
-  @override
-  State<ElapsedText> createState() => _ElapsedTextState();
-}
-
-class _ElapsedTextState extends State<ElapsedText> {
-  late final Timer _timer;
-
-  @override
-  void initState() {
-    super.initState();
-    _timer = Timer.periodic(const Duration(seconds: 1), (_) => setState(() {}));
-  }
-
-  @override
-  void dispose() {
-    _timer.cancel();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final d = sessionDuration(widget.start, null, DateTime.now());
-    final s = (d.inSeconds % 60).toString().padLeft(2, '0');
-    return Text('${formatDuration(d)} $s″', style: widget.style);
-  }
 }

@@ -8,6 +8,7 @@ import '../memories/memory_card.dart';
 import '../money/spend_card.dart';
 import '../reading/reading_card.dart';
 import '../sleep/last_night_card.dart';
+import '../trackers/tracker_card.dart';
 import '../sleep/sleep_toggle_card.dart';
 
 class DashboardPage extends StatelessWidget {
@@ -52,6 +53,8 @@ class DashboardPage extends StatelessWidget {
             const InvestCard(),
             const SizedBox(height: 12),
             const ReadingCard(),
+            const SizedBox(height: 12),
+            const TrackerCard(),
             const SizedBox(height: 12),
             const MemoryCard(),
             const SizedBox(height: 12),
