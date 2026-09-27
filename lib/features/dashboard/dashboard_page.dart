@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
 import '../investing/invest_card.dart';
+import '../memories/memory_card.dart';
 import '../money/spend_card.dart';
 import '../reading/reading_card.dart';
 import '../sleep/last_night_card.dart';
@@ -51,6 +52,8 @@ class DashboardPage extends StatelessWidget {
             const InvestCard(),
             const SizedBox(height: 12),
             const ReadingCard(),
+            const SizedBox(height: 12),
+            const MemoryCard(),
             const SizedBox(height: 12),
             PillButton(
               label: 'Add expense',

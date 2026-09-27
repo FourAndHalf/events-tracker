@@ -217,4 +217,55 @@ void main() {
     expect(find.text('Graduation'), findsNothing);
     await _teardown(tester, db);
   });
+
+  testWidgets('dashboard card shows the next occasion and today\'s memory', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    final now = DateTime.now();
+    final soon = now.add(const Duration(days: 5));
+    await tester.runAsync(() async {
+      final repo = MemoriesRepository(db);
+      await repo.addEvent(
+        MemoryEventsCompanion.insert(
+          title: 'Dad birthday',
+          categoryId: 1,
+          createdAt: now,
+          kind: const Value('occasion'),
+          year: Value(soon.year - 50),
+          month: Value(soon.month),
+          day: Value(soon.day),
+        ),
+      );
+      await repo.addEvent(
+        MemoryEventsCompanion.insert(
+          title: 'First day at work',
+          categoryId: 3,
+          createdAt: now,
+          year: Value(now.year - 3),
+          month: Value(now.month),
+          day: Value(now.day),
+        ),
+      );
+    });
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [databaseProvider.overrideWithValue(db)],
+        child: const TrackerApp(),
+      ),
+    );
+    appRouter.go('/');
+    await tester.pump(const Duration(seconds: 2));
+    await _settle(tester);
+    await tester.scrollUntilVisible(
+      find.text('First day at work'),
+      200,
+      scrollable: find.byType(Scrollable).first,
+    );
+    expect(find.text('Dad birthday'), findsOneWidget);
+    expect(find.text('in 5 days'), findsOneWidget);
+    expect(find.text('50th birthday'), findsOneWidget);
+    expect(find.text('3 years ago'), findsOneWidget);
+    await _teardown(tester, db);
+  });
 }
