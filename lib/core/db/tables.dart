@@ -103,3 +103,44 @@ class ReadingNotes extends Table {
   BoolColumn get isQuote => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
 }
+
+class MemoryCategories extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get name => text()();
+  BoolColumn get archived => boolean().withDefault(const Constant(false))();
+}
+
+class MemoryEvents extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  TextColumn get title => text()();
+  // 'occasion' repeats every year; 'oneTime' happened (or will happen) once.
+  TextColumn get kind => text().withDefault(const Constant('oneTime'))();
+  // How much of the date is known: 'day', 'month' or 'year'.
+  TextColumn get precision => text().withDefault(const Constant('day'))();
+  // Year may be null only for an occasion whose starting year is unknown.
+  IntColumn get year => integer().nullable()();
+  IntColumn get month => integer().nullable()();
+  IntColumn get day => integer().nullable()();
+  TextColumn get person => text().nullable()();
+  IntColumn get categoryId => integer().references(MemoryCategories, #id)();
+  TextColumn get place => text().nullable()();
+  TextColumn get description => text().nullable()();
+  // Media id chosen as cover; null means the first photo.
+  IntColumn get coverMediaId => integer().nullable()();
+  BoolColumn get remindOnDay => boolean().withDefault(const Constant(false))();
+  // Comma-separated days before, from {1, 3, 7}, e.g. "1,7".
+  TextColumn get remindDaysBefore => text().withDefault(const Constant(''))();
+  DateTimeColumn get createdAt => dateTime()();
+}
+
+@DataClassName('MemoryMediaItem')
+class MemoryMedia extends Table {
+  IntColumn get id => integer().autoIncrement()();
+  IntColumn get eventId => integer().references(MemoryEvents, #id)();
+  TextColumn get path => text()();
+  BoolColumn get isVideo => boolean().withDefault(const Constant(false))();
+  TextColumn get thumbPath => text().nullable()();
+  IntColumn get durationMs => integer().nullable()();
+  IntColumn get sortOrder => integer().withDefault(const Constant(0))();
+  IntColumn get sizeBytes => integer().withDefault(const Constant(0))();
+}

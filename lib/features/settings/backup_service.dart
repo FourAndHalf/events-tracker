@@ -26,10 +26,16 @@ class BackupService {
     books: await _db.select(_db.books).get(),
     readingSessions: await _db.select(_db.readingSessions).get(),
     readingNotes: await _db.select(_db.readingNotes).get(),
+    memoryCategories: await _db.select(_db.memoryCategories).get(),
+    memoryEvents: await _db.select(_db.memoryEvents).get(),
+    memoryMedia: await _db.select(_db.memoryMedia).get(),
   );
 
   /// Replaces every table with [d] in one transaction (all or nothing).
   Future<void> replaceAll(BackupData d) => _db.transaction(() async {
+    await _db.delete(_db.memoryMedia).go();
+    await _db.delete(_db.memoryEvents).go();
+    await _db.delete(_db.memoryCategories).go();
     await _db.delete(_db.readingNotes).go();
     await _db.delete(_db.readingSessions).go();
     await _db.delete(_db.books).go();
@@ -51,6 +57,22 @@ class BackupService {
       b.insertAll(_db.books, d.books);
       b.insertAll(_db.readingSessions, d.readingSessions);
       b.insertAll(_db.readingNotes, d.readingNotes);
+      // Backups from before Memories carry none: keep the defaults usable.
+      b.insertAll(
+        _db.memoryCategories,
+        d.memoryCategories.isEmpty
+            ? [
+                for (var i = 0; i < defaultMemoryCategories.length; i++)
+                  MemoryCategory(
+                    id: i + 1,
+                    name: defaultMemoryCategories[i],
+                    archived: false,
+                  ),
+              ]
+            : d.memoryCategories,
+      );
+      b.insertAll(_db.memoryEvents, d.memoryEvents);
+      b.insertAll(_db.memoryMedia, d.memoryMedia);
     });
   });
 

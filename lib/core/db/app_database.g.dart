@@ -4117,6 +4117,1607 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
   }
 }
 
+class $MemoryCategoriesTable extends MemoryCategories
+    with TableInfo<$MemoryCategoriesTable, MemoryCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemoryCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+    'name',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _archivedMeta = const VerificationMeta(
+    'archived',
+  );
+  @override
+  late final GeneratedColumn<bool> archived = GeneratedColumn<bool>(
+    'archived',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("archived" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [id, name, archived];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'memory_categories';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemoryCategory> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+        _nameMeta,
+        name.isAcceptableOrUnknown(data['name']!, _nameMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('archived')) {
+      context.handle(
+        _archivedMeta,
+        archived.isAcceptableOrUnknown(data['archived']!, _archivedMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemoryCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemoryCategory(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      name: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}name'],
+      )!,
+      archived: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}archived'],
+      )!,
+    );
+  }
+
+  @override
+  $MemoryCategoriesTable createAlias(String alias) {
+    return $MemoryCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class MemoryCategory extends DataClass implements Insertable<MemoryCategory> {
+  final int id;
+  final String name;
+  final bool archived;
+  const MemoryCategory({
+    required this.id,
+    required this.name,
+    required this.archived,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['archived'] = Variable<bool>(archived);
+    return map;
+  }
+
+  MemoryCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return MemoryCategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+      archived: Value(archived),
+    );
+  }
+
+  factory MemoryCategory.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemoryCategory(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      archived: serializer.fromJson<bool>(json['archived']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'archived': serializer.toJson<bool>(archived),
+    };
+  }
+
+  MemoryCategory copyWith({int? id, String? name, bool? archived}) =>
+      MemoryCategory(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        archived: archived ?? this.archived,
+      );
+  MemoryCategory copyWithCompanion(MemoryCategoriesCompanion data) {
+    return MemoryCategory(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      archived: data.archived.present ? data.archived.value : this.archived,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryCategory(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('archived: $archived')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, archived);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemoryCategory &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.archived == this.archived);
+}
+
+class MemoryCategoriesCompanion extends UpdateCompanion<MemoryCategory> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<bool> archived;
+  const MemoryCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.archived = const Value.absent(),
+  });
+  MemoryCategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.archived = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<MemoryCategory> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<bool>? archived,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (archived != null) 'archived': archived,
+    });
+  }
+
+  MemoryCategoriesCompanion copyWith({
+    Value<int>? id,
+    Value<String>? name,
+    Value<bool>? archived,
+  }) {
+    return MemoryCategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      archived: archived ?? this.archived,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (archived.present) {
+      map['archived'] = Variable<bool>(archived.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('archived: $archived')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MemoryEventsTable extends MemoryEvents
+    with TableInfo<$MemoryEventsTable, MemoryEvent> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemoryEventsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _kindMeta = const VerificationMeta('kind');
+  @override
+  late final GeneratedColumn<String> kind = GeneratedColumn<String>(
+    'kind',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('oneTime'),
+  );
+  static const VerificationMeta _precisionMeta = const VerificationMeta(
+    'precision',
+  );
+  @override
+  late final GeneratedColumn<String> precision = GeneratedColumn<String>(
+    'precision',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant('day'),
+  );
+  static const VerificationMeta _yearMeta = const VerificationMeta('year');
+  @override
+  late final GeneratedColumn<int> year = GeneratedColumn<int>(
+    'year',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _monthMeta = const VerificationMeta('month');
+  @override
+  late final GeneratedColumn<int> month = GeneratedColumn<int>(
+    'month',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _dayMeta = const VerificationMeta('day');
+  @override
+  late final GeneratedColumn<int> day = GeneratedColumn<int>(
+    'day',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _personMeta = const VerificationMeta('person');
+  @override
+  late final GeneratedColumn<String> person = GeneratedColumn<String>(
+    'person',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _categoryIdMeta = const VerificationMeta(
+    'categoryId',
+  );
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+    'category_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES memory_categories (id)',
+    ),
+  );
+  static const VerificationMeta _placeMeta = const VerificationMeta('place');
+  @override
+  late final GeneratedColumn<String> place = GeneratedColumn<String>(
+    'place',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _descriptionMeta = const VerificationMeta(
+    'description',
+  );
+  @override
+  late final GeneratedColumn<String> description = GeneratedColumn<String>(
+    'description',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _coverMediaIdMeta = const VerificationMeta(
+    'coverMediaId',
+  );
+  @override
+  late final GeneratedColumn<int> coverMediaId = GeneratedColumn<int>(
+    'cover_media_id',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _remindOnDayMeta = const VerificationMeta(
+    'remindOnDay',
+  );
+  @override
+  late final GeneratedColumn<bool> remindOnDay = GeneratedColumn<bool>(
+    'remind_on_day',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("remind_on_day" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _remindDaysBeforeMeta = const VerificationMeta(
+    'remindDaysBefore',
+  );
+  @override
+  late final GeneratedColumn<String> remindDaysBefore = GeneratedColumn<String>(
+    'remind_days_before',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(''),
+  );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    title,
+    kind,
+    precision,
+    year,
+    month,
+    day,
+    person,
+    categoryId,
+    place,
+    description,
+    coverMediaId,
+    remindOnDay,
+    remindDaysBefore,
+    createdAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'memory_events';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemoryEvent> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('kind')) {
+      context.handle(
+        _kindMeta,
+        kind.isAcceptableOrUnknown(data['kind']!, _kindMeta),
+      );
+    }
+    if (data.containsKey('precision')) {
+      context.handle(
+        _precisionMeta,
+        precision.isAcceptableOrUnknown(data['precision']!, _precisionMeta),
+      );
+    }
+    if (data.containsKey('year')) {
+      context.handle(
+        _yearMeta,
+        year.isAcceptableOrUnknown(data['year']!, _yearMeta),
+      );
+    }
+    if (data.containsKey('month')) {
+      context.handle(
+        _monthMeta,
+        month.isAcceptableOrUnknown(data['month']!, _monthMeta),
+      );
+    }
+    if (data.containsKey('day')) {
+      context.handle(
+        _dayMeta,
+        day.isAcceptableOrUnknown(data['day']!, _dayMeta),
+      );
+    }
+    if (data.containsKey('person')) {
+      context.handle(
+        _personMeta,
+        person.isAcceptableOrUnknown(data['person']!, _personMeta),
+      );
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+        _categoryIdMeta,
+        categoryId.isAcceptableOrUnknown(data['category_id']!, _categoryIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('place')) {
+      context.handle(
+        _placeMeta,
+        place.isAcceptableOrUnknown(data['place']!, _placeMeta),
+      );
+    }
+    if (data.containsKey('description')) {
+      context.handle(
+        _descriptionMeta,
+        description.isAcceptableOrUnknown(
+          data['description']!,
+          _descriptionMeta,
+        ),
+      );
+    }
+    if (data.containsKey('cover_media_id')) {
+      context.handle(
+        _coverMediaIdMeta,
+        coverMediaId.isAcceptableOrUnknown(
+          data['cover_media_id']!,
+          _coverMediaIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('remind_on_day')) {
+      context.handle(
+        _remindOnDayMeta,
+        remindOnDay.isAcceptableOrUnknown(
+          data['remind_on_day']!,
+          _remindOnDayMeta,
+        ),
+      );
+    }
+    if (data.containsKey('remind_days_before')) {
+      context.handle(
+        _remindDaysBeforeMeta,
+        remindDaysBefore.isAcceptableOrUnknown(
+          data['remind_days_before']!,
+          _remindDaysBeforeMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemoryEvent map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemoryEvent(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      kind: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}kind'],
+      )!,
+      precision: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}precision'],
+      )!,
+      year: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}year'],
+      ),
+      month: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}month'],
+      ),
+      day: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}day'],
+      ),
+      person: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}person'],
+      ),
+      categoryId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}category_id'],
+      )!,
+      place: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}place'],
+      ),
+      description: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}description'],
+      ),
+      coverMediaId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}cover_media_id'],
+      ),
+      remindOnDay: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}remind_on_day'],
+      )!,
+      remindDaysBefore: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remind_days_before'],
+      )!,
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+    );
+  }
+
+  @override
+  $MemoryEventsTable createAlias(String alias) {
+    return $MemoryEventsTable(attachedDatabase, alias);
+  }
+}
+
+class MemoryEvent extends DataClass implements Insertable<MemoryEvent> {
+  final int id;
+  final String title;
+  final String kind;
+  final String precision;
+  final int? year;
+  final int? month;
+  final int? day;
+  final String? person;
+  final int categoryId;
+  final String? place;
+  final String? description;
+  final int? coverMediaId;
+  final bool remindOnDay;
+  final String remindDaysBefore;
+  final DateTime createdAt;
+  const MemoryEvent({
+    required this.id,
+    required this.title,
+    required this.kind,
+    required this.precision,
+    this.year,
+    this.month,
+    this.day,
+    this.person,
+    required this.categoryId,
+    this.place,
+    this.description,
+    this.coverMediaId,
+    required this.remindOnDay,
+    required this.remindDaysBefore,
+    required this.createdAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['title'] = Variable<String>(title);
+    map['kind'] = Variable<String>(kind);
+    map['precision'] = Variable<String>(precision);
+    if (!nullToAbsent || year != null) {
+      map['year'] = Variable<int>(year);
+    }
+    if (!nullToAbsent || month != null) {
+      map['month'] = Variable<int>(month);
+    }
+    if (!nullToAbsent || day != null) {
+      map['day'] = Variable<int>(day);
+    }
+    if (!nullToAbsent || person != null) {
+      map['person'] = Variable<String>(person);
+    }
+    map['category_id'] = Variable<int>(categoryId);
+    if (!nullToAbsent || place != null) {
+      map['place'] = Variable<String>(place);
+    }
+    if (!nullToAbsent || description != null) {
+      map['description'] = Variable<String>(description);
+    }
+    if (!nullToAbsent || coverMediaId != null) {
+      map['cover_media_id'] = Variable<int>(coverMediaId);
+    }
+    map['remind_on_day'] = Variable<bool>(remindOnDay);
+    map['remind_days_before'] = Variable<String>(remindDaysBefore);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    return map;
+  }
+
+  MemoryEventsCompanion toCompanion(bool nullToAbsent) {
+    return MemoryEventsCompanion(
+      id: Value(id),
+      title: Value(title),
+      kind: Value(kind),
+      precision: Value(precision),
+      year: year == null && nullToAbsent ? const Value.absent() : Value(year),
+      month: month == null && nullToAbsent
+          ? const Value.absent()
+          : Value(month),
+      day: day == null && nullToAbsent ? const Value.absent() : Value(day),
+      person: person == null && nullToAbsent
+          ? const Value.absent()
+          : Value(person),
+      categoryId: Value(categoryId),
+      place: place == null && nullToAbsent
+          ? const Value.absent()
+          : Value(place),
+      description: description == null && nullToAbsent
+          ? const Value.absent()
+          : Value(description),
+      coverMediaId: coverMediaId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(coverMediaId),
+      remindOnDay: Value(remindOnDay),
+      remindDaysBefore: Value(remindDaysBefore),
+      createdAt: Value(createdAt),
+    );
+  }
+
+  factory MemoryEvent.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemoryEvent(
+      id: serializer.fromJson<int>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      kind: serializer.fromJson<String>(json['kind']),
+      precision: serializer.fromJson<String>(json['precision']),
+      year: serializer.fromJson<int?>(json['year']),
+      month: serializer.fromJson<int?>(json['month']),
+      day: serializer.fromJson<int?>(json['day']),
+      person: serializer.fromJson<String?>(json['person']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+      place: serializer.fromJson<String?>(json['place']),
+      description: serializer.fromJson<String?>(json['description']),
+      coverMediaId: serializer.fromJson<int?>(json['coverMediaId']),
+      remindOnDay: serializer.fromJson<bool>(json['remindOnDay']),
+      remindDaysBefore: serializer.fromJson<String>(json['remindDaysBefore']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'title': serializer.toJson<String>(title),
+      'kind': serializer.toJson<String>(kind),
+      'precision': serializer.toJson<String>(precision),
+      'year': serializer.toJson<int?>(year),
+      'month': serializer.toJson<int?>(month),
+      'day': serializer.toJson<int?>(day),
+      'person': serializer.toJson<String?>(person),
+      'categoryId': serializer.toJson<int>(categoryId),
+      'place': serializer.toJson<String?>(place),
+      'description': serializer.toJson<String?>(description),
+      'coverMediaId': serializer.toJson<int?>(coverMediaId),
+      'remindOnDay': serializer.toJson<bool>(remindOnDay),
+      'remindDaysBefore': serializer.toJson<String>(remindDaysBefore),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+    };
+  }
+
+  MemoryEvent copyWith({
+    int? id,
+    String? title,
+    String? kind,
+    String? precision,
+    Value<int?> year = const Value.absent(),
+    Value<int?> month = const Value.absent(),
+    Value<int?> day = const Value.absent(),
+    Value<String?> person = const Value.absent(),
+    int? categoryId,
+    Value<String?> place = const Value.absent(),
+    Value<String?> description = const Value.absent(),
+    Value<int?> coverMediaId = const Value.absent(),
+    bool? remindOnDay,
+    String? remindDaysBefore,
+    DateTime? createdAt,
+  }) => MemoryEvent(
+    id: id ?? this.id,
+    title: title ?? this.title,
+    kind: kind ?? this.kind,
+    precision: precision ?? this.precision,
+    year: year.present ? year.value : this.year,
+    month: month.present ? month.value : this.month,
+    day: day.present ? day.value : this.day,
+    person: person.present ? person.value : this.person,
+    categoryId: categoryId ?? this.categoryId,
+    place: place.present ? place.value : this.place,
+    description: description.present ? description.value : this.description,
+    coverMediaId: coverMediaId.present ? coverMediaId.value : this.coverMediaId,
+    remindOnDay: remindOnDay ?? this.remindOnDay,
+    remindDaysBefore: remindDaysBefore ?? this.remindDaysBefore,
+    createdAt: createdAt ?? this.createdAt,
+  );
+  MemoryEvent copyWithCompanion(MemoryEventsCompanion data) {
+    return MemoryEvent(
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      kind: data.kind.present ? data.kind.value : this.kind,
+      precision: data.precision.present ? data.precision.value : this.precision,
+      year: data.year.present ? data.year.value : this.year,
+      month: data.month.present ? data.month.value : this.month,
+      day: data.day.present ? data.day.value : this.day,
+      person: data.person.present ? data.person.value : this.person,
+      categoryId: data.categoryId.present
+          ? data.categoryId.value
+          : this.categoryId,
+      place: data.place.present ? data.place.value : this.place,
+      description: data.description.present
+          ? data.description.value
+          : this.description,
+      coverMediaId: data.coverMediaId.present
+          ? data.coverMediaId.value
+          : this.coverMediaId,
+      remindOnDay: data.remindOnDay.present
+          ? data.remindOnDay.value
+          : this.remindOnDay,
+      remindDaysBefore: data.remindDaysBefore.present
+          ? data.remindDaysBefore.value
+          : this.remindDaysBefore,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryEvent(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('kind: $kind, ')
+          ..write('precision: $precision, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('day: $day, ')
+          ..write('person: $person, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('place: $place, ')
+          ..write('description: $description, ')
+          ..write('coverMediaId: $coverMediaId, ')
+          ..write('remindOnDay: $remindOnDay, ')
+          ..write('remindDaysBefore: $remindDaysBefore, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    title,
+    kind,
+    precision,
+    year,
+    month,
+    day,
+    person,
+    categoryId,
+    place,
+    description,
+    coverMediaId,
+    remindOnDay,
+    remindDaysBefore,
+    createdAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemoryEvent &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.kind == this.kind &&
+          other.precision == this.precision &&
+          other.year == this.year &&
+          other.month == this.month &&
+          other.day == this.day &&
+          other.person == this.person &&
+          other.categoryId == this.categoryId &&
+          other.place == this.place &&
+          other.description == this.description &&
+          other.coverMediaId == this.coverMediaId &&
+          other.remindOnDay == this.remindOnDay &&
+          other.remindDaysBefore == this.remindDaysBefore &&
+          other.createdAt == this.createdAt);
+}
+
+class MemoryEventsCompanion extends UpdateCompanion<MemoryEvent> {
+  final Value<int> id;
+  final Value<String> title;
+  final Value<String> kind;
+  final Value<String> precision;
+  final Value<int?> year;
+  final Value<int?> month;
+  final Value<int?> day;
+  final Value<String?> person;
+  final Value<int> categoryId;
+  final Value<String?> place;
+  final Value<String?> description;
+  final Value<int?> coverMediaId;
+  final Value<bool> remindOnDay;
+  final Value<String> remindDaysBefore;
+  final Value<DateTime> createdAt;
+  const MemoryEventsCompanion({
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.kind = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.year = const Value.absent(),
+    this.month = const Value.absent(),
+    this.day = const Value.absent(),
+    this.person = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.place = const Value.absent(),
+    this.description = const Value.absent(),
+    this.coverMediaId = const Value.absent(),
+    this.remindOnDay = const Value.absent(),
+    this.remindDaysBefore = const Value.absent(),
+    this.createdAt = const Value.absent(),
+  });
+  MemoryEventsCompanion.insert({
+    this.id = const Value.absent(),
+    required String title,
+    this.kind = const Value.absent(),
+    this.precision = const Value.absent(),
+    this.year = const Value.absent(),
+    this.month = const Value.absent(),
+    this.day = const Value.absent(),
+    this.person = const Value.absent(),
+    required int categoryId,
+    this.place = const Value.absent(),
+    this.description = const Value.absent(),
+    this.coverMediaId = const Value.absent(),
+    this.remindOnDay = const Value.absent(),
+    this.remindDaysBefore = const Value.absent(),
+    required DateTime createdAt,
+  }) : title = Value(title),
+       categoryId = Value(categoryId),
+       createdAt = Value(createdAt);
+  static Insertable<MemoryEvent> custom({
+    Expression<int>? id,
+    Expression<String>? title,
+    Expression<String>? kind,
+    Expression<String>? precision,
+    Expression<int>? year,
+    Expression<int>? month,
+    Expression<int>? day,
+    Expression<String>? person,
+    Expression<int>? categoryId,
+    Expression<String>? place,
+    Expression<String>? description,
+    Expression<int>? coverMediaId,
+    Expression<bool>? remindOnDay,
+    Expression<String>? remindDaysBefore,
+    Expression<DateTime>? createdAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (kind != null) 'kind': kind,
+      if (precision != null) 'precision': precision,
+      if (year != null) 'year': year,
+      if (month != null) 'month': month,
+      if (day != null) 'day': day,
+      if (person != null) 'person': person,
+      if (categoryId != null) 'category_id': categoryId,
+      if (place != null) 'place': place,
+      if (description != null) 'description': description,
+      if (coverMediaId != null) 'cover_media_id': coverMediaId,
+      if (remindOnDay != null) 'remind_on_day': remindOnDay,
+      if (remindDaysBefore != null) 'remind_days_before': remindDaysBefore,
+      if (createdAt != null) 'created_at': createdAt,
+    });
+  }
+
+  MemoryEventsCompanion copyWith({
+    Value<int>? id,
+    Value<String>? title,
+    Value<String>? kind,
+    Value<String>? precision,
+    Value<int?>? year,
+    Value<int?>? month,
+    Value<int?>? day,
+    Value<String?>? person,
+    Value<int>? categoryId,
+    Value<String?>? place,
+    Value<String?>? description,
+    Value<int?>? coverMediaId,
+    Value<bool>? remindOnDay,
+    Value<String>? remindDaysBefore,
+    Value<DateTime>? createdAt,
+  }) {
+    return MemoryEventsCompanion(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      kind: kind ?? this.kind,
+      precision: precision ?? this.precision,
+      year: year ?? this.year,
+      month: month ?? this.month,
+      day: day ?? this.day,
+      person: person ?? this.person,
+      categoryId: categoryId ?? this.categoryId,
+      place: place ?? this.place,
+      description: description ?? this.description,
+      coverMediaId: coverMediaId ?? this.coverMediaId,
+      remindOnDay: remindOnDay ?? this.remindOnDay,
+      remindDaysBefore: remindDaysBefore ?? this.remindDaysBefore,
+      createdAt: createdAt ?? this.createdAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (kind.present) {
+      map['kind'] = Variable<String>(kind.value);
+    }
+    if (precision.present) {
+      map['precision'] = Variable<String>(precision.value);
+    }
+    if (year.present) {
+      map['year'] = Variable<int>(year.value);
+    }
+    if (month.present) {
+      map['month'] = Variable<int>(month.value);
+    }
+    if (day.present) {
+      map['day'] = Variable<int>(day.value);
+    }
+    if (person.present) {
+      map['person'] = Variable<String>(person.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (place.present) {
+      map['place'] = Variable<String>(place.value);
+    }
+    if (description.present) {
+      map['description'] = Variable<String>(description.value);
+    }
+    if (coverMediaId.present) {
+      map['cover_media_id'] = Variable<int>(coverMediaId.value);
+    }
+    if (remindOnDay.present) {
+      map['remind_on_day'] = Variable<bool>(remindOnDay.value);
+    }
+    if (remindDaysBefore.present) {
+      map['remind_days_before'] = Variable<String>(remindDaysBefore.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryEventsCompanion(')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('kind: $kind, ')
+          ..write('precision: $precision, ')
+          ..write('year: $year, ')
+          ..write('month: $month, ')
+          ..write('day: $day, ')
+          ..write('person: $person, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('place: $place, ')
+          ..write('description: $description, ')
+          ..write('coverMediaId: $coverMediaId, ')
+          ..write('remindOnDay: $remindOnDay, ')
+          ..write('remindDaysBefore: $remindDaysBefore, ')
+          ..write('createdAt: $createdAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $MemoryMediaTable extends MemoryMedia
+    with TableInfo<$MemoryMediaTable, MemoryMediaItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $MemoryMediaTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+    'id',
+    aliasedName,
+    false,
+    hasAutoIncrement: true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'PRIMARY KEY AUTOINCREMENT',
+    ),
+  );
+  static const VerificationMeta _eventIdMeta = const VerificationMeta(
+    'eventId',
+  );
+  @override
+  late final GeneratedColumn<int> eventId = GeneratedColumn<int>(
+    'event_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: true,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'REFERENCES memory_events (id)',
+    ),
+  );
+  static const VerificationMeta _pathMeta = const VerificationMeta('path');
+  @override
+  late final GeneratedColumn<String> path = GeneratedColumn<String>(
+    'path',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _isVideoMeta = const VerificationMeta(
+    'isVideo',
+  );
+  @override
+  late final GeneratedColumn<bool> isVideo = GeneratedColumn<bool>(
+    'is_video',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("is_video" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
+  static const VerificationMeta _thumbPathMeta = const VerificationMeta(
+    'thumbPath',
+  );
+  @override
+  late final GeneratedColumn<String> thumbPath = GeneratedColumn<String>(
+    'thumb_path',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _durationMsMeta = const VerificationMeta(
+    'durationMs',
+  );
+  @override
+  late final GeneratedColumn<int> durationMs = GeneratedColumn<int>(
+    'duration_ms',
+    aliasedName,
+    true,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _sortOrderMeta = const VerificationMeta(
+    'sortOrder',
+  );
+  @override
+  late final GeneratedColumn<int> sortOrder = GeneratedColumn<int>(
+    'sort_order',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  static const VerificationMeta _sizeBytesMeta = const VerificationMeta(
+    'sizeBytes',
+  );
+  @override
+  late final GeneratedColumn<int> sizeBytes = GeneratedColumn<int>(
+    'size_bytes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(0),
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    id,
+    eventId,
+    path,
+    isVideo,
+    thumbPath,
+    durationMs,
+    sortOrder,
+    sizeBytes,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'memory_media';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<MemoryMediaItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('event_id')) {
+      context.handle(
+        _eventIdMeta,
+        eventId.isAcceptableOrUnknown(data['event_id']!, _eventIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_eventIdMeta);
+    }
+    if (data.containsKey('path')) {
+      context.handle(
+        _pathMeta,
+        path.isAcceptableOrUnknown(data['path']!, _pathMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_pathMeta);
+    }
+    if (data.containsKey('is_video')) {
+      context.handle(
+        _isVideoMeta,
+        isVideo.isAcceptableOrUnknown(data['is_video']!, _isVideoMeta),
+      );
+    }
+    if (data.containsKey('thumb_path')) {
+      context.handle(
+        _thumbPathMeta,
+        thumbPath.isAcceptableOrUnknown(data['thumb_path']!, _thumbPathMeta),
+      );
+    }
+    if (data.containsKey('duration_ms')) {
+      context.handle(
+        _durationMsMeta,
+        durationMs.isAcceptableOrUnknown(data['duration_ms']!, _durationMsMeta),
+      );
+    }
+    if (data.containsKey('sort_order')) {
+      context.handle(
+        _sortOrderMeta,
+        sortOrder.isAcceptableOrUnknown(data['sort_order']!, _sortOrderMeta),
+      );
+    }
+    if (data.containsKey('size_bytes')) {
+      context.handle(
+        _sizeBytesMeta,
+        sizeBytes.isAcceptableOrUnknown(data['size_bytes']!, _sizeBytesMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  MemoryMediaItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return MemoryMediaItem(
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}id'],
+      )!,
+      eventId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}event_id'],
+      )!,
+      path: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}path'],
+      )!,
+      isVideo: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}is_video'],
+      )!,
+      thumbPath: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}thumb_path'],
+      ),
+      durationMs: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}duration_ms'],
+      ),
+      sortOrder: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}sort_order'],
+      )!,
+      sizeBytes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}size_bytes'],
+      )!,
+    );
+  }
+
+  @override
+  $MemoryMediaTable createAlias(String alias) {
+    return $MemoryMediaTable(attachedDatabase, alias);
+  }
+}
+
+class MemoryMediaItem extends DataClass implements Insertable<MemoryMediaItem> {
+  final int id;
+  final int eventId;
+  final String path;
+  final bool isVideo;
+  final String? thumbPath;
+  final int? durationMs;
+  final int sortOrder;
+  final int sizeBytes;
+  const MemoryMediaItem({
+    required this.id,
+    required this.eventId,
+    required this.path,
+    required this.isVideo,
+    this.thumbPath,
+    this.durationMs,
+    required this.sortOrder,
+    required this.sizeBytes,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['event_id'] = Variable<int>(eventId);
+    map['path'] = Variable<String>(path);
+    map['is_video'] = Variable<bool>(isVideo);
+    if (!nullToAbsent || thumbPath != null) {
+      map['thumb_path'] = Variable<String>(thumbPath);
+    }
+    if (!nullToAbsent || durationMs != null) {
+      map['duration_ms'] = Variable<int>(durationMs);
+    }
+    map['sort_order'] = Variable<int>(sortOrder);
+    map['size_bytes'] = Variable<int>(sizeBytes);
+    return map;
+  }
+
+  MemoryMediaCompanion toCompanion(bool nullToAbsent) {
+    return MemoryMediaCompanion(
+      id: Value(id),
+      eventId: Value(eventId),
+      path: Value(path),
+      isVideo: Value(isVideo),
+      thumbPath: thumbPath == null && nullToAbsent
+          ? const Value.absent()
+          : Value(thumbPath),
+      durationMs: durationMs == null && nullToAbsent
+          ? const Value.absent()
+          : Value(durationMs),
+      sortOrder: Value(sortOrder),
+      sizeBytes: Value(sizeBytes),
+    );
+  }
+
+  factory MemoryMediaItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return MemoryMediaItem(
+      id: serializer.fromJson<int>(json['id']),
+      eventId: serializer.fromJson<int>(json['eventId']),
+      path: serializer.fromJson<String>(json['path']),
+      isVideo: serializer.fromJson<bool>(json['isVideo']),
+      thumbPath: serializer.fromJson<String?>(json['thumbPath']),
+      durationMs: serializer.fromJson<int?>(json['durationMs']),
+      sortOrder: serializer.fromJson<int>(json['sortOrder']),
+      sizeBytes: serializer.fromJson<int>(json['sizeBytes']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'eventId': serializer.toJson<int>(eventId),
+      'path': serializer.toJson<String>(path),
+      'isVideo': serializer.toJson<bool>(isVideo),
+      'thumbPath': serializer.toJson<String?>(thumbPath),
+      'durationMs': serializer.toJson<int?>(durationMs),
+      'sortOrder': serializer.toJson<int>(sortOrder),
+      'sizeBytes': serializer.toJson<int>(sizeBytes),
+    };
+  }
+
+  MemoryMediaItem copyWith({
+    int? id,
+    int? eventId,
+    String? path,
+    bool? isVideo,
+    Value<String?> thumbPath = const Value.absent(),
+    Value<int?> durationMs = const Value.absent(),
+    int? sortOrder,
+    int? sizeBytes,
+  }) => MemoryMediaItem(
+    id: id ?? this.id,
+    eventId: eventId ?? this.eventId,
+    path: path ?? this.path,
+    isVideo: isVideo ?? this.isVideo,
+    thumbPath: thumbPath.present ? thumbPath.value : this.thumbPath,
+    durationMs: durationMs.present ? durationMs.value : this.durationMs,
+    sortOrder: sortOrder ?? this.sortOrder,
+    sizeBytes: sizeBytes ?? this.sizeBytes,
+  );
+  MemoryMediaItem copyWithCompanion(MemoryMediaCompanion data) {
+    return MemoryMediaItem(
+      id: data.id.present ? data.id.value : this.id,
+      eventId: data.eventId.present ? data.eventId.value : this.eventId,
+      path: data.path.present ? data.path.value : this.path,
+      isVideo: data.isVideo.present ? data.isVideo.value : this.isVideo,
+      thumbPath: data.thumbPath.present ? data.thumbPath.value : this.thumbPath,
+      durationMs: data.durationMs.present
+          ? data.durationMs.value
+          : this.durationMs,
+      sortOrder: data.sortOrder.present ? data.sortOrder.value : this.sortOrder,
+      sizeBytes: data.sizeBytes.present ? data.sizeBytes.value : this.sizeBytes,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryMediaItem(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('path: $path, ')
+          ..write('isVideo: $isVideo, ')
+          ..write('thumbPath: $thumbPath, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('sizeBytes: $sizeBytes')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    id,
+    eventId,
+    path,
+    isVideo,
+    thumbPath,
+    durationMs,
+    sortOrder,
+    sizeBytes,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is MemoryMediaItem &&
+          other.id == this.id &&
+          other.eventId == this.eventId &&
+          other.path == this.path &&
+          other.isVideo == this.isVideo &&
+          other.thumbPath == this.thumbPath &&
+          other.durationMs == this.durationMs &&
+          other.sortOrder == this.sortOrder &&
+          other.sizeBytes == this.sizeBytes);
+}
+
+class MemoryMediaCompanion extends UpdateCompanion<MemoryMediaItem> {
+  final Value<int> id;
+  final Value<int> eventId;
+  final Value<String> path;
+  final Value<bool> isVideo;
+  final Value<String?> thumbPath;
+  final Value<int?> durationMs;
+  final Value<int> sortOrder;
+  final Value<int> sizeBytes;
+  const MemoryMediaCompanion({
+    this.id = const Value.absent(),
+    this.eventId = const Value.absent(),
+    this.path = const Value.absent(),
+    this.isVideo = const Value.absent(),
+    this.thumbPath = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+  });
+  MemoryMediaCompanion.insert({
+    this.id = const Value.absent(),
+    required int eventId,
+    required String path,
+    this.isVideo = const Value.absent(),
+    this.thumbPath = const Value.absent(),
+    this.durationMs = const Value.absent(),
+    this.sortOrder = const Value.absent(),
+    this.sizeBytes = const Value.absent(),
+  }) : eventId = Value(eventId),
+       path = Value(path);
+  static Insertable<MemoryMediaItem> custom({
+    Expression<int>? id,
+    Expression<int>? eventId,
+    Expression<String>? path,
+    Expression<bool>? isVideo,
+    Expression<String>? thumbPath,
+    Expression<int>? durationMs,
+    Expression<int>? sortOrder,
+    Expression<int>? sizeBytes,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (eventId != null) 'event_id': eventId,
+      if (path != null) 'path': path,
+      if (isVideo != null) 'is_video': isVideo,
+      if (thumbPath != null) 'thumb_path': thumbPath,
+      if (durationMs != null) 'duration_ms': durationMs,
+      if (sortOrder != null) 'sort_order': sortOrder,
+      if (sizeBytes != null) 'size_bytes': sizeBytes,
+    });
+  }
+
+  MemoryMediaCompanion copyWith({
+    Value<int>? id,
+    Value<int>? eventId,
+    Value<String>? path,
+    Value<bool>? isVideo,
+    Value<String?>? thumbPath,
+    Value<int?>? durationMs,
+    Value<int>? sortOrder,
+    Value<int>? sizeBytes,
+  }) {
+    return MemoryMediaCompanion(
+      id: id ?? this.id,
+      eventId: eventId ?? this.eventId,
+      path: path ?? this.path,
+      isVideo: isVideo ?? this.isVideo,
+      thumbPath: thumbPath ?? this.thumbPath,
+      durationMs: durationMs ?? this.durationMs,
+      sortOrder: sortOrder ?? this.sortOrder,
+      sizeBytes: sizeBytes ?? this.sizeBytes,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (eventId.present) {
+      map['event_id'] = Variable<int>(eventId.value);
+    }
+    if (path.present) {
+      map['path'] = Variable<String>(path.value);
+    }
+    if (isVideo.present) {
+      map['is_video'] = Variable<bool>(isVideo.value);
+    }
+    if (thumbPath.present) {
+      map['thumb_path'] = Variable<String>(thumbPath.value);
+    }
+    if (durationMs.present) {
+      map['duration_ms'] = Variable<int>(durationMs.value);
+    }
+    if (sortOrder.present) {
+      map['sort_order'] = Variable<int>(sortOrder.value);
+    }
+    if (sizeBytes.present) {
+      map['size_bytes'] = Variable<int>(sizeBytes.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('MemoryMediaCompanion(')
+          ..write('id: $id, ')
+          ..write('eventId: $eventId, ')
+          ..write('path: $path, ')
+          ..write('isVideo: $isVideo, ')
+          ..write('thumbPath: $thumbPath, ')
+          ..write('durationMs: $durationMs, ')
+          ..write('sortOrder: $sortOrder, ')
+          ..write('sizeBytes: $sizeBytes')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -4134,6 +5735,11 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     this,
   );
   late final $ReadingNotesTable readingNotes = $ReadingNotesTable(this);
+  late final $MemoryCategoriesTable memoryCategories = $MemoryCategoriesTable(
+    this,
+  );
+  late final $MemoryEventsTable memoryEvents = $MemoryEventsTable(this);
+  late final $MemoryMediaTable memoryMedia = $MemoryMediaTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -4149,6 +5755,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     books,
     readingSessions,
     readingNotes,
+    memoryCategories,
+    memoryEvents,
+    memoryMedia,
   ];
 }
 
@@ -7386,6 +8995,1239 @@ typedef $$ReadingNotesTableProcessedTableManager =
       ReadingNote,
       PrefetchHooks Function({bool bookId, bool sessionId})
     >;
+typedef $$MemoryCategoriesTableCreateCompanionBuilder =
+    MemoryCategoriesCompanion Function({
+      Value<int> id,
+      required String name,
+      Value<bool> archived,
+    });
+typedef $$MemoryCategoriesTableUpdateCompanionBuilder =
+    MemoryCategoriesCompanion Function({
+      Value<int> id,
+      Value<String> name,
+      Value<bool> archived,
+    });
+
+final class $$MemoryCategoriesTableReferences
+    extends
+        BaseReferences<_$AppDatabase, $MemoryCategoriesTable, MemoryCategory> {
+  $$MemoryCategoriesTableReferences(
+    super.$_db,
+    super.$_table,
+    super.$_typedResult,
+  );
+
+  static MultiTypedResultKey<$MemoryEventsTable, List<MemoryEvent>>
+  _memoryEventsRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memoryEvents,
+    aliasName: 'memory_categories__id__memory_events__category_id',
+  );
+
+  $$MemoryEventsTableProcessedTableManager get memoryEventsRefs {
+    final manager = $$MemoryEventsTableTableManager(
+      $_db,
+      $_db.memoryEvents,
+    ).filter((f) => f.categoryId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memoryEventsRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$MemoryCategoriesTableFilterComposer
+    extends Composer<_$AppDatabase, $MemoryCategoriesTable> {
+  $$MemoryCategoriesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get archived => $composableBuilder(
+    column: $table.archived,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  Expression<bool> memoryEventsRefs(
+    Expression<bool> Function($$MemoryEventsTableFilterComposer f) f,
+  ) {
+    final $$MemoryEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memoryEvents,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.memoryEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MemoryCategoriesTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemoryCategoriesTable> {
+  $$MemoryCategoriesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get name => $composableBuilder(
+    column: $table.name,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get archived => $composableBuilder(
+    column: $table.archived,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$MemoryCategoriesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemoryCategoriesTable> {
+  $$MemoryCategoriesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get name =>
+      $composableBuilder(column: $table.name, builder: (column) => column);
+
+  GeneratedColumn<bool> get archived =>
+      $composableBuilder(column: $table.archived, builder: (column) => column);
+
+  Expression<T> memoryEventsRefs<T extends Object>(
+    Expression<T> Function($$MemoryEventsTableAnnotationComposer a) f,
+  ) {
+    final $$MemoryEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memoryEvents,
+      getReferencedColumn: (t) => t.categoryId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memoryEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MemoryCategoriesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemoryCategoriesTable,
+          MemoryCategory,
+          $$MemoryCategoriesTableFilterComposer,
+          $$MemoryCategoriesTableOrderingComposer,
+          $$MemoryCategoriesTableAnnotationComposer,
+          $$MemoryCategoriesTableCreateCompanionBuilder,
+          $$MemoryCategoriesTableUpdateCompanionBuilder,
+          (MemoryCategory, $$MemoryCategoriesTableReferences),
+          MemoryCategory,
+          PrefetchHooks Function({bool memoryEventsRefs})
+        > {
+  $$MemoryCategoriesTableTableManager(
+    _$AppDatabase db,
+    $MemoryCategoriesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemoryCategoriesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemoryCategoriesTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemoryCategoriesTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> name = const Value.absent(),
+                Value<bool> archived = const Value.absent(),
+              }) => MemoryCategoriesCompanion(
+                id: id,
+                name: name,
+                archived: archived,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String name,
+                Value<bool> archived = const Value.absent(),
+              }) => MemoryCategoriesCompanion.insert(
+                id: id,
+                name: name,
+                archived: archived,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MemoryCategoriesTable, MemoryCategory>(table),
+                  $$MemoryCategoriesTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({memoryEventsRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (memoryEventsRefs) db.memoryEvents],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (memoryEventsRefs)
+                    await $_getPrefetchedData<
+                      MemoryCategory,
+                      $MemoryCategoriesTable,
+                      MemoryEvent
+                    >(
+                      currentTable: table,
+                      referencedTable: $$MemoryCategoriesTableReferences
+                          ._memoryEventsRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$MemoryCategoriesTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).memoryEventsRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.categoryId == item.id),
+                      typedResults: items,
+                    ),
+                ];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MemoryCategoriesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemoryCategoriesTable,
+      MemoryCategory,
+      $$MemoryCategoriesTableFilterComposer,
+      $$MemoryCategoriesTableOrderingComposer,
+      $$MemoryCategoriesTableAnnotationComposer,
+      $$MemoryCategoriesTableCreateCompanionBuilder,
+      $$MemoryCategoriesTableUpdateCompanionBuilder,
+      (MemoryCategory, $$MemoryCategoriesTableReferences),
+      MemoryCategory,
+      PrefetchHooks Function({bool memoryEventsRefs})
+    >;
+typedef $$MemoryEventsTableCreateCompanionBuilder =
+    MemoryEventsCompanion Function({
+      Value<int> id,
+      required String title,
+      Value<String> kind,
+      Value<String> precision,
+      Value<int?> year,
+      Value<int?> month,
+      Value<int?> day,
+      Value<String?> person,
+      required int categoryId,
+      Value<String?> place,
+      Value<String?> description,
+      Value<int?> coverMediaId,
+      Value<bool> remindOnDay,
+      Value<String> remindDaysBefore,
+      required DateTime createdAt,
+    });
+typedef $$MemoryEventsTableUpdateCompanionBuilder =
+    MemoryEventsCompanion Function({
+      Value<int> id,
+      Value<String> title,
+      Value<String> kind,
+      Value<String> precision,
+      Value<int?> year,
+      Value<int?> month,
+      Value<int?> day,
+      Value<String?> person,
+      Value<int> categoryId,
+      Value<String?> place,
+      Value<String?> description,
+      Value<int?> coverMediaId,
+      Value<bool> remindOnDay,
+      Value<String> remindDaysBefore,
+      Value<DateTime> createdAt,
+    });
+
+final class $$MemoryEventsTableReferences
+    extends BaseReferences<_$AppDatabase, $MemoryEventsTable, MemoryEvent> {
+  $$MemoryEventsTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MemoryCategoriesTable _categoryIdTable(_$AppDatabase db) => db
+      .memoryCategories
+      .createAlias('memory_events__category_id__memory_categories__id');
+
+  $$MemoryCategoriesTableProcessedTableManager get categoryId {
+    final $_column = $_itemColumn<int>('category_id')!;
+
+    final manager = $$MemoryCategoriesTableTableManager(
+      $_db,
+      $_db.memoryCategories,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_categoryIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+
+  static MultiTypedResultKey<$MemoryMediaTable, List<MemoryMediaItem>>
+  _memoryMediaRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
+    db.memoryMedia,
+    aliasName: 'memory_events__id__memory_media__event_id',
+  );
+
+  $$MemoryMediaTableProcessedTableManager get memoryMediaRefs {
+    final manager = $$MemoryMediaTableTableManager(
+      $_db,
+      $_db.memoryMedia,
+    ).filter((f) => f.eventId.id.sqlEquals($_itemColumn<int>('id')!));
+
+    final cache = $_typedResult.readTableOrNull(_memoryMediaRefsTable($_db));
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: cache),
+    );
+  }
+}
+
+class $$MemoryEventsTableFilterComposer
+    extends Composer<_$AppDatabase, $MemoryEventsTable> {
+  $$MemoryEventsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get precision => $composableBuilder(
+    column: $table.precision,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get person => $composableBuilder(
+    column: $table.person,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get place => $composableBuilder(
+    column: $table.place,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get coverMediaId => $composableBuilder(
+    column: $table.coverMediaId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get remindOnDay => $composableBuilder(
+    column: $table.remindOnDay,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remindDaysBefore => $composableBuilder(
+    column: $table.remindDaysBefore,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MemoryCategoriesTableFilterComposer get categoryId {
+    final $$MemoryCategoriesTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.memoryCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryCategoriesTableFilterComposer(
+            $db: $db,
+            $table: $db.memoryCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<bool> memoryMediaRefs(
+    Expression<bool> Function($$MemoryMediaTableFilterComposer f) f,
+  ) {
+    final $$MemoryMediaTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memoryMedia,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryMediaTableFilterComposer(
+            $db: $db,
+            $table: $db.memoryMedia,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MemoryEventsTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemoryEventsTable> {
+  $$MemoryEventsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get kind => $composableBuilder(
+    column: $table.kind,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get precision => $composableBuilder(
+    column: $table.precision,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get year => $composableBuilder(
+    column: $table.year,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get month => $composableBuilder(
+    column: $table.month,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get day => $composableBuilder(
+    column: $table.day,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get person => $composableBuilder(
+    column: $table.person,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get place => $composableBuilder(
+    column: $table.place,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get coverMediaId => $composableBuilder(
+    column: $table.coverMediaId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get remindOnDay => $composableBuilder(
+    column: $table.remindOnDay,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remindDaysBefore => $composableBuilder(
+    column: $table.remindDaysBefore,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MemoryCategoriesTableOrderingComposer get categoryId {
+    final $$MemoryCategoriesTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.memoryCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryCategoriesTableOrderingComposer(
+            $db: $db,
+            $table: $db.memoryCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemoryEventsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemoryEventsTable> {
+  $$MemoryEventsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get kind =>
+      $composableBuilder(column: $table.kind, builder: (column) => column);
+
+  GeneratedColumn<String> get precision =>
+      $composableBuilder(column: $table.precision, builder: (column) => column);
+
+  GeneratedColumn<int> get year =>
+      $composableBuilder(column: $table.year, builder: (column) => column);
+
+  GeneratedColumn<int> get month =>
+      $composableBuilder(column: $table.month, builder: (column) => column);
+
+  GeneratedColumn<int> get day =>
+      $composableBuilder(column: $table.day, builder: (column) => column);
+
+  GeneratedColumn<String> get person =>
+      $composableBuilder(column: $table.person, builder: (column) => column);
+
+  GeneratedColumn<String> get place =>
+      $composableBuilder(column: $table.place, builder: (column) => column);
+
+  GeneratedColumn<String> get description => $composableBuilder(
+    column: $table.description,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get coverMediaId => $composableBuilder(
+    column: $table.coverMediaId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get remindOnDay => $composableBuilder(
+    column: $table.remindOnDay,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get remindDaysBefore => $composableBuilder(
+    column: $table.remindDaysBefore,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  $$MemoryCategoriesTableAnnotationComposer get categoryId {
+    final $$MemoryCategoriesTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.categoryId,
+      referencedTable: $db.memoryCategories,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryCategoriesTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memoryCategories,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+
+  Expression<T> memoryMediaRefs<T extends Object>(
+    Expression<T> Function($$MemoryMediaTableAnnotationComposer a) f,
+  ) {
+    final $$MemoryMediaTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.id,
+      referencedTable: $db.memoryMedia,
+      getReferencedColumn: (t) => t.eventId,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryMediaTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memoryMedia,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return f(composer);
+  }
+}
+
+class $$MemoryEventsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemoryEventsTable,
+          MemoryEvent,
+          $$MemoryEventsTableFilterComposer,
+          $$MemoryEventsTableOrderingComposer,
+          $$MemoryEventsTableAnnotationComposer,
+          $$MemoryEventsTableCreateCompanionBuilder,
+          $$MemoryEventsTableUpdateCompanionBuilder,
+          (MemoryEvent, $$MemoryEventsTableReferences),
+          MemoryEvent,
+          PrefetchHooks Function({bool categoryId, bool memoryMediaRefs})
+        > {
+  $$MemoryEventsTableTableManager(_$AppDatabase db, $MemoryEventsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemoryEventsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemoryEventsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemoryEventsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> kind = const Value.absent(),
+                Value<String> precision = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<int?> month = const Value.absent(),
+                Value<int?> day = const Value.absent(),
+                Value<String?> person = const Value.absent(),
+                Value<int> categoryId = const Value.absent(),
+                Value<String?> place = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int?> coverMediaId = const Value.absent(),
+                Value<bool> remindOnDay = const Value.absent(),
+                Value<String> remindDaysBefore = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+              }) => MemoryEventsCompanion(
+                id: id,
+                title: title,
+                kind: kind,
+                precision: precision,
+                year: year,
+                month: month,
+                day: day,
+                person: person,
+                categoryId: categoryId,
+                place: place,
+                description: description,
+                coverMediaId: coverMediaId,
+                remindOnDay: remindOnDay,
+                remindDaysBefore: remindDaysBefore,
+                createdAt: createdAt,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required String title,
+                Value<String> kind = const Value.absent(),
+                Value<String> precision = const Value.absent(),
+                Value<int?> year = const Value.absent(),
+                Value<int?> month = const Value.absent(),
+                Value<int?> day = const Value.absent(),
+                Value<String?> person = const Value.absent(),
+                required int categoryId,
+                Value<String?> place = const Value.absent(),
+                Value<String?> description = const Value.absent(),
+                Value<int?> coverMediaId = const Value.absent(),
+                Value<bool> remindOnDay = const Value.absent(),
+                Value<String> remindDaysBefore = const Value.absent(),
+                required DateTime createdAt,
+              }) => MemoryEventsCompanion.insert(
+                id: id,
+                title: title,
+                kind: kind,
+                precision: precision,
+                year: year,
+                month: month,
+                day: day,
+                person: person,
+                categoryId: categoryId,
+                place: place,
+                description: description,
+                coverMediaId: coverMediaId,
+                remindOnDay: remindOnDay,
+                remindDaysBefore: remindDaysBefore,
+                createdAt: createdAt,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MemoryEventsTable, MemoryEvent>(table),
+                  $$MemoryEventsTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback:
+              ({categoryId = false, memoryMediaRefs = false}) {
+                return PrefetchHooks(
+                  db: db,
+                  explicitlyWatchedTables: [
+                    if (memoryMediaRefs) db.memoryMedia,
+                  ],
+                  addJoins:
+                      <
+                        T extends TableManagerState<
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic,
+                          dynamic
+                        >
+                      >(state) {
+                        if (categoryId) {
+                          state = state.withJoin(
+                            currentTable: table,
+                            currentColumn: table.categoryId,
+                            referencedTable: $$MemoryEventsTableReferences
+                                ._categoryIdTable(db),
+                            referencedColumn: $$MemoryEventsTableReferences
+                                ._categoryIdTable(db)
+                                .id,
+                          ) as T;
+                        }
+
+                        return state;
+                      },
+                  getPrefetchedDataCallback: (items) async {
+                    return [
+                      if (memoryMediaRefs)
+                        await $_getPrefetchedData<
+                          MemoryEvent,
+                          $MemoryEventsTable,
+                          MemoryMediaItem
+                        >(
+                          currentTable: table,
+                          referencedTable: $$MemoryEventsTableReferences
+                              ._memoryMediaRefsTable(db),
+                          managerFromTypedResult: (p0) =>
+                              $$MemoryEventsTableReferences(
+                                db,
+                                table,
+                                p0,
+                              ).memoryMediaRefs,
+                          referencedItemsForCurrentItem:
+                              (item, referencedItems) => referencedItems.where(
+                                (e) => e.eventId == item.id,
+                              ),
+                          typedResults: items,
+                        ),
+                    ];
+                  },
+                );
+              },
+        ),
+      );
+}
+
+typedef $$MemoryEventsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemoryEventsTable,
+      MemoryEvent,
+      $$MemoryEventsTableFilterComposer,
+      $$MemoryEventsTableOrderingComposer,
+      $$MemoryEventsTableAnnotationComposer,
+      $$MemoryEventsTableCreateCompanionBuilder,
+      $$MemoryEventsTableUpdateCompanionBuilder,
+      (MemoryEvent, $$MemoryEventsTableReferences),
+      MemoryEvent,
+      PrefetchHooks Function({bool categoryId, bool memoryMediaRefs})
+    >;
+typedef $$MemoryMediaTableCreateCompanionBuilder =
+    MemoryMediaCompanion Function({
+      Value<int> id,
+      required int eventId,
+      required String path,
+      Value<bool> isVideo,
+      Value<String?> thumbPath,
+      Value<int?> durationMs,
+      Value<int> sortOrder,
+      Value<int> sizeBytes,
+    });
+typedef $$MemoryMediaTableUpdateCompanionBuilder =
+    MemoryMediaCompanion Function({
+      Value<int> id,
+      Value<int> eventId,
+      Value<String> path,
+      Value<bool> isVideo,
+      Value<String?> thumbPath,
+      Value<int?> durationMs,
+      Value<int> sortOrder,
+      Value<int> sizeBytes,
+    });
+
+final class $$MemoryMediaTableReferences
+    extends BaseReferences<_$AppDatabase, $MemoryMediaTable, MemoryMediaItem> {
+  $$MemoryMediaTableReferences(super.$_db, super.$_table, super.$_typedResult);
+
+  static $MemoryEventsTable _eventIdTable(_$AppDatabase db) =>
+      db.memoryEvents.createAlias('memory_media__event_id__memory_events__id');
+
+  $$MemoryEventsTableProcessedTableManager get eventId {
+    final $_column = $_itemColumn<int>('event_id')!;
+
+    final manager = $$MemoryEventsTableTableManager(
+      $_db,
+      $_db.memoryEvents,
+    ).filter((f) => f.id.sqlEquals($_column));
+    final item = $_typedResult.readTableOrNull(_eventIdTable($_db));
+    if (item == null) return manager;
+    return ProcessedTableManager(
+      manager.$state.copyWith(prefetchedData: [item]),
+    );
+  }
+}
+
+class $$MemoryMediaTableFilterComposer
+    extends Composer<_$AppDatabase, $MemoryMediaTable> {
+  $$MemoryMediaTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get isVideo => $composableBuilder(
+    column: $table.isVideo,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  $$MemoryEventsTableFilterComposer get eventId {
+    final $$MemoryEventsTableFilterComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.memoryEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryEventsTableFilterComposer(
+            $db: $db,
+            $table: $db.memoryEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemoryMediaTableOrderingComposer
+    extends Composer<_$AppDatabase, $MemoryMediaTable> {
+  $$MemoryMediaTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get path => $composableBuilder(
+    column: $table.path,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get isVideo => $composableBuilder(
+    column: $table.isVideo,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get thumbPath => $composableBuilder(
+    column: $table.thumbPath,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sortOrder => $composableBuilder(
+    column: $table.sortOrder,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<int> get sizeBytes => $composableBuilder(
+    column: $table.sizeBytes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  $$MemoryEventsTableOrderingComposer get eventId {
+    final $$MemoryEventsTableOrderingComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.memoryEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryEventsTableOrderingComposer(
+            $db: $db,
+            $table: $db.memoryEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemoryMediaTableAnnotationComposer
+    extends Composer<_$AppDatabase, $MemoryMediaTable> {
+  $$MemoryMediaTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get path =>
+      $composableBuilder(column: $table.path, builder: (column) => column);
+
+  GeneratedColumn<bool> get isVideo =>
+      $composableBuilder(column: $table.isVideo, builder: (column) => column);
+
+  GeneratedColumn<String> get thumbPath =>
+      $composableBuilder(column: $table.thumbPath, builder: (column) => column);
+
+  GeneratedColumn<int> get durationMs => $composableBuilder(
+    column: $table.durationMs,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<int> get sortOrder =>
+      $composableBuilder(column: $table.sortOrder, builder: (column) => column);
+
+  GeneratedColumn<int> get sizeBytes =>
+      $composableBuilder(column: $table.sizeBytes, builder: (column) => column);
+
+  $$MemoryEventsTableAnnotationComposer get eventId {
+    final $$MemoryEventsTableAnnotationComposer composer = $composerBuilder(
+      composer: this,
+      getCurrentColumn: (t) => t.eventId,
+      referencedTable: $db.memoryEvents,
+      getReferencedColumn: (t) => t.id,
+      builder:
+          (
+            joinBuilder, {
+            $addJoinBuilderToRootComposer,
+            $removeJoinBuilderFromRootComposer,
+          }) => $$MemoryEventsTableAnnotationComposer(
+            $db: $db,
+            $table: $db.memoryEvents,
+            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
+            joinBuilder: joinBuilder,
+            $removeJoinBuilderFromRootComposer:
+                $removeJoinBuilderFromRootComposer,
+          ),
+    );
+    return composer;
+  }
+}
+
+class $$MemoryMediaTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $MemoryMediaTable,
+          MemoryMediaItem,
+          $$MemoryMediaTableFilterComposer,
+          $$MemoryMediaTableOrderingComposer,
+          $$MemoryMediaTableAnnotationComposer,
+          $$MemoryMediaTableCreateCompanionBuilder,
+          $$MemoryMediaTableUpdateCompanionBuilder,
+          (MemoryMediaItem, $$MemoryMediaTableReferences),
+          MemoryMediaItem,
+          PrefetchHooks Function({bool eventId})
+        > {
+  $$MemoryMediaTableTableManager(_$AppDatabase db, $MemoryMediaTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$MemoryMediaTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$MemoryMediaTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$MemoryMediaTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                Value<int> eventId = const Value.absent(),
+                Value<String> path = const Value.absent(),
+                Value<bool> isVideo = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+              }) => MemoryMediaCompanion(
+                id: id,
+                eventId: eventId,
+                path: path,
+                isVideo: isVideo,
+                thumbPath: thumbPath,
+                durationMs: durationMs,
+                sortOrder: sortOrder,
+                sizeBytes: sizeBytes,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> id = const Value.absent(),
+                required int eventId,
+                required String path,
+                Value<bool> isVideo = const Value.absent(),
+                Value<String?> thumbPath = const Value.absent(),
+                Value<int?> durationMs = const Value.absent(),
+                Value<int> sortOrder = const Value.absent(),
+                Value<int> sizeBytes = const Value.absent(),
+              }) => MemoryMediaCompanion.insert(
+                id: id,
+                eventId: eventId,
+                path: path,
+                isVideo: isVideo,
+                thumbPath: thumbPath,
+                durationMs: durationMs,
+                sortOrder: sortOrder,
+                sizeBytes: sizeBytes,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map(
+                (e) => (
+                  e.readTable<$MemoryMediaTable, MemoryMediaItem>(table),
+                  $$MemoryMediaTableReferences(db, table, e),
+                ),
+              )
+              .toList(),
+          prefetchHooksCallback: ({eventId = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [],
+              addJoins:
+                  <
+                    T extends TableManagerState<
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic,
+                      dynamic
+                    >
+                  >(state) {
+                    if (eventId) {
+                      state = state.withJoin(
+                        currentTable: table,
+                        currentColumn: table.eventId,
+                        referencedTable: $$MemoryMediaTableReferences
+                            ._eventIdTable(db),
+                        referencedColumn: $$MemoryMediaTableReferences
+                            ._eventIdTable(db)
+                            .id,
+                      ) as T;
+                    }
+
+                    return state;
+                  },
+              getPrefetchedDataCallback: (items) async {
+                return [];
+              },
+            );
+          },
+        ),
+      );
+}
+
+typedef $$MemoryMediaTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $MemoryMediaTable,
+      MemoryMediaItem,
+      $$MemoryMediaTableFilterComposer,
+      $$MemoryMediaTableOrderingComposer,
+      $$MemoryMediaTableAnnotationComposer,
+      $$MemoryMediaTableCreateCompanionBuilder,
+      $$MemoryMediaTableUpdateCompanionBuilder,
+      (MemoryMediaItem, $$MemoryMediaTableReferences),
+      MemoryMediaItem,
+      PrefetchHooks Function({bool eventId})
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -7410,4 +10252,10 @@ class $AppDatabaseManager {
       $$ReadingSessionsTableTableManager(_db, _db.readingSessions);
   $$ReadingNotesTableTableManager get readingNotes =>
       $$ReadingNotesTableTableManager(_db, _db.readingNotes);
+  $$MemoryCategoriesTableTableManager get memoryCategories =>
+      $$MemoryCategoriesTableTableManager(_db, _db.memoryCategories);
+  $$MemoryEventsTableTableManager get memoryEvents =>
+      $$MemoryEventsTableTableManager(_db, _db.memoryEvents);
+  $$MemoryMediaTableTableManager get memoryMedia =>
+      $$MemoryMediaTableTableManager(_db, _db.memoryMedia);
 }
