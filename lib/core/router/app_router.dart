@@ -10,6 +10,9 @@ import '../../features/investing/weekly_page.dart';
 import '../../features/money/categories_page.dart';
 import '../../features/money/expense_form_page.dart';
 import '../../features/money/money_page.dart';
+import '../../features/reading/book_form_page.dart';
+import '../../features/reading/book_page.dart';
+import '../../features/reading/reading_page.dart';
 import '../../features/settings/settings_page.dart';
 import '../../features/sleep/sleep_edit_page.dart';
 import '../../features/sleep/sleep_page.dart';
@@ -106,6 +109,27 @@ final appRouter = GoRouter(
                   builder: (_, _) => const JournalPage(),
                 ),
                 GoRoute(path: 'weekly', builder: (_, _) => const WeeklyPage()),
+              ],
+            ),
+          ],
+        ),
+        StatefulShellBranch(
+          routes: [
+            GoRoute(
+              path: '/read',
+              builder: (_, _) => const ReadingPage(),
+              routes: [
+                GoRoute(path: 'edit', builder: (_, _) => const BookFormPage()),
+                GoRoute(
+                  path: 'edit/:id',
+                  builder: (_, state) =>
+                      BookFormPage(id: int.parse(state.pathParameters['id']!)),
+                ),
+                GoRoute(
+                  path: 'book/:id',
+                  builder: (_, state) =>
+                      BookPage(id: int.parse(state.pathParameters['id']!)),
+                ),
               ],
             ),
           ],
