@@ -16,6 +16,9 @@ class BackupData {
     this.stocks = const [],
     this.trades = const [],
     this.snapshots = const [],
+    this.books = const [],
+    this.readingSessions = const [],
+    this.readingNotes = const [],
   });
 
   final Setting settings;
@@ -25,6 +28,9 @@ class BackupData {
   final List<Stock> stocks;
   final List<Trade> trades;
   final List<WeeklySnapshot> snapshots;
+  final List<Book> books;
+  final List<ReadingSession> readingSessions;
+  final List<ReadingNote> readingNotes;
 }
 
 String backupToJson(BackupData d) =>
@@ -38,6 +44,9 @@ String backupToJson(BackupData d) =>
       'stocks': [for (final r in d.stocks) r.toJson()],
       'trades': [for (final r in d.trades) r.toJson()],
       'weeklySnapshots': [for (final r in d.snapshots) r.toJson()],
+      'books': [for (final r in d.books) r.toJson()],
+      'readingSessions': [for (final r in d.readingSessions) r.toJson()],
+      'readingNotes': [for (final r in d.readingNotes) r.toJson()],
     });
 
 /// Parses a backup file. Throws [FormatException] if it is not a valid backup.
@@ -57,7 +66,7 @@ BackupData backupFromJson(String source) {
   }
   try {
     List<T> rows<T>(String key, T Function(Map<String, dynamic>) f) => [
-      // Older backups (before Investing) simply lack these keys.
+      // Older backups (before Investing or Reading) simply lack these keys.
       for (final r in (raw[key] as List?) ?? const [])
         f(r as Map<String, dynamic>),
     ];
@@ -73,6 +82,9 @@ BackupData backupFromJson(String source) {
       stocks: rows('stocks', Stock.fromJson),
       trades: rows('trades', Trade.fromJson),
       snapshots: rows('weeklySnapshots', WeeklySnapshot.fromJson),
+      books: rows('books', Book.fromJson),
+      readingSessions: rows('readingSessions', ReadingSession.fromJson),
+      readingNotes: rows('readingNotes', ReadingNote.fromJson),
     );
   } on TypeError {
     throw const FormatException('Backup file is damaged');
@@ -94,6 +106,13 @@ Map<String, String> backupToCsv(BackupData d) {
     'trades.csv': _csv([for (final r in d.trades) r.toJson(serializer: s)]),
     'weekly_snapshots.csv': _csv([
       for (final r in d.snapshots) r.toJson(serializer: s),
+    ]),
+    'books.csv': _csv([for (final r in d.books) r.toJson(serializer: s)]),
+    'reading_sessions.csv': _csv([
+      for (final r in d.readingSessions) r.toJson(serializer: s),
+    ]),
+    'reading_notes.csv': _csv([
+      for (final r in d.readingNotes) r.toJson(serializer: s),
     ]),
   };
 }

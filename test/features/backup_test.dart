@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
 import 'package:events_tracker/features/investing/investing_repository.dart';
+import 'package:events_tracker/features/reading/reading_repository.dart';
 import 'package:events_tracker/features/settings/backup_codec.dart';
 import 'package:events_tracker/features/settings/backup_service.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -129,6 +130,53 @@ void main() {
       expect(trade.note, 'first buy');
       final snap = await dst.select(dst.weeklySnapshots).getSingle();
       expect(snap.valueCents, 150250);
+    },
+  );
+
+  test(
+    'reading data (books, sessions, notes) survives export -> import',
+    () async {
+      final src = await _seeded();
+      final repo = ReadingRepository(src);
+      final bookId = await repo.addBook(
+        BooksCompanion.insert(
+          title: 'Dune',
+          author: const Value('Herbert'),
+          totalPages: const Value(600),
+          coverPath: const Value('/covers/1.jpg'),
+        ),
+      );
+      final sid = await repo.startSession(bookId, DateTime(2026, 3, 1, 20));
+      await repo.stopSession(sid, DateTime(2026, 3, 1, 20, 30), endPage: 42);
+      await repo.addNote(
+        bookId,
+        'Fear, "the mind-killer"',
+        sessionId: sid,
+        isQuote: true,
+      );
+      final data = await BackupService(src).readAll();
+      final json = backupToJson(data);
+      final csv = backupToCsv(data);
+      await src.close();
+
+      final dst = AppDatabase(NativeDatabase.memory());
+      addTearDown(dst.close);
+      await BackupService(dst).replaceAll(backupFromJson(json));
+
+      final book = await dst.select(dst.books).getSingle();
+      expect(book.title, 'Dune');
+      expect(book.coverPath, '/covers/1.jpg');
+      final session = await dst.select(dst.readingSessions).getSingle();
+      expect(session.bookId, book.id);
+      expect(session.endPage, 42);
+      final note = await dst.select(dst.readingNotes).getSingle();
+      expect(note.sessionId, session.id);
+      expect(note.isQuote, isTrue);
+      expect(
+        csv.keys,
+        containsAll(['books.csv', 'reading_sessions.csv', 'reading_notes.csv']),
+      );
+      expect(csv['reading_notes.csv'], contains('"Fear, ""the mind-killer"""'));
     },
   );
 
