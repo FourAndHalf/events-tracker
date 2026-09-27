@@ -3,10 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
+import '../../core/charts/series.dart';
 import '../../core/db/app_database.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
+import '../../core/widgets/charts.dart';
 import '../sleep/sleep_logic.dart';
+import 'tracker_charts.dart';
 import 'tracker_icons.dart';
 import 'tracker_logic.dart';
 import 'trackers_repository.dart';
@@ -95,6 +98,30 @@ class TrackerDetailPage extends ConsumerWidget {
                 ),
               ],
             ),
+          ),
+          const SizedBox(height: 16),
+          Builder(
+            builder: (context) {
+              final range = lastDays(30, now);
+              final values = isTimer
+                  ? minutesPerDay(entries, range, now)
+                  : habitPerDay(entries, range);
+              return ChartCard(
+                title: isTimer ? 'Minutes per day' : 'Days done',
+                color: Aura.habit,
+                subtitle: isTimer
+                    ? '${values.fold<double>(0, (a, b) => a + b).round()} min in the last 30 days'
+                    : '${(completionRate(values) * 100).round()}% of the last 30 days',
+                child: BarChart(
+                  bars: [
+                    for (var i = 0; i < range.length; i++)
+                      ChartBar(dayLabel(range[i], 30), values[i]),
+                  ],
+                  color: Aura.habit,
+                  semanticsLabel: 'Last 30 days',
+                ),
+              );
+            },
           ),
           const SizedBox(height: 16),
           if (!isTimer) ...[

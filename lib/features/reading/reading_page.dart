@@ -38,6 +38,11 @@ class _ReadingPageState extends ConsumerState<ReadingPage> {
         title: const Text('Reading'),
         actions: [
           IconButton(
+            tooltip: 'Charts',
+            onPressed: () => context.push('/read/charts'),
+            icon: const Icon(Icons.bar_chart),
+          ),
+          IconButton(
             tooltip: 'Stats',
             onPressed: () => context.push('/read/stats'),
             icon: const Icon(Icons.insights_outlined),
