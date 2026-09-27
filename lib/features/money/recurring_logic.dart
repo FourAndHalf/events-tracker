@@ -49,3 +49,13 @@ List<DateTime> dueDates(
   }
   return out;
 }
+
+/// The first occurrence strictly after today.
+DateTime nextDue(Frequency f, DateTime start, DateTime now) {
+  final today = _dayOnly(now);
+  for (var n = 0; n < 5000; n++) {
+    final d = occurrence(f, start, n);
+    if (d.isAfter(today)) return d;
+  }
+  return today;
+}

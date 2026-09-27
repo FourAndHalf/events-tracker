@@ -121,6 +121,21 @@ void main() {
     });
   });
 
+  test('next due is the first occurrence after today', () {
+    expect(
+      nextDue(Frequency.monthly, DateTime(2026, 7, 10), DateTime(2026, 9, 27)),
+      DateTime(2026, 10, 10),
+    );
+    expect(
+      nextDue(Frequency.monthly, DateTime(2026, 7, 10), DateTime(2026, 9, 10)),
+      DateTime(2026, 10, 10),
+    );
+    expect(
+      nextDue(Frequency.weekly, DateTime(2026, 12, 1), DateTime(2026, 9, 27)),
+      DateTime(2026, 12, 1),
+    );
+  });
+
   group('generateDue', () {
     late AppDatabase db;
     late RecurringRepository repo;
