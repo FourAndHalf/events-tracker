@@ -84,6 +84,11 @@ class _MoneyPageState extends ConsumerState<MoneyPage> {
         title: const Text('Money'),
         actions: [
           IconButton(
+            tooltip: 'Recurring expenses',
+            onPressed: () => context.push('/money/recurring'),
+            icon: const Icon(Icons.repeat),
+          ),
+          IconButton(
             tooltip: 'Categories & budgets',
             onPressed: () => context.push('/money/categories'),
             icon: const Icon(Icons.category_outlined),

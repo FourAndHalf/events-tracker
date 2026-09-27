@@ -16,6 +16,7 @@ import '../../features/memories/search_page.dart';
 import '../../features/money/categories_page.dart';
 import '../../features/money/expense_form_page.dart';
 import '../../features/money/money_page.dart';
+import '../../features/money/recurring_page.dart';
 import '../../features/reading/book_form_page.dart';
 import '../../features/reading/book_page.dart';
 import '../../features/reading/reading_page.dart';
@@ -120,6 +121,22 @@ final appRouter = GoRouter(
                 GoRoute(
                   path: 'categories',
                   builder: (_, _) => const CategoriesPage(),
+                ),
+                GoRoute(
+                  path: 'recurring',
+                  builder: (_, _) => const RecurringPage(),
+                  routes: [
+                    GoRoute(
+                      path: 'add',
+                      builder: (_, _) => const RecurringFormPage(),
+                    ),
+                    GoRoute(
+                      path: 'edit/:id',
+                      builder: (_, state) => RecurringFormPage(
+                        id: int.parse(state.pathParameters['id']!),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),
