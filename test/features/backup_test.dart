@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
 import 'package:events_tracker/features/investing/investing_repository.dart';
+import 'package:events_tracker/features/memories/memories_repository.dart';
 import 'package:events_tracker/features/reading/reading_repository.dart';
 import 'package:events_tracker/features/settings/backup_codec.dart';
 import 'package:events_tracker/features/settings/backup_service.dart';
@@ -180,6 +181,58 @@ void main() {
     },
   );
 
+  test(
+    'memories (events, media, categories) survive export -> import',
+    () async {
+      final src = await _seeded();
+      final repo = MemoriesRepository(src);
+      final e = await repo.addEvent(
+        MemoryEventsCompanion.insert(
+          title: 'Mum, 60th',
+          categoryId: 1,
+          createdAt: DateTime(2026, 1, 1),
+          kind: const Value('occasion'),
+          year: const Value(1966),
+          month: const Value(2),
+          day: const Value(29),
+          remindOnDay: const Value(true),
+          remindDaysBefore: const Value('1,7'),
+        ),
+      );
+      final m = await repo.addMedia(
+        MemoryMediaCompanion.insert(
+          eventId: e,
+          path: '/m/1.jpg',
+          sizeBytes: const Value(1234),
+        ),
+      );
+      await repo.setCover(e, m);
+      final data = await BackupService(src).readAll();
+      final json = backupToJson(data);
+      final csv = backupToCsv(data);
+      await src.close();
+
+      final dst = AppDatabase(NativeDatabase.memory());
+      addTearDown(dst.close);
+      await BackupService(dst).replaceAll(backupFromJson(json));
+      final ev = await dst.select(dst.memoryEvents).getSingle();
+      expect(ev.title, 'Mum, 60th');
+      expect(ev.remindDaysBefore, '1,7');
+      expect(ev.coverMediaId, m);
+      final media = await dst.select(dst.memoryMedia).getSingle();
+      expect(media.sizeBytes, 1234);
+      expect(await dst.select(dst.memoryCategories).get(), hasLength(6));
+      expect(
+        csv.keys,
+        containsAll([
+          'memory_categories.csv',
+          'memory_events.csv',
+          'memory_media.csv',
+        ]),
+      );
+    },
+  );
+
   test('a backup made before Investing existed still imports', () async {
     const old = '''
 {"format":"events-tracker-backup","version":1,
@@ -196,6 +249,8 @@ void main() {
     addTearDown(dst.close);
     await BackupService(dst).replaceAll(data);
     expect((await dst.select(dst.settings).getSingle()).currencySymbol, '€');
+    // Memory categories fall back to the defaults so the form stays usable.
+    expect(await dst.select(dst.memoryCategories).get(), hasLength(6));
   });
 
   test('CSV export includes the investing tables', () async {

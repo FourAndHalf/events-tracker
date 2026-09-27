@@ -5,6 +5,15 @@ import 'tables.dart';
 
 part 'app_database.g.dart';
 
+const defaultMemoryCategories = [
+  'Birthday',
+  'Anniversary',
+  'Milestone',
+  'Travel',
+  'Family',
+  'Other',
+];
+
 const defaultCategories = [
   'Food',
   'Transport',
@@ -26,6 +35,9 @@ const defaultCategories = [
     Books,
     ReadingSessions,
     ReadingNotes,
+    MemoryCategories,
+    MemoryEvents,
+    MemoryMedia,
   ],
 )
 class AppDatabase extends _$AppDatabase {
@@ -33,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 3;
+  int get schemaVersion => 4;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -43,6 +55,7 @@ class AppDatabase extends _$AppDatabase {
       for (final name in defaultCategories) {
         await into(categories).insert(CategoriesCompanion.insert(name: name));
       }
+      await _seedMemoryCategories();
     },
     onUpgrade: (m, from, to) async {
       if (from < 2) {
@@ -57,6 +70,19 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(readingSessions);
         await m.createTable(readingNotes);
       }
+      if (from < 4) {
+        await m.createTable(memoryCategories);
+        await m.createTable(memoryEvents);
+        await m.createTable(memoryMedia);
+        await _seedMemoryCategories();
+      }
     },
   );
+
+  Future<void> _seedMemoryCategories() async {
+    for (final name in defaultMemoryCategories) {
+      await into(memoryCategories)
+          .insert(MemoryCategoriesCompanion.insert(name: name));
+    }
+  }
 }

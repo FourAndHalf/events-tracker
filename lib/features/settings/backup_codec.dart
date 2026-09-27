@@ -19,6 +19,9 @@ class BackupData {
     this.books = const [],
     this.readingSessions = const [],
     this.readingNotes = const [],
+    this.memoryCategories = const [],
+    this.memoryEvents = const [],
+    this.memoryMedia = const [],
   });
 
   final Setting settings;
@@ -31,6 +34,9 @@ class BackupData {
   final List<Book> books;
   final List<ReadingSession> readingSessions;
   final List<ReadingNote> readingNotes;
+  final List<MemoryCategory> memoryCategories;
+  final List<MemoryEvent> memoryEvents;
+  final List<MemoryMediaItem> memoryMedia;
 }
 
 String backupToJson(BackupData d) =>
@@ -47,6 +53,9 @@ String backupToJson(BackupData d) =>
       'books': [for (final r in d.books) r.toJson()],
       'readingSessions': [for (final r in d.readingSessions) r.toJson()],
       'readingNotes': [for (final r in d.readingNotes) r.toJson()],
+      'memoryCategories': [for (final r in d.memoryCategories) r.toJson()],
+      'memoryEvents': [for (final r in d.memoryEvents) r.toJson()],
+      'memoryMedia': [for (final r in d.memoryMedia) r.toJson()],
     });
 
 /// Parses a backup file. Throws [FormatException] if it is not a valid backup.
@@ -66,7 +75,7 @@ BackupData backupFromJson(String source) {
   }
   try {
     List<T> rows<T>(String key, T Function(Map<String, dynamic>) f) => [
-      // Older backups (before Investing or Reading) simply lack these keys.
+      // Older backups (before Investing, Reading or Memories) simply lack these keys.
       for (final r in (raw[key] as List?) ?? const [])
         f(r as Map<String, dynamic>),
     ];
@@ -85,6 +94,9 @@ BackupData backupFromJson(String source) {
       books: rows('books', Book.fromJson),
       readingSessions: rows('readingSessions', ReadingSession.fromJson),
       readingNotes: rows('readingNotes', ReadingNote.fromJson),
+      memoryCategories: rows('memoryCategories', MemoryCategory.fromJson),
+      memoryEvents: rows('memoryEvents', MemoryEvent.fromJson),
+      memoryMedia: rows('memoryMedia', MemoryMediaItem.fromJson),
     );
   } on TypeError {
     throw const FormatException('Backup file is damaged');
@@ -113,6 +125,15 @@ Map<String, String> backupToCsv(BackupData d) {
     ]),
     'reading_notes.csv': _csv([
       for (final r in d.readingNotes) r.toJson(serializer: s),
+    ]),
+    'memory_categories.csv': _csv([
+      for (final r in d.memoryCategories) r.toJson(serializer: s),
+    ]),
+    'memory_events.csv': _csv([
+      for (final r in d.memoryEvents) r.toJson(serializer: s),
+    ]),
+    'memory_media.csv': _csv([
+      for (final r in d.memoryMedia) r.toJson(serializer: s),
     ]),
   };
 }
