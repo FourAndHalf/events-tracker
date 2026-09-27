@@ -50,6 +50,7 @@ dependencies:
   video_player: ^2.14.0
   fc_native_video_thumbnail: ^3.0.1
   archive: ^4.3.0
+  home_widget: ^0.10.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
