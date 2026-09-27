@@ -83,6 +83,8 @@ BackupData backupFromJson(String source) {
       settings: Setting.fromJson({
         'weeklyReportEnabled': true,
         'weeklyReportMinutes': 1140,
+        'memoryRemindMinutes': 540,
+        'onThisDayEnabled': false,
         ...(raw['settings'] as Map<String, dynamic>),
       }),
       sleepSessions: rows('sleepSessions', SleepSession.fromJson),

@@ -45,7 +45,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 4;
+  int get schemaVersion => 5;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -75,6 +75,10 @@ class AppDatabase extends _$AppDatabase {
         await m.createTable(memoryEvents);
         await m.createTable(memoryMedia);
         await _seedMemoryCategories();
+      }
+      if (from < 5) {
+        await m.addColumn(settings, settings.memoryRemindMinutes);
+        await m.addColumn(settings, settings.onThisDayEnabled);
       }
     },
   );

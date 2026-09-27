@@ -13,6 +13,11 @@ class Settings extends Table {
   // Minutes after midnight for the Sunday report notification, e.g. 1140 = 19:00.
   IntColumn get weeklyReportMinutes =>
       integer().withDefault(const Constant(1140))();
+  // Minutes after midnight for Memories reminders, e.g. 540 = 09:00.
+  IntColumn get memoryRemindMinutes =>
+      integer().withDefault(const Constant(540))();
+  BoolColumn get onThisDayEnabled =>
+      boolean().withDefault(const Constant(false))();
 
   @override
   Set<Column> get primaryKey => {id};

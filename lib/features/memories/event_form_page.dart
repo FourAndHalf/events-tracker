@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
+import '../../core/notifications/report_notifier.dart';
 import '../../core/theme/aura_colors.dart';
 import '../../core/widgets/aura_widgets.dart';
 import 'media_storage.dart';
@@ -35,6 +36,8 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
   int? _day;
   bool _yearKnown = true; // occasions may leave the starting year out
   int? _categoryId;
+  bool _remindOnDay = false;
+  final _remindDays = <int>{};
   MemoryEvent? _existing;
   // Photos and videos picked here are copied in once the event is saved.
   final _pending = <XFile>[];
@@ -66,6 +69,8 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
     _yearKnown = e.year != null;
     _yearText.text = e.year?.toString() ?? '';
     _categoryId = e.categoryId;
+    _remindOnDay = e.remindOnDay;
+    _remindDays.addAll(parseRemindDays(e.remindDaysBefore));
     _loaded = true;
   }
 
@@ -154,6 +159,14 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
       return _toast('Pick the date');
     }
 
+    // Reminders need a full date to count from.
+    final remind = precision == DatePrecision.day && _remindOnDay;
+    final remindDays = precision == DatePrecision.day
+        ? joinRemindDays(_remindDays)
+        : '';
+    if (remind || remindDays.isNotEmpty) {
+      await ref.read(reportNotifierProvider).requestPermission();
+    }
     final repo = ref.read(memoriesRepositoryProvider);
     final existing = _existing;
     int eventId;
@@ -171,6 +184,8 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
           person: Value(_clean(_person)),
           place: Value(_clean(_place)),
           description: Value(_clean(_description)),
+          remindOnDay: Value(remind),
+          remindDaysBefore: Value(remindDays),
         ),
       );
     } else {
@@ -187,6 +202,8 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
           person: Value(_clean(_person)),
           place: Value(_clean(_place)),
           description: Value(_clean(_description)),
+          remindOnDay: remind,
+          remindDaysBefore: remindDays,
         ),
       );
     }
@@ -359,6 +376,29 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
               labelText: 'Description (optional)',
             ),
           ),
+          if (precision == DatePrecision.day) ...[
+            const SizedBox(height: 16),
+            const Overline('Reminders'),
+            SwitchListTile(
+              contentPadding: EdgeInsets.zero,
+              title: const Text('On the day'),
+              value: _remindOnDay,
+              onChanged: (v) => setState(() => _remindOnDay = v),
+            ),
+            Wrap(
+              spacing: 8,
+              children: [
+                for (final k in const [1, 3, 7])
+                  FilterChip(
+                    label: Text(k == 1 ? '1 day before' : '$k days before'),
+                    selected: _remindDays.contains(k),
+                    onSelected: (v) => setState(
+                      () => v ? _remindDays.add(k) : _remindDays.remove(k),
+                    ),
+                  ),
+              ],
+            ),
+          ],
           const SizedBox(height: 16),
           const Overline('Photos and videos'),
           const SizedBox(height: 8),

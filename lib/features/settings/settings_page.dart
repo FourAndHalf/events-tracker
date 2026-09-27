@@ -185,22 +185,72 @@ class SettingsPage extends ConsumerWidget {
                 const Overline('Memories'),
                 const SizedBox(height: 8),
                 AuraCard(
-                  child: Row(
+                  child: Column(
                     children: [
-                      Expanded(
-                        child: Text(
-                          'Photos and videos stored',
-                          style: Theme.of(context).textTheme.bodyLarge,
-                        ),
-                      ),
-                      Text(
-                        formatBytes(
-                          totalMediaBytes(
-                            ref.watch(memoryMediaProvider).value ?? const [],
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              'Photos and videos stored',
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
                           ),
+                          Text(
+                            formatBytes(
+                              totalMediaBytes(
+                                ref.watch(memoryMediaProvider).value ??
+                                    const [],
+                              ),
+                            ),
+                            style: Theme.of(context).textTheme.labelLarge
+                                ?.copyWith(color: Aura.memory),
+                          ),
+                        ],
+                      ),
+                      const Divider(color: Aura.rim),
+                      _Row(
+                        label: 'Reminder time',
+                        value: TimeOfDay(
+                          hour: s.memoryRemindMinutes ~/ 60,
+                          minute: s.memoryRemindMinutes % 60,
+                        ).format(context),
+                        onTap: () async {
+                          final t = await showTimePicker(
+                            context: context,
+                            initialTime: TimeOfDay(
+                              hour: s.memoryRemindMinutes ~/ 60,
+                              minute: s.memoryRemindMinutes % 60,
+                            ),
+                          );
+                          if (t == null) return;
+                          await updateSettings(
+                            db,
+                            SettingsCompanion(
+                              memoryRemindMinutes: Value(
+                                t.hour * 60 + t.minute,
+                              ),
+                            ),
+                          );
+                        },
+                      ),
+                      SwitchListTile(
+                        contentPadding: EdgeInsets.zero,
+                        title: const Text('"On this day" notification'),
+                        subtitle: const Text(
+                          'A morning nudge when an old memory matches today',
                         ),
-                        style: Theme.of(context).textTheme.labelLarge
-                            ?.copyWith(color: Aura.memory),
+                        value: s.onThisDayEnabled,
+                        onChanged: (v) async {
+                          if (v) {
+                            await ref
+                                .read(reportNotifierProvider)
+                                .requestPermission();
+                          }
+                          await updateSettings(
+                            db,
+                            SettingsCompanion(onThisDayEnabled: Value(v)),
+                          );
+                        },
                       ),
                     ],
                   ),

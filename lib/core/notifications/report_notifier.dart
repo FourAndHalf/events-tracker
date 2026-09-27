@@ -15,6 +15,19 @@ abstract class ReportNotifier {
   Future<void> schedule(DateTime when, String title, String body);
   Future<void> cancel();
 
+  /// Schedules one notification with its own [id] (1 is the weekly report).
+  /// Tapping it opens [route].
+  Future<void> scheduleAt({
+    required int id,
+    required DateTime when,
+    required String title,
+    required String body,
+    required String route,
+  });
+
+  /// Cancels every pending notification whose id is in [from, to).
+  Future<void> cancelRange(int from, int to);
+
   /// Asks for the Android 13+ notification permission. True if granted.
   Future<bool> requestPermission();
 }
@@ -79,6 +92,50 @@ class LocalReportNotifier implements ReportNotifier {
       );
     } catch (e) {
       debugPrint('Could not schedule report: $e');
+    }
+  }
+
+  @override
+  Future<void> scheduleAt({
+    required int id,
+    required DateTime when,
+    required String title,
+    required String body,
+    required String route,
+  }) async {
+    if (!_ready) return;
+    try {
+      await _plugin.zonedSchedule(
+        id: id,
+        title: title,
+        body: body,
+        scheduledDate: tz.TZDateTime.from(when, tz.local),
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'memories',
+            'Memories and important dates',
+            channelDescription:
+                'Reminders for birthdays, anniversaries and memories',
+            importance: Importance.defaultImportance,
+          ),
+        ),
+        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
+        payload: route,
+      );
+    } catch (e) {
+      debugPrint('Could not schedule reminder $id: $e');
+    }
+  }
+
+  @override
+  Future<void> cancelRange(int from, int to) async {
+    if (!_ready) return;
+    try {
+      for (final n in await _plugin.pendingNotificationRequests()) {
+        if (n.id >= from && n.id < to) await _plugin.cancel(id: n.id);
+      }
+    } catch (e) {
+      debugPrint('Could not cancel reminders: $e');
     }
   }
 

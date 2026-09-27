@@ -77,6 +77,32 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1140),
   );
+  static const VerificationMeta _memoryRemindMinutesMeta =
+      const VerificationMeta('memoryRemindMinutes');
+  @override
+  late final GeneratedColumn<int> memoryRemindMinutes = GeneratedColumn<int>(
+    'memory_remind_minutes',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(540),
+  );
+  static const VerificationMeta _onThisDayEnabledMeta = const VerificationMeta(
+    'onThisDayEnabled',
+  );
+  @override
+  late final GeneratedColumn<bool> onThisDayEnabled = GeneratedColumn<bool>(
+    'on_this_day_enabled',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("on_this_day_enabled" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -85,6 +111,8 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     targetBedtimeMinutes,
     weeklyReportEnabled,
     weeklyReportMinutes,
+    memoryRemindMinutes,
+    onThisDayEnabled,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -146,6 +174,24 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         ),
       );
     }
+    if (data.containsKey('memory_remind_minutes')) {
+      context.handle(
+        _memoryRemindMinutesMeta,
+        memoryRemindMinutes.isAcceptableOrUnknown(
+          data['memory_remind_minutes']!,
+          _memoryRemindMinutesMeta,
+        ),
+      );
+    }
+    if (data.containsKey('on_this_day_enabled')) {
+      context.handle(
+        _onThisDayEnabledMeta,
+        onThisDayEnabled.isAcceptableOrUnknown(
+          data['on_this_day_enabled']!,
+          _onThisDayEnabledMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -179,6 +225,14 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         DriftSqlType.int,
         data['${effectivePrefix}weekly_report_minutes'],
       )!,
+      memoryRemindMinutes: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}memory_remind_minutes'],
+      )!,
+      onThisDayEnabled: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}on_this_day_enabled'],
+      )!,
     );
   }
 
@@ -195,6 +249,8 @@ class Setting extends DataClass implements Insertable<Setting> {
   final int targetBedtimeMinutes;
   final bool weeklyReportEnabled;
   final int weeklyReportMinutes;
+  final int memoryRemindMinutes;
+  final bool onThisDayEnabled;
   const Setting({
     required this.id,
     required this.currencySymbol,
@@ -202,6 +258,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     required this.targetBedtimeMinutes,
     required this.weeklyReportEnabled,
     required this.weeklyReportMinutes,
+    required this.memoryRemindMinutes,
+    required this.onThisDayEnabled,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -212,6 +270,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     map['target_bedtime_minutes'] = Variable<int>(targetBedtimeMinutes);
     map['weekly_report_enabled'] = Variable<bool>(weeklyReportEnabled);
     map['weekly_report_minutes'] = Variable<int>(weeklyReportMinutes);
+    map['memory_remind_minutes'] = Variable<int>(memoryRemindMinutes);
+    map['on_this_day_enabled'] = Variable<bool>(onThisDayEnabled);
     return map;
   }
 
@@ -223,6 +283,8 @@ class Setting extends DataClass implements Insertable<Setting> {
       targetBedtimeMinutes: Value(targetBedtimeMinutes),
       weeklyReportEnabled: Value(weeklyReportEnabled),
       weeklyReportMinutes: Value(weeklyReportMinutes),
+      memoryRemindMinutes: Value(memoryRemindMinutes),
+      onThisDayEnabled: Value(onThisDayEnabled),
     );
   }
 
@@ -244,6 +306,10 @@ class Setting extends DataClass implements Insertable<Setting> {
       weeklyReportMinutes: serializer.fromJson<int>(
         json['weeklyReportMinutes'],
       ),
+      memoryRemindMinutes: serializer.fromJson<int>(
+        json['memoryRemindMinutes'],
+      ),
+      onThisDayEnabled: serializer.fromJson<bool>(json['onThisDayEnabled']),
     );
   }
   @override
@@ -256,6 +322,8 @@ class Setting extends DataClass implements Insertable<Setting> {
       'targetBedtimeMinutes': serializer.toJson<int>(targetBedtimeMinutes),
       'weeklyReportEnabled': serializer.toJson<bool>(weeklyReportEnabled),
       'weeklyReportMinutes': serializer.toJson<int>(weeklyReportMinutes),
+      'memoryRemindMinutes': serializer.toJson<int>(memoryRemindMinutes),
+      'onThisDayEnabled': serializer.toJson<bool>(onThisDayEnabled),
     };
   }
 
@@ -266,6 +334,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     int? targetBedtimeMinutes,
     bool? weeklyReportEnabled,
     int? weeklyReportMinutes,
+    int? memoryRemindMinutes,
+    bool? onThisDayEnabled,
   }) => Setting(
     id: id ?? this.id,
     currencySymbol: currencySymbol ?? this.currencySymbol,
@@ -273,6 +343,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     targetBedtimeMinutes: targetBedtimeMinutes ?? this.targetBedtimeMinutes,
     weeklyReportEnabled: weeklyReportEnabled ?? this.weeklyReportEnabled,
     weeklyReportMinutes: weeklyReportMinutes ?? this.weeklyReportMinutes,
+    memoryRemindMinutes: memoryRemindMinutes ?? this.memoryRemindMinutes,
+    onThisDayEnabled: onThisDayEnabled ?? this.onThisDayEnabled,
   );
   Setting copyWithCompanion(SettingsCompanion data) {
     return Setting(
@@ -292,6 +364,12 @@ class Setting extends DataClass implements Insertable<Setting> {
       weeklyReportMinutes: data.weeklyReportMinutes.present
           ? data.weeklyReportMinutes.value
           : this.weeklyReportMinutes,
+      memoryRemindMinutes: data.memoryRemindMinutes.present
+          ? data.memoryRemindMinutes.value
+          : this.memoryRemindMinutes,
+      onThisDayEnabled: data.onThisDayEnabled.present
+          ? data.onThisDayEnabled.value
+          : this.onThisDayEnabled,
     );
   }
 
@@ -303,7 +381,9 @@ class Setting extends DataClass implements Insertable<Setting> {
           ..write('sleepGoalMinutes: $sleepGoalMinutes, ')
           ..write('targetBedtimeMinutes: $targetBedtimeMinutes, ')
           ..write('weeklyReportEnabled: $weeklyReportEnabled, ')
-          ..write('weeklyReportMinutes: $weeklyReportMinutes')
+          ..write('weeklyReportMinutes: $weeklyReportMinutes, ')
+          ..write('memoryRemindMinutes: $memoryRemindMinutes, ')
+          ..write('onThisDayEnabled: $onThisDayEnabled')
           ..write(')'))
         .toString();
   }
@@ -316,6 +396,8 @@ class Setting extends DataClass implements Insertable<Setting> {
     targetBedtimeMinutes,
     weeklyReportEnabled,
     weeklyReportMinutes,
+    memoryRemindMinutes,
+    onThisDayEnabled,
   );
   @override
   bool operator ==(Object other) =>
@@ -326,7 +408,9 @@ class Setting extends DataClass implements Insertable<Setting> {
           other.sleepGoalMinutes == this.sleepGoalMinutes &&
           other.targetBedtimeMinutes == this.targetBedtimeMinutes &&
           other.weeklyReportEnabled == this.weeklyReportEnabled &&
-          other.weeklyReportMinutes == this.weeklyReportMinutes);
+          other.weeklyReportMinutes == this.weeklyReportMinutes &&
+          other.memoryRemindMinutes == this.memoryRemindMinutes &&
+          other.onThisDayEnabled == this.onThisDayEnabled);
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
@@ -336,6 +420,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<int> targetBedtimeMinutes;
   final Value<bool> weeklyReportEnabled;
   final Value<int> weeklyReportMinutes;
+  final Value<int> memoryRemindMinutes;
+  final Value<bool> onThisDayEnabled;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.currencySymbol = const Value.absent(),
@@ -343,6 +429,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     this.targetBedtimeMinutes = const Value.absent(),
     this.weeklyReportEnabled = const Value.absent(),
     this.weeklyReportMinutes = const Value.absent(),
+    this.memoryRemindMinutes = const Value.absent(),
+    this.onThisDayEnabled = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -351,6 +439,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     this.targetBedtimeMinutes = const Value.absent(),
     this.weeklyReportEnabled = const Value.absent(),
     this.weeklyReportMinutes = const Value.absent(),
+    this.memoryRemindMinutes = const Value.absent(),
+    this.onThisDayEnabled = const Value.absent(),
   });
   static Insertable<Setting> custom({
     Expression<int>? id,
@@ -359,6 +449,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Expression<int>? targetBedtimeMinutes,
     Expression<bool>? weeklyReportEnabled,
     Expression<int>? weeklyReportMinutes,
+    Expression<int>? memoryRemindMinutes,
+    Expression<bool>? onThisDayEnabled,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -370,6 +462,9 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
         'weekly_report_enabled': weeklyReportEnabled,
       if (weeklyReportMinutes != null)
         'weekly_report_minutes': weeklyReportMinutes,
+      if (memoryRemindMinutes != null)
+        'memory_remind_minutes': memoryRemindMinutes,
+      if (onThisDayEnabled != null) 'on_this_day_enabled': onThisDayEnabled,
     });
   }
 
@@ -380,6 +475,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Value<int>? targetBedtimeMinutes,
     Value<bool>? weeklyReportEnabled,
     Value<int>? weeklyReportMinutes,
+    Value<int>? memoryRemindMinutes,
+    Value<bool>? onThisDayEnabled,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -388,6 +485,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
       targetBedtimeMinutes: targetBedtimeMinutes ?? this.targetBedtimeMinutes,
       weeklyReportEnabled: weeklyReportEnabled ?? this.weeklyReportEnabled,
       weeklyReportMinutes: weeklyReportMinutes ?? this.weeklyReportMinutes,
+      memoryRemindMinutes: memoryRemindMinutes ?? this.memoryRemindMinutes,
+      onThisDayEnabled: onThisDayEnabled ?? this.onThisDayEnabled,
     );
   }
 
@@ -412,6 +511,12 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     if (weeklyReportMinutes.present) {
       map['weekly_report_minutes'] = Variable<int>(weeklyReportMinutes.value);
     }
+    if (memoryRemindMinutes.present) {
+      map['memory_remind_minutes'] = Variable<int>(memoryRemindMinutes.value);
+    }
+    if (onThisDayEnabled.present) {
+      map['on_this_day_enabled'] = Variable<bool>(onThisDayEnabled.value);
+    }
     return map;
   }
 
@@ -423,7 +528,9 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           ..write('sleepGoalMinutes: $sleepGoalMinutes, ')
           ..write('targetBedtimeMinutes: $targetBedtimeMinutes, ')
           ..write('weeklyReportEnabled: $weeklyReportEnabled, ')
-          ..write('weeklyReportMinutes: $weeklyReportMinutes')
+          ..write('weeklyReportMinutes: $weeklyReportMinutes, ')
+          ..write('memoryRemindMinutes: $memoryRemindMinutes, ')
+          ..write('onThisDayEnabled: $onThisDayEnabled')
           ..write(')'))
         .toString();
   }
@@ -5768,6 +5875,8 @@ typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   Value<int> targetBedtimeMinutes,
   Value<bool> weeklyReportEnabled,
   Value<int> weeklyReportMinutes,
+  Value<int> memoryRemindMinutes,
+  Value<bool> onThisDayEnabled,
 });
 typedef $$SettingsTableUpdateCompanionBuilder = SettingsCompanion Function({
   Value<int> id,
@@ -5776,6 +5885,8 @@ typedef $$SettingsTableUpdateCompanionBuilder = SettingsCompanion Function({
   Value<int> targetBedtimeMinutes,
   Value<bool> weeklyReportEnabled,
   Value<int> weeklyReportMinutes,
+  Value<int> memoryRemindMinutes,
+  Value<bool> onThisDayEnabled,
 });
 
 class $$SettingsTableFilterComposer
@@ -5814,6 +5925,16 @@ class $$SettingsTableFilterComposer
 
   ColumnFilters<int> get weeklyReportMinutes => $composableBuilder(
     column: $table.weeklyReportMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get memoryRemindMinutes => $composableBuilder(
+    column: $table.memoryRemindMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get onThisDayEnabled => $composableBuilder(
+    column: $table.onThisDayEnabled,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -5856,6 +5977,16 @@ class $$SettingsTableOrderingComposer
     column: $table.weeklyReportMinutes,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get memoryRemindMinutes => $composableBuilder(
+    column: $table.memoryRemindMinutes,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<bool> get onThisDayEnabled => $composableBuilder(
+    column: $table.onThisDayEnabled,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SettingsTableAnnotationComposer
@@ -5894,6 +6025,16 @@ class $$SettingsTableAnnotationComposer
     column: $table.weeklyReportMinutes,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get memoryRemindMinutes => $composableBuilder(
+    column: $table.memoryRemindMinutes,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<bool> get onThisDayEnabled => $composableBuilder(
+    column: $table.onThisDayEnabled,
+    builder: (column) => column,
+  );
 }
 
 class $$SettingsTableTableManager
@@ -5930,6 +6071,8 @@ class $$SettingsTableTableManager
                 Value<int> targetBedtimeMinutes = const Value.absent(),
                 Value<bool> weeklyReportEnabled = const Value.absent(),
                 Value<int> weeklyReportMinutes = const Value.absent(),
+                Value<int> memoryRemindMinutes = const Value.absent(),
+                Value<bool> onThisDayEnabled = const Value.absent(),
               }) => SettingsCompanion(
                 id: id,
                 currencySymbol: currencySymbol,
@@ -5937,6 +6080,8 @@ class $$SettingsTableTableManager
                 targetBedtimeMinutes: targetBedtimeMinutes,
                 weeklyReportEnabled: weeklyReportEnabled,
                 weeklyReportMinutes: weeklyReportMinutes,
+                memoryRemindMinutes: memoryRemindMinutes,
+                onThisDayEnabled: onThisDayEnabled,
               ),
           createCompanionCallback:
               ({
@@ -5946,6 +6091,8 @@ class $$SettingsTableTableManager
                 Value<int> targetBedtimeMinutes = const Value.absent(),
                 Value<bool> weeklyReportEnabled = const Value.absent(),
                 Value<int> weeklyReportMinutes = const Value.absent(),
+                Value<int> memoryRemindMinutes = const Value.absent(),
+                Value<bool> onThisDayEnabled = const Value.absent(),
               }) => SettingsCompanion.insert(
                 id: id,
                 currencySymbol: currencySymbol,
@@ -5953,6 +6100,8 @@ class $$SettingsTableTableManager
                 targetBedtimeMinutes: targetBedtimeMinutes,
                 weeklyReportEnabled: weeklyReportEnabled,
                 weeklyReportMinutes: weeklyReportMinutes,
+                memoryRemindMinutes: memoryRemindMinutes,
+                onThisDayEnabled: onThisDayEnabled,
               ),
           withReferenceMapper: (p0) => p0
               .map(
