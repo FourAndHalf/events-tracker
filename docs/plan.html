@@ -155,6 +155,7 @@ const PLAN = [
       ["money-add", "Add expense: amount, category, date, payment method, note"],
       ["money-purchase", "Optional purchase details: item, store, warranty or return-by date"],
       ["money-photo", "Receipt photo from camera or gallery"],
+      ["money-photo-gphotos", "Receipt photo: also allow picking from Google Photos alongside camera and gallery"],
       ["money-cats", "Manage categories"],
       ["money-budget", "Monthly budget per category"],
       ["money-warn", "Budget warnings at 80% and 100%"],
@@ -279,6 +280,7 @@ const PLAN = [
     { name: "Photos & videos", items: [
       ["mem-media-pick", "Add several photos and videos at once from the gallery"],
       ["mem-media-camera", "Take a photo or record a video straight from the camera"],
+      ["mem-media-gphotos", "Attach a photo from Google Photos, alongside camera and gallery upload"],
       ["mem-media-thumb", "Video thumbnails with a duration badge in grids"],
       ["mem-media-size", "Warning before adding very large videos; total media storage shown in Settings"],
       ["mem-media-cover", "Cover photo per event (first photo by default)"],
@@ -310,7 +312,7 @@ const DONE = new Set([
   "sleep-buttons", "sleep-quality", "sleep-edit", "sleep-goal", "sleep-hitmiss", "sleep-history", "sleep-dash",
   "p1-test-sleep",
   "core-dash", "core-settings", "core-export", "core-import",
-  "money-add", "money-purchase", "money-cats", "money-budget", "money-warn", "money-list", "money-dash", "money-photo",
+  "money-add", "money-purchase", "money-cats", "money-budget", "money-warn", "money-list", "money-dash", "money-photo", "money-photo-gphotos",
   "p1-test-budget",
   "inv-db", "inv-fifo", "inv-realized", "inv-holding", "inv-unrealized", "inv-guard",
   "inv-test-fifo", "inv-test-pl", "inv-test-guard",
@@ -323,7 +325,7 @@ const DONE = new Set([
   "chart-sleep", "chart-read", "chart-money", "chart-custom", "chart-invest",
   "remind-bed", "remind-expense", "remind-custom", "remind-settings",
   "custom-create", "custom-habit", "custom-streak", "custom-duration", "custom-dash", "money-recurring", "p2-test-streak", "p2-test-recurring",
-  "mem-onthisday", "mem-dash", "mem-backup-zip", "mem-test-backup", "mem-page-form", "mem-remind", "mem-remind-onthisday", "mem-remind-resched", "mem-page-calendar", "mem-page-search", "mem-storage", "mem-media-pick", "mem-media-camera", "mem-media-thumb", "mem-media-size", "mem-media-cover", "mem-page-viewer", "mem-page-detail", "mem-page-home",
+  "mem-onthisday", "mem-dash", "mem-backup-zip", "mem-test-backup", "mem-page-form", "mem-remind", "mem-remind-onthisday", "mem-remind-resched", "mem-page-calendar", "mem-page-search", "mem-storage", "mem-media-pick", "mem-media-camera", "mem-media-gphotos", "mem-media-thumb", "mem-media-size", "mem-media-cover", "mem-page-viewer", "mem-page-detail", "mem-page-home",
   "mem-db", "mem-kinds", "mem-approx", "mem-next", "mem-count", "mem-cats", "mem-backup-json", "mem-test-next", "mem-test-count", "mem-test-onthisday",
 ]);
 
