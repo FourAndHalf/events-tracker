@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 import '../../core/db/app_database.dart';
+import '../../core/media/image_compress.dart';
 import '../../core/theme/aura_colors.dart';
 import 'media_logic.dart';
 
@@ -175,10 +178,19 @@ class MediaPickButtons extends StatelessWidget {
           label: const Text('Google Photos'),
           onPressed: () async {
             final picked = await FilePicker.pickFiles(type: FileType.image);
-            final files = [
-              for (final f in picked)
-                if (f.path != null) XFile(f.path!),
-            ];
+            if (picked.isEmpty) return;
+            final tempDir = await getTemporaryDirectory();
+            final files = <XFile>[];
+            for (final f in picked) {
+              final path = f.path;
+              if (path == null) continue;
+              final dest = p.join(
+                tempDir.path,
+                '${DateTime.now().microsecondsSinceEpoch}_${files.length}.jpg',
+              );
+              await compressImageTo(path, dest);
+              files.add(XFile(dest));
+            }
             if (context.mounted) await _deliver(context, files);
           },
         ),
