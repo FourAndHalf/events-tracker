@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -167,6 +168,18 @@ class MediaPickButtons extends StatelessWidget {
           onPressed: () async {
             final f = await picker.pickVideo(source: ImageSource.camera);
             if (context.mounted && f != null) await _deliver(context, [f]);
+          },
+        ),
+        ActionChip(
+          avatar: const Icon(Icons.cloud_outlined, size: 18),
+          label: const Text('Google Photos'),
+          onPressed: () async {
+            final picked = await FilePicker.pickFiles(type: FileType.image);
+            final files = [
+              for (final f in picked)
+                if (f.path != null) XFile(f.path!),
+            ];
+            if (context.mounted) await _deliver(context, files);
           },
         ),
       ],

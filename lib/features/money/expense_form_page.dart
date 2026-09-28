@@ -94,6 +94,11 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     if (path != null && mounted) setState(() => _receipt = path);
   }
 
+  Future<void> _addReceiptFromFiles() async {
+    final path = await pickReceiptFromFiles();
+    if (path != null && mounted) setState(() => _receipt = path);
+  }
+
   Future<void> _save() async {
     final cents = parseCents(_amount.text);
     if (cents == null) {
@@ -320,25 +325,39 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
                           ],
                         )
                       else
-                        Row(
-                          spacing: 8,
+                        Column(
                           children: [
-                            Expanded(
-                              child: PillButton(
-                                ghost: true,
-                                icon: Icons.photo_camera_outlined,
-                                label: 'Camera',
-                                onPressed: () =>
-                                    _addReceipt(ImageSource.camera),
-                              ),
+                            Row(
+                              spacing: 8,
+                              children: [
+                                Expanded(
+                                  child: PillButton(
+                                    ghost: true,
+                                    icon: Icons.photo_camera_outlined,
+                                    label: 'Camera',
+                                    onPressed: () =>
+                                        _addReceipt(ImageSource.camera),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: PillButton(
+                                    ghost: true,
+                                    icon: Icons.photo_library_outlined,
+                                    label: 'Gallery',
+                                    onPressed: () =>
+                                        _addReceipt(ImageSource.gallery),
+                                  ),
+                                ),
+                              ],
                             ),
-                            Expanded(
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
                               child: PillButton(
                                 ghost: true,
-                                icon: Icons.photo_library_outlined,
-                                label: 'Gallery',
-                                onPressed: () =>
-                                    _addReceipt(ImageSource.gallery),
+                                icon: Icons.cloud_outlined,
+                                label: 'Google Photos',
+                                onPressed: _addReceiptFromFiles,
                               ),
                             ),
                           ],
