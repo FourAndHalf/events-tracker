@@ -31,7 +31,7 @@ class _WeeklyPageState extends ConsumerState<WeeklyPage> {
     final snaps =
         ref.watch(snapshotsProvider).value ?? const <WeeklySnapshot>[];
     final live = ref.watch(portfolioProvider).valueCents;
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final today = DateTime.now();
     final text = Theme.of(context).textTheme;
     final weeks = reportWeeks(trades, snaps, today);

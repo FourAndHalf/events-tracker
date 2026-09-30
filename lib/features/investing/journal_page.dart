@@ -68,7 +68,7 @@ class _JournalPageState extends ConsumerState<JournalPage> {
     final trades = ref.watch(tradesProvider).value ?? const <Trade>[];
     final stocks = ref.watch(stocksProvider).value ?? const <Stock>[];
     final portfolio = ref.watch(portfolioProvider);
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final symbolOf = {for (final s in stocks) s.id: s.symbol};
 

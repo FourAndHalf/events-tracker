@@ -17,7 +17,7 @@ class PortfolioPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final p = ref.watch(portfolioProvider);
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final closed = p.holdings.where(
       (h) => !h.position.isOpen && h.fifo.matches.isNotEmpty,

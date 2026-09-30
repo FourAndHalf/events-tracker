@@ -1,3 +1,5 @@
+import '../../core/db/app_database.dart';
+
 /// Time asleep. Works across midnight because it uses full DateTimes.
 Duration sleepDuration(DateTime sleepAt, DateTime wakeAt) =>
     wakeAt.difference(sleepAt);
@@ -29,3 +31,22 @@ String formatDuration(Duration d) {
   final m = d.inMinutes % 60;
   return '${h}h ${m.toString().padLeft(2, '0')}m';
 }
+
+/// Total time asleep across sessions that ended (woke) today.
+Duration sleepToday(Iterable<SleepSession> sessions, DateTime now) {
+  var total = Duration.zero;
+  for (final s in sessions) {
+    final wakeAt = s.wakeAt;
+    if (wakeAt != null &&
+        wakeAt.year == now.year &&
+        wakeAt.month == now.month &&
+        wakeAt.day == now.day) {
+      total += sleepDuration(s.sleepAt, wakeAt);
+    }
+  }
+  return total;
+}
+
+/// Percent of [goalMinutes] that [total] reaches, clamped to 0-100.
+int sleepGoalPercent(Duration total, int goalMinutes) =>
+    goalMinutes <= 0 ? 0 : (total.inMinutes * 100 / goalMinutes).round().clamp(0, 100);

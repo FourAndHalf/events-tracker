@@ -51,7 +51,7 @@ class CategoriesPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final cats = ref.watch(categoriesProvider).value ?? const <Category>[];
     final expenses = ref.watch(expensesProvider).value ?? const <Expense>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final repo = ref.read(moneyRepositoryProvider);
     final spent = spendByCategory(expenses, DateTime.now());
     final text = Theme.of(context).textTheme;

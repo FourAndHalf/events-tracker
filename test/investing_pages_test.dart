@@ -55,9 +55,9 @@ void main() {
     await tester.pump(const Duration(milliseconds: 300));
 
     expect(find.text('AAPL'), findsOneWidget);
-    expect(find.text(r'$120.00'), findsWidgets); // value 10 x 12.00
-    expect(find.text(r'$100.00'), findsOneWidget); // invested
-    expect(find.text(r'+$20.00'), findsOneWidget); // unrealized
+    expect(find.text('₹120.00'), findsWidgets); // value 10 x 12.00
+    expect(find.text('₹100.00'), findsOneWidget); // invested
+    expect(find.text('+₹20.00'), findsOneWidget); // unrealized
     await _teardown(tester, db);
   });
 
@@ -83,7 +83,7 @@ void main() {
       );
       await tester.pump();
       expect(find.text('THIS SALE'), findsOneWidget);
-      expect(find.text(r'+$20.00'), findsOneWidget); // 4 x (15 - 10)
+      expect(find.text('+₹20.00'), findsOneWidget); // 4 x (15 - 10)
       expect(find.text('Held 30 days'), findsOneWidget);
       expect(find.text('Short-term'), findsOneWidget);
 

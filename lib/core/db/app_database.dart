@@ -48,7 +48,7 @@ class AppDatabase extends _$AppDatabase {
     : super(executor ?? driftDatabase(name: 'tracker'));
 
   @override
-  int get schemaVersion => 7;
+  int get schemaVersion => 8;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -95,6 +95,9 @@ class AppDatabase extends _$AppDatabase {
         await m.addColumn(settings, settings.expenseReminderMinutes);
         // Older upgrades just created the trackers table with this column.
         if (from >= 6) await m.addColumn(trackers, trackers.reminderMinutes);
+      }
+      if (from < 8) {
+        await m.addColumn(settings, settings.dailyPageGoal);
       }
     },
   );

@@ -119,7 +119,7 @@ void main() {
     await _settle(tester);
     expect(find.text('Money charts'), findsOneWidget);
     expect(find.textContaining('Food'), findsWidgets);
-    expect(find.textContaining(r'$120.00 of $500.00'), findsOneWidget);
+    expect(find.textContaining('₹120.00 of ₹500.00'), findsOneWidget);
 
     appRouter.go('/invest/charts');
     await tester.pump(const Duration(milliseconds: 300));

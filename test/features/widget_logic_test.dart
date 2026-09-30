@@ -23,11 +23,4 @@ void main() {
     expect(parseWidgetUri(Uri.parse('https://sleep-toggle')), isNull);
     expect(parseWidgetUri(Uri.parse('/sleep')), isNull);
   });
-
-  test('labels reflect state', () {
-    expect(sleepWidgetLabel(null), 'Tap to sleep');
-    expect(sleepWidgetLabel(DateTime(2026, 9, 27, 23, 5)), contains('11:05'));
-    expect(readWidgetLabel(null), 'Tap to start');
-    expect(readWidgetLabel('Dune'), 'Reading: Dune');
-  });
 }

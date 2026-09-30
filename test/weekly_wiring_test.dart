@@ -123,8 +123,8 @@ void main() {
       expect(at.isAfter(DateTime.now()), isTrue);
       expect(title, 'Your investing week');
       expect(body, contains('1 trade ')); // only the sale is in this week
-      expect(body, contains(r'Realized +$20.00')); // 4 x (15.00 - 10.00)
-      expect(body, contains(r'Portfolio $72.00'));
+      expect(body, contains('Realized +₹20.00')); // 4 x (15.00 - 10.00)
+      expect(body, contains('Portfolio ₹72.00'));
       await _teardown(tester, db);
     },
   );
@@ -142,13 +142,13 @@ void main() {
         scrollable: find.byType(Scrollable).first,
       );
       expect(find.text('INVESTING'), findsOneWidget);
-      expect(find.text(r'$72.00'), findsWidgets);
+      expect(find.text('₹72.00'), findsWidgets);
       expect(
-        find.textContaining(r'+$20.00', findRichText: true),
+        find.textContaining('+₹20.00', findRichText: true),
         findsWidgets,
       ); // this week's realized
       expect(
-        find.textContaining(r'+$12.00', findRichText: true),
+        find.textContaining('+₹12.00', findRichText: true),
         findsWidgets,
       ); // unrealized
 

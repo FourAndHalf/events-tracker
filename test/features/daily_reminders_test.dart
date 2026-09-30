@@ -21,6 +21,7 @@ Setting settings({
   bedtimeReminderLeadMinutes: lead,
   expenseReminderEnabled: exp,
   expenseReminderMinutes: expAt,
+  dailyPageGoal: 25,
 );
 
 Tracker tracker(

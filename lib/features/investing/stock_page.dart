@@ -23,7 +23,7 @@ class StockPage extends ConsumerWidget {
     final trades = (ref.watch(tradesProvider).value ?? const <Trade>[])
         .where((t) => t.stockId == stockId)
         .toList();
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final date = DateFormat('d MMM y');
 

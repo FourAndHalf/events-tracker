@@ -24,6 +24,16 @@ void main() {
     expect(currentPage(s), 30);
     expect(currentPage(const []), isNull);
   });
+
+  group('pageGoalPercent', () {
+    test('percent of goal, clamped to 100', () {
+      expect(pageGoalPercent(18, 25), 72);
+      expect(pageGoalPercent(30, 25), 100);
+    });
+    test('zero goal is zero percent', () {
+      expect(pageGoalPercent(18, 0), 0);
+    });
+  });
 }
 
 void _statsTests() {
