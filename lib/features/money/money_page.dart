@@ -62,7 +62,7 @@ class _MoneyPageState extends ConsumerState<MoneyPage> {
   Widget build(BuildContext context) {
     final all = ref.watch(expensesProvider).value ?? const <Expense>[];
     final cats = ref.watch(categoriesProvider).value ?? const <Category>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final catName = {for (final c in cats) c.id: c.name};
 

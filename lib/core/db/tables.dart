@@ -2,7 +2,7 @@ import 'package:drift/drift.dart';
 
 class Settings extends Table {
   IntColumn get id => integer()();
-  TextColumn get currencySymbol => text().withDefault(const Constant('\$'))();
+  TextColumn get currencySymbol => text().withDefault(const Constant('₹'))();
   IntColumn get sleepGoalMinutes =>
       integer().withDefault(const Constant(480))();
   // Minutes after midnight, e.g. 1380 = 23:00.
@@ -28,6 +28,7 @@ class Settings extends Table {
       boolean().withDefault(const Constant(false))();
   IntColumn get expenseReminderMinutes =>
       integer().withDefault(const Constant(1260))();
+  IntColumn get dailyPageGoal => integer().withDefault(const Constant(25))();
 
   @override
   Set<Column> get primaryKey => {id};

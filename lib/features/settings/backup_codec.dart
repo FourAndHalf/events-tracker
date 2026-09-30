@@ -98,6 +98,7 @@ BackupData backupFromJson(String source) {
         'bedtimeReminderLeadMinutes': 30,
         'expenseReminderEnabled': false,
         'expenseReminderMinutes': 1260,
+        'dailyPageGoal': 25,
         ...(raw['settings'] as Map<String, dynamic>),
       }),
       sleepSessions: rows('sleepSessions', SleepSession.fromJson),

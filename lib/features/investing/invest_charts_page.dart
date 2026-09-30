@@ -20,7 +20,7 @@ class InvestChartsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final portfolio = ref.watch(portfolioProvider);
     final snapshots = ref.watch(snapshotsProvider).value ?? const [];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final now = DateTime.now();
     final weeks = lastWeeks(12, now);

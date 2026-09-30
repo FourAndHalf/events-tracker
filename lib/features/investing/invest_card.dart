@@ -23,7 +23,7 @@ class InvestCard extends ConsumerWidget {
     final p = ref.watch(portfolioProvider);
     final stocks = ref.watch(stocksProvider).value ?? const <Stock>[];
     final trades = ref.watch(tradesProvider).value ?? const <Trade>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final today = DateTime.now();
 

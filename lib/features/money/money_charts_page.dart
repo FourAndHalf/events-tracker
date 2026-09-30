@@ -21,7 +21,7 @@ class MoneyChartsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expenses = ref.watch(expensesProvider).value ?? const <Expense>[];
     final cats = ref.watch(categoriesProvider).value ?? const <Category>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final now = DateTime.now();
     final months = lastMonths(6, now);

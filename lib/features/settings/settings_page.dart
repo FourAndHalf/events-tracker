@@ -23,7 +23,7 @@ import 'backup_codec.dart';
 import 'backup_zip.dart';
 import 'backup_service.dart';
 
-const _currencies = [r'$', '€', '£', '₹', '¥'];
+const _currencies = ['₹', r'$', '€', '£', '¥'];
 
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});

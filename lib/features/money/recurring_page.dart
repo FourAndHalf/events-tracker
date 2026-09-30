@@ -22,7 +22,7 @@ class RecurringPage extends ConsumerWidget {
     final rules =
         ref.watch(recurringProvider).value ?? const <RecurringExpense>[];
     final cats = ref.watch(categoriesProvider).value ?? const <Category>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final catName = {for (final c in cats) c.id: c.name};
     final now = DateTime.now();
@@ -227,7 +227,7 @@ class _RecurringFormPageState extends ConsumerState<RecurringFormPage> {
     final cats = (ref.watch(categoriesProvider).value ?? const <Category>[])
         .where((c) => !c.archived || c.id == _categoryId)
         .toList();
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     if (widget.id != null && !_loaded) {
       final r =
           (ref.watch(recurringProvider).value ?? const <RecurringExpense>[])

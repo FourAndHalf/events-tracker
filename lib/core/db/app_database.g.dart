@@ -27,7 +27,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     false,
     type: DriftSqlType.string,
     requiredDuringInsert: false,
-    defaultValue: const Constant('\$'),
+    defaultValue: const Constant('₹'),
   );
   static const VerificationMeta _sleepGoalMinutesMeta = const VerificationMeta(
     'sleepGoalMinutes',
@@ -156,6 +156,18 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     requiredDuringInsert: false,
     defaultValue: const Constant(1260),
   );
+  static const VerificationMeta _dailyPageGoalMeta = const VerificationMeta(
+    'dailyPageGoal',
+  );
+  @override
+  late final GeneratedColumn<int> dailyPageGoal = GeneratedColumn<int>(
+    'daily_page_goal',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(25),
+  );
   @override
   List<GeneratedColumn> get $columns => [
     id,
@@ -170,6 +182,7 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
     bedtimeReminderLeadMinutes,
     expenseReminderEnabled,
     expenseReminderMinutes,
+    dailyPageGoal,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -285,6 +298,15 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         ),
       );
     }
+    if (data.containsKey('daily_page_goal')) {
+      context.handle(
+        _dailyPageGoalMeta,
+        dailyPageGoal.isAcceptableOrUnknown(
+          data['daily_page_goal']!,
+          _dailyPageGoalMeta,
+        ),
+      );
+    }
     return context;
   }
 
@@ -342,6 +364,10 @@ class $SettingsTable extends Settings with TableInfo<$SettingsTable, Setting> {
         DriftSqlType.int,
         data['${effectivePrefix}expense_reminder_minutes'],
       )!,
+      dailyPageGoal: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}daily_page_goal'],
+      )!,
     );
   }
 
@@ -364,6 +390,7 @@ class Setting extends DataClass implements Insertable<Setting> {
   final int bedtimeReminderLeadMinutes;
   final bool expenseReminderEnabled;
   final int expenseReminderMinutes;
+  final int dailyPageGoal;
   const Setting({
     required this.id,
     required this.currencySymbol,
@@ -377,6 +404,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     required this.bedtimeReminderLeadMinutes,
     required this.expenseReminderEnabled,
     required this.expenseReminderMinutes,
+    required this.dailyPageGoal,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -395,6 +423,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     );
     map['expense_reminder_enabled'] = Variable<bool>(expenseReminderEnabled);
     map['expense_reminder_minutes'] = Variable<int>(expenseReminderMinutes);
+    map['daily_page_goal'] = Variable<int>(dailyPageGoal);
     return map;
   }
 
@@ -412,6 +441,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       bedtimeReminderLeadMinutes: Value(bedtimeReminderLeadMinutes),
       expenseReminderEnabled: Value(expenseReminderEnabled),
       expenseReminderMinutes: Value(expenseReminderMinutes),
+      dailyPageGoal: Value(dailyPageGoal),
     );
   }
 
@@ -449,6 +479,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       expenseReminderMinutes: serializer.fromJson<int>(
         json['expenseReminderMinutes'],
       ),
+      dailyPageGoal: serializer.fromJson<int>(json['dailyPageGoal']),
     );
   }
   @override
@@ -469,6 +500,7 @@ class Setting extends DataClass implements Insertable<Setting> {
       ),
       'expenseReminderEnabled': serializer.toJson<bool>(expenseReminderEnabled),
       'expenseReminderMinutes': serializer.toJson<int>(expenseReminderMinutes),
+      'dailyPageGoal': serializer.toJson<int>(dailyPageGoal),
     };
   }
 
@@ -485,6 +517,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     int? bedtimeReminderLeadMinutes,
     bool? expenseReminderEnabled,
     int? expenseReminderMinutes,
+    int? dailyPageGoal,
   }) => Setting(
     id: id ?? this.id,
     currencySymbol: currencySymbol ?? this.currencySymbol,
@@ -502,6 +535,7 @@ class Setting extends DataClass implements Insertable<Setting> {
         expenseReminderEnabled ?? this.expenseReminderEnabled,
     expenseReminderMinutes:
         expenseReminderMinutes ?? this.expenseReminderMinutes,
+    dailyPageGoal: dailyPageGoal ?? this.dailyPageGoal,
   );
   Setting copyWithCompanion(SettingsCompanion data) {
     return Setting(
@@ -539,6 +573,9 @@ class Setting extends DataClass implements Insertable<Setting> {
       expenseReminderMinutes: data.expenseReminderMinutes.present
           ? data.expenseReminderMinutes.value
           : this.expenseReminderMinutes,
+      dailyPageGoal: data.dailyPageGoal.present
+          ? data.dailyPageGoal.value
+          : this.dailyPageGoal,
     );
   }
 
@@ -556,7 +593,8 @@ class Setting extends DataClass implements Insertable<Setting> {
           ..write('bedtimeReminderEnabled: $bedtimeReminderEnabled, ')
           ..write('bedtimeReminderLeadMinutes: $bedtimeReminderLeadMinutes, ')
           ..write('expenseReminderEnabled: $expenseReminderEnabled, ')
-          ..write('expenseReminderMinutes: $expenseReminderMinutes')
+          ..write('expenseReminderMinutes: $expenseReminderMinutes, ')
+          ..write('dailyPageGoal: $dailyPageGoal')
           ..write(')'))
         .toString();
   }
@@ -575,6 +613,7 @@ class Setting extends DataClass implements Insertable<Setting> {
     bedtimeReminderLeadMinutes,
     expenseReminderEnabled,
     expenseReminderMinutes,
+    dailyPageGoal,
   );
   @override
   bool operator ==(Object other) =>
@@ -591,7 +630,8 @@ class Setting extends DataClass implements Insertable<Setting> {
           other.bedtimeReminderEnabled == this.bedtimeReminderEnabled &&
           other.bedtimeReminderLeadMinutes == this.bedtimeReminderLeadMinutes &&
           other.expenseReminderEnabled == this.expenseReminderEnabled &&
-          other.expenseReminderMinutes == this.expenseReminderMinutes);
+          other.expenseReminderMinutes == this.expenseReminderMinutes &&
+          other.dailyPageGoal == this.dailyPageGoal);
 }
 
 class SettingsCompanion extends UpdateCompanion<Setting> {
@@ -607,6 +647,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
   final Value<int> bedtimeReminderLeadMinutes;
   final Value<bool> expenseReminderEnabled;
   final Value<int> expenseReminderMinutes;
+  final Value<int> dailyPageGoal;
   const SettingsCompanion({
     this.id = const Value.absent(),
     this.currencySymbol = const Value.absent(),
@@ -620,6 +661,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     this.bedtimeReminderLeadMinutes = const Value.absent(),
     this.expenseReminderEnabled = const Value.absent(),
     this.expenseReminderMinutes = const Value.absent(),
+    this.dailyPageGoal = const Value.absent(),
   });
   SettingsCompanion.insert({
     this.id = const Value.absent(),
@@ -634,6 +676,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     this.bedtimeReminderLeadMinutes = const Value.absent(),
     this.expenseReminderEnabled = const Value.absent(),
     this.expenseReminderMinutes = const Value.absent(),
+    this.dailyPageGoal = const Value.absent(),
   });
   static Insertable<Setting> custom({
     Expression<int>? id,
@@ -648,6 +691,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Expression<int>? bedtimeReminderLeadMinutes,
     Expression<bool>? expenseReminderEnabled,
     Expression<int>? expenseReminderMinutes,
+    Expression<int>? dailyPageGoal,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
@@ -670,6 +714,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
         'expense_reminder_enabled': expenseReminderEnabled,
       if (expenseReminderMinutes != null)
         'expense_reminder_minutes': expenseReminderMinutes,
+      if (dailyPageGoal != null) 'daily_page_goal': dailyPageGoal,
     });
   }
 
@@ -686,6 +731,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
     Value<int>? bedtimeReminderLeadMinutes,
     Value<bool>? expenseReminderEnabled,
     Value<int>? expenseReminderMinutes,
+    Value<int>? dailyPageGoal,
   }) {
     return SettingsCompanion(
       id: id ?? this.id,
@@ -704,6 +750,7 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           expenseReminderEnabled ?? this.expenseReminderEnabled,
       expenseReminderMinutes:
           expenseReminderMinutes ?? this.expenseReminderMinutes,
+      dailyPageGoal: dailyPageGoal ?? this.dailyPageGoal,
     );
   }
 
@@ -754,6 +801,9 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
         expenseReminderMinutes.value,
       );
     }
+    if (dailyPageGoal.present) {
+      map['daily_page_goal'] = Variable<int>(dailyPageGoal.value);
+    }
     return map;
   }
 
@@ -771,7 +821,8 @@ class SettingsCompanion extends UpdateCompanion<Setting> {
           ..write('bedtimeReminderEnabled: $bedtimeReminderEnabled, ')
           ..write('bedtimeReminderLeadMinutes: $bedtimeReminderLeadMinutes, ')
           ..write('expenseReminderEnabled: $expenseReminderEnabled, ')
-          ..write('expenseReminderMinutes: $expenseReminderMinutes')
+          ..write('expenseReminderMinutes: $expenseReminderMinutes, ')
+          ..write('dailyPageGoal: $dailyPageGoal')
           ..write(')'))
         .toString();
   }
@@ -7537,6 +7588,7 @@ typedef $$SettingsTableCreateCompanionBuilder = SettingsCompanion Function({
   Value<int> bedtimeReminderLeadMinutes,
   Value<bool> expenseReminderEnabled,
   Value<int> expenseReminderMinutes,
+  Value<int> dailyPageGoal,
 });
 typedef $$SettingsTableUpdateCompanionBuilder = SettingsCompanion Function({
   Value<int> id,
@@ -7551,6 +7603,7 @@ typedef $$SettingsTableUpdateCompanionBuilder = SettingsCompanion Function({
   Value<int> bedtimeReminderLeadMinutes,
   Value<bool> expenseReminderEnabled,
   Value<int> expenseReminderMinutes,
+  Value<int> dailyPageGoal,
 });
 
 class $$SettingsTableFilterComposer
@@ -7619,6 +7672,11 @@ class $$SettingsTableFilterComposer
 
   ColumnFilters<int> get expenseReminderMinutes => $composableBuilder(
     column: $table.expenseReminderMinutes,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<int> get dailyPageGoal => $composableBuilder(
+    column: $table.dailyPageGoal,
     builder: (column) => ColumnFilters(column),
   );
 }
@@ -7691,6 +7749,11 @@ class $$SettingsTableOrderingComposer
     column: $table.expenseReminderMinutes,
     builder: (column) => ColumnOrderings(column),
   );
+
+  ColumnOrderings<int> get dailyPageGoal => $composableBuilder(
+    column: $table.dailyPageGoal,
+    builder: (column) => ColumnOrderings(column),
+  );
 }
 
 class $$SettingsTableAnnotationComposer
@@ -7759,6 +7822,11 @@ class $$SettingsTableAnnotationComposer
     column: $table.expenseReminderMinutes,
     builder: (column) => column,
   );
+
+  GeneratedColumn<int> get dailyPageGoal => $composableBuilder(
+    column: $table.dailyPageGoal,
+    builder: (column) => column,
+  );
 }
 
 class $$SettingsTableTableManager
@@ -7801,6 +7869,7 @@ class $$SettingsTableTableManager
                 Value<int> bedtimeReminderLeadMinutes = const Value.absent(),
                 Value<bool> expenseReminderEnabled = const Value.absent(),
                 Value<int> expenseReminderMinutes = const Value.absent(),
+                Value<int> dailyPageGoal = const Value.absent(),
               }) => SettingsCompanion(
                 id: id,
                 currencySymbol: currencySymbol,
@@ -7814,6 +7883,7 @@ class $$SettingsTableTableManager
                 bedtimeReminderLeadMinutes: bedtimeReminderLeadMinutes,
                 expenseReminderEnabled: expenseReminderEnabled,
                 expenseReminderMinutes: expenseReminderMinutes,
+                dailyPageGoal: dailyPageGoal,
               ),
           createCompanionCallback:
               ({
@@ -7829,6 +7899,7 @@ class $$SettingsTableTableManager
                 Value<int> bedtimeReminderLeadMinutes = const Value.absent(),
                 Value<bool> expenseReminderEnabled = const Value.absent(),
                 Value<int> expenseReminderMinutes = const Value.absent(),
+                Value<int> dailyPageGoal = const Value.absent(),
               }) => SettingsCompanion.insert(
                 id: id,
                 currencySymbol: currencySymbol,
@@ -7842,6 +7913,7 @@ class $$SettingsTableTableManager
                 bedtimeReminderLeadMinutes: bedtimeReminderLeadMinutes,
                 expenseReminderEnabled: expenseReminderEnabled,
                 expenseReminderMinutes: expenseReminderMinutes,
+                dailyPageGoal: dailyPageGoal,
               ),
           withReferenceMapper: (p0) => p0
               .map(

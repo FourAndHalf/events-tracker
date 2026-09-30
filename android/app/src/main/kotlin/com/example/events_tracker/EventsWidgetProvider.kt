@@ -9,9 +9,10 @@ import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
- * Home-screen widget with three buttons. Each opens the app on a link like
- * events://sleep-toggle, which the Flutter side turns into the action. The
- * labels under the buttons are written by the app (see widget_bridge.dart).
+ * Home-screen widget: sleep/reading/spend stats plus three tappable tiles.
+ * Each tile opens the app on a link like events://sleep-toggle, which the
+ * Flutter side turns into the action. All text is written by the app (see
+ * widget_bridge.dart).
  */
 class EventsWidgetProvider : HomeWidgetProvider() {
     override fun onUpdate(
@@ -22,8 +23,16 @@ class EventsWidgetProvider : HomeWidgetProvider() {
     ) {
         for (id in appWidgetIds) {
             val views = RemoteViews(context.packageName, R.layout.widget_events).apply {
-                setTextViewText(R.id.sleep_status, widgetData.getString("sleep_label", "Tap to start"))
-                setTextViewText(R.id.read_status, widgetData.getString("read_label", "Tap to start"))
+                setTextViewText(R.id.sleep_percent, widgetData.getString("sleep_percent", "0%"))
+                setTextViewText(R.id.sleep_hours_label, widgetData.getString("sleep_hours_label", "0h 00m"))
+                setTextViewText(R.id.sleep_state, widgetData.getString("sleep_state", "Awake"))
+                setTextViewText(R.id.pages_percent, widgetData.getString("pages_percent", "0%"))
+                setTextViewText(R.id.pages_label, widgetData.getString("pages_label", "0/0p"))
+                setTextViewText(R.id.read_state, widgetData.getString("read_state", "Idle"))
+                setTextViewText(R.id.spend_status, widgetData.getString("spend_status", "On Track"))
+                setTextViewText(R.id.spend_label, widgetData.getString("spend_label", "₹0.00 spent today"))
+                setTextViewText(R.id.spend_percent, widgetData.getString("spend_percent", "0%"))
+                setTextViewText(R.id.spend_of_budget_label, widgetData.getString("spend_of_budget_label", "no budget set"))
                 setOnClickPendingIntent(R.id.btn_sleep, launch(context, "events://sleep-toggle"))
                 setOnClickPendingIntent(R.id.btn_read, launch(context, "events://read-toggle"))
                 setOnClickPendingIntent(R.id.btn_expense, launch(context, "events://add-expense"))

@@ -67,7 +67,7 @@ class _PricesPageState extends ConsumerState<PricesPage> {
   @override
   Widget build(BuildContext context) {
     final holdings = ref.watch(portfolioProvider).open.toList();
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final today = DateTime.now();
 

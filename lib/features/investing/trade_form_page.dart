@@ -201,7 +201,7 @@ class _TradeFormPageState extends ConsumerState<TradeFormPage> {
   Widget build(BuildContext context) {
     final stocks = ref.watch(stocksProvider).value ?? const <Stock>[];
     final all = ref.watch(tradesProvider).value ?? const <Trade>[];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final preview = _preview(all);
 

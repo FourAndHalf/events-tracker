@@ -23,6 +23,10 @@ int? currentPage(List<ReadingSession> ascending) {
   return null;
 }
 
+/// Percent of [goal] pages that [pagesToday] reaches, clamped to 0-100.
+int pageGoalPercent(int pagesToday, int goal) =>
+    goal <= 0 ? 0 : (pagesToday * 100 / goal).round().clamp(0, 100);
+
 /// Sessions reduced to time and pages for the stats. A running session counts
 /// up to [now] only when [includeRunning] is set (dashboard); the stats page
 /// waits until it is stopped so its page count is known.

@@ -16,7 +16,7 @@ class SpendCard extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final expenses = ref.watch(expensesProvider).value ?? const [];
     final cats = ref.watch(categoriesProvider).value ?? const [];
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final text = Theme.of(context).textTheme;
     final now = DateTime.now();
 

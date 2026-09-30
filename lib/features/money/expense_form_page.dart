@@ -178,7 +178,7 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     final cats = (ref.watch(categoriesProvider).value ?? const <Category>[])
         .where((c) => !c.archived || c.id == _categoryId)
         .toList();
-    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? r'$';
+    final sym = ref.watch(settingsProvider).value?.currencySymbol ?? '₹';
     final dateFmt = DateFormat('EEE, d MMM y');
 
     return Scaffold(

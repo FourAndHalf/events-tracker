@@ -1,3 +1,4 @@
+import 'package:events_tracker/core/db/app_database.dart';
 import 'package:events_tracker/features/sleep/sleep_logic.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -61,5 +62,34 @@ void main() {
 
   test('formatDuration', () {
     expect(formatDuration(const Duration(hours: 7, minutes: 5)), '7h 05m');
+  });
+
+  group('sleepToday', () {
+    final now = DateTime(2026, 1, 2, 12, 0);
+    SleepSession session(DateTime sleepAt, DateTime? wakeAt) =>
+        SleepSession(id: 1, sleepAt: sleepAt, wakeAt: wakeAt, quality: null, note: null);
+
+    test('sums sessions that woke today, ignores others', () {
+      final sessions = [
+        session(DateTime(2026, 1, 1, 23, 0), DateTime(2026, 1, 2, 7, 0)), // today
+        session(DateTime(2026, 1, 1, 13, 0), DateTime(2026, 1, 1, 14, 0)), // yesterday
+        session(DateTime(2026, 1, 2, 12, 30), null), // still open
+      ];
+      expect(sleepToday(sessions, now), const Duration(hours: 8));
+    });
+
+    test('no sessions today gives zero', () {
+      expect(sleepToday(const [], now), Duration.zero);
+    });
+  });
+
+  group('sleepGoalPercent', () {
+    test('percent of goal, clamped to 100', () {
+      expect(sleepGoalPercent(const Duration(hours: 4), 480), 50);
+      expect(sleepGoalPercent(const Duration(hours: 10), 480), 100);
+    });
+    test('zero goal is zero percent', () {
+      expect(sleepGoalPercent(const Duration(hours: 4), 0), 0);
+    });
   });
 }
