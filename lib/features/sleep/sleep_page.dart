@@ -53,7 +53,11 @@ class SleepPage extends ConsumerWidget {
           for (final s in sessions)
             Padding(
               padding: const EdgeInsets.only(bottom: 12),
-              child: _SessionTile(session: s, settings: settings),
+              child: _SessionTile(
+                session: s,
+                settings: settings,
+                onDelete: () => _confirmDelete(context, ref, s),
+              ),
             ),
         ],
       ),
@@ -61,11 +65,40 @@ class SleepPage extends ConsumerWidget {
   }
 }
 
+Future<void> _confirmDelete(
+  BuildContext context,
+  WidgetRef ref,
+  SleepSession s,
+) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Delete this night?'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Delete'),
+        ),
+      ],
+    ),
+  );
+  if (ok == true) await ref.read(sleepRepositoryProvider).delete(s.id);
+}
+
 class _SessionTile extends StatelessWidget {
-  const _SessionTile({required this.session, required this.settings});
+  const _SessionTile({
+    required this.session,
+    required this.settings,
+    required this.onDelete,
+  });
 
   final SleepSession session;
   final Setting? settings;
+  final VoidCallback onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -117,6 +150,11 @@ class _SessionTile extends StatelessWidget {
             ),
           ),
           badge,
+          IconButton(
+            tooltip: 'Delete',
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_outline),
+          ),
         ],
       ),
     );
