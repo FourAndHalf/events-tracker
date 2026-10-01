@@ -229,6 +229,13 @@ class BookPage extends ConsumerWidget {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(fmt.format(s.startAt)),
+                trailing: s.endAt == null
+                    ? null
+                    : IconButton(
+                        tooltip: 'Delete',
+                        icon: const Icon(Icons.delete_outline),
+                        onPressed: () => _confirmDeleteSession(context, ref, s),
+                      ),
                 subtitle: Text(
                   s.endAt == null
                       ? 'Running'
@@ -242,6 +249,32 @@ class BookPage extends ConsumerWidget {
         ],
       ),
     );
+  }
+
+  Future<void> _confirmDeleteSession(
+    BuildContext context,
+    WidgetRef ref,
+    ReadingSession s,
+  ) async {
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete this session?'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok == true) {
+      await ref.read(readingRepositoryProvider).deleteSession(s.id);
+    }
   }
 
   Future<void> _addNote(BuildContext context, WidgetRef ref, Book book) async {
