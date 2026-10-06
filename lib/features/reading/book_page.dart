@@ -229,13 +229,11 @@ class BookPage extends ConsumerWidget {
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 title: Text(fmt.format(s.startAt)),
-                trailing: s.endAt == null
-                    ? null
-                    : IconButton(
-                        tooltip: 'Delete',
-                        icon: const Icon(Icons.delete_outline),
-                        onPressed: () => _confirmDeleteSession(context, ref, s),
-                      ),
+                trailing: IconButton(
+                  tooltip: 'Delete',
+                  icon: const Icon(Icons.delete_outline),
+                  onPressed: () => _confirmDeleteSession(context, ref, s),
+                ),
                 subtitle: Text(
                   s.endAt == null
                       ? 'Running'

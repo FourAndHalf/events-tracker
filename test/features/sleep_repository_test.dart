@@ -30,6 +30,16 @@ void main() {
     expect(last.wakeAt, DateTime(2026, 1, 2, 7));
   });
 
+  test('deleting an open session removes the accidental sleep start', () async {
+    await repo.start(DateTime(2026, 1, 1, 23));
+    final open = (await repo.watchOpen().first)!;
+
+    await repo.delete(open.id);
+
+    expect(await repo.watchOpen().first, isNull);
+    expect(await db.select(db.sleepSessions).get(), isEmpty);
+  });
+
   test('database seeds settings and default categories', () async {
     expect((await db.select(db.settings).get()).single.sleepGoalMinutes, 480);
     expect(
