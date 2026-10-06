@@ -145,6 +145,32 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     if (mounted) context.pop();
   }
 
+  Future<void> _delete() async {
+    final expense = _existing;
+    if (expense == null) return;
+    final ok = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Delete this expense?'),
+        content: const Text('This expense and its receipt will be deleted.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: const Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, true),
+            child: const Text('Delete'),
+          ),
+        ],
+      ),
+    );
+    if (ok != true) return;
+    await ref.read(moneyRepositoryProvider).deleteExpense(expense.id);
+    await deleteReceipt(expense.receiptPath);
+    if (mounted) context.pop();
+  }
+
   /// Shows a warning at 80% and 100% of the category's monthly budget.
   Future<void> _warnIfNearBudget(int categoryId) async {
     final repo = ref.read(moneyRepositoryProvider);
@@ -184,6 +210,14 @@ class _ExpenseFormPageState extends ConsumerState<ExpenseFormPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.id == null ? 'Add expense' : 'Edit expense'),
+        actions: [
+          if (widget.id != null)
+            IconButton(
+              tooltip: 'Delete',
+              onPressed: _loaded ? _delete : null,
+              icon: const Icon(Icons.delete_outline),
+            ),
+        ],
       ),
       body: !_loaded
           ? const SizedBox.shrink()

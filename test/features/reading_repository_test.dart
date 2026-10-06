@@ -67,7 +67,7 @@ void main() {
     expect(got.rating, 4);
   });
 
-  test('deleting a session keeps its notes, unlinked', () async {
+  test('deleting an open session keeps its notes, unlinked', () async {
     final b = await book();
     final sid = await repo.startSession(b.id, DateTime(2026, 9, 27, 10));
     await repo.addNote(b.id, ' great line ', sessionId: sid, isQuote: true);
@@ -76,6 +76,7 @@ void main() {
     expect(n.body, 'great line');
     expect(n.isQuote, isTrue);
     expect(n.sessionId, isNull);
+    expect(await repo.runningSession(), isNull);
   });
 
   test(

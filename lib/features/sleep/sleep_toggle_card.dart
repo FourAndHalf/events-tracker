@@ -52,8 +52,44 @@ class SleepToggleCard extends ConsumerWidget {
               onPressed: onTap,
             ),
           ),
+          if (asleep) ...[
+            const SizedBox(height: 8),
+            Align(
+              alignment: Alignment.centerRight,
+              child: TextButton.icon(
+                onPressed: () => _confirmDelete(context, ref, open.id),
+                icon: const Icon(Icons.delete_outline),
+                label: const Text('Delete this sleep session'),
+              ),
+            ),
+          ],
         ],
       ),
     );
   }
+}
+
+Future<void> _confirmDelete(
+  BuildContext context,
+  WidgetRef ref,
+  int id,
+) async {
+  final ok = await showDialog<bool>(
+    context: context,
+    builder: (ctx) => AlertDialog(
+      title: const Text('Delete this sleep session?'),
+      content: const Text('This will remove the active sleep session.'),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, false),
+          child: const Text('Cancel'),
+        ),
+        TextButton(
+          onPressed: () => Navigator.pop(ctx, true),
+          child: const Text('Delete'),
+        ),
+      ],
+    ),
+  );
+  if (ok == true) await ref.read(sleepRepositoryProvider).delete(id);
 }

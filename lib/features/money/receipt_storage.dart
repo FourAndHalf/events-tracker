@@ -48,3 +48,9 @@ Future<String?> pickReceiptFromFiles() async {
   await compressImageTo(path, dest);
   return dest;
 }
+
+Future<void> deleteReceipt(String? path) async {
+  if (path == null) return;
+  final file = File(path);
+  if (await file.exists()) await file.delete();
+}
