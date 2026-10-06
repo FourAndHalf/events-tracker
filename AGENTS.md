@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 ## Project
 Personal tracker app: Flutter, Android only, local SQLite (drift), no cloud.
