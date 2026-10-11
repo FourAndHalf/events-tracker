@@ -117,6 +117,7 @@ class ReadingNotes extends Table {
       integer().nullable().references(ReadingSessions, #id)();
   TextColumn get body => text()();
   BoolColumn get isQuote => boolean().withDefault(const Constant(false))();
+  BoolColumn get pinned => boolean().withDefault(const Constant(false))();
   DateTimeColumn get createdAt => dateTime()();
 }
 

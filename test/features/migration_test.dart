@@ -59,6 +59,10 @@ void main() {
               icon TEXT NOT NULL DEFAULT 'star', type TEXT NOT NULL DEFAULT 'habit',
               archived INTEGER NOT NULL DEFAULT 0);
             INSERT INTO trackers (name) VALUES ('Meditate');
+            CREATE TABLE reading_notes (
+              id INTEGER PRIMARY KEY AUTOINCREMENT, book_id INTEGER NOT NULL,
+              session_id INTEGER NULL, body TEXT NOT NULL,
+              is_quote INTEGER NOT NULL DEFAULT 0, created_at INTEGER NOT NULL);
             PRAGMA user_version = 6;
           ''');
           },

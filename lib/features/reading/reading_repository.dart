@@ -11,6 +11,14 @@ class TimerAlreadyRunningException implements Exception {
   String toString() => 'A reading timer is already running';
 }
 
+const maxPinnedNotesPerBook = 5;
+
+class MaxPinnedNotesException implements Exception {
+  const MaxPinnedNotesException();
+  @override
+  String toString() => 'Only $maxPinnedNotesPerBook notes or quotes can be pinned per book';
+}
+
 class ReadingRepository {
   ReadingRepository(this._db);
   final AppDatabase _db;
@@ -23,9 +31,12 @@ class ReadingRepository {
     _db.readingSessions,
   )..orderBy([(s) => OrderingTerm.desc(s.startAt)])).watch();
 
-  Stream<List<ReadingNote>> watchNotes() => (_db.select(
-    _db.readingNotes,
-  )..orderBy([(n) => OrderingTerm.desc(n.createdAt)])).watch();
+  Stream<List<ReadingNote>> watchNotes() => (_db.select(_db.readingNotes)
+        ..orderBy([
+          (n) => OrderingTerm.desc(n.pinned),
+          (n) => OrderingTerm.desc(n.createdAt),
+        ]))
+      .watch();
 
   Future<int> addBook(BooksCompanion b) => _db.into(_db.books).insert(b);
 
@@ -113,6 +124,36 @@ class ReadingRepository {
 
   Future<void> deleteNote(int id) =>
       (_db.delete(_db.readingNotes)..where((n) => n.id.equals(id))).go();
+
+  Future<void> updateNote(int id, String text, {bool isQuote = false}) =>
+      (_db.update(_db.readingNotes)..where((n) => n.id.equals(id))).write(
+        ReadingNotesCompanion(
+          body: Value(text.trim()),
+          isQuote: Value(isQuote),
+        ),
+      );
+
+  /// Pins or unpins a note. Throws [MaxPinnedNotesException] when pinning
+  /// would exceed [maxPinnedNotesPerBook] for that book.
+  Future<void> setPinned(int bookId, int id, bool pinned) async {
+    if (pinned) {
+      final count =
+          await (_db.selectOnly(_db.readingNotes)
+                ..addColumns([_db.readingNotes.id.count()])
+                ..where(
+                  _db.readingNotes.bookId.equals(bookId) &
+                      _db.readingNotes.pinned.equals(true),
+                ))
+              .map((row) => row.read(_db.readingNotes.id.count()) ?? 0)
+              .getSingle();
+      if (count >= maxPinnedNotesPerBook) {
+        throw const MaxPinnedNotesException();
+      }
+    }
+    await (_db.update(_db.readingNotes)..where((n) => n.id.equals(id))).write(
+      ReadingNotesCompanion(pinned: Value(pinned)),
+    );
+  }
 }
 
 final readingRepositoryProvider = Provider(
