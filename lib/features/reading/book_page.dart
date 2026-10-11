@@ -170,7 +170,7 @@ class BookPage extends ConsumerWidget {
             children: [
               const Expanded(child: Overline('Notes and quotes')),
               TextButton.icon(
-                onPressed: () => _addNote(context, ref, book),
+                onPressed: () => _noteDialog(context, ref, book),
                 icon: const Icon(Icons.add),
                 label: const Text('Add'),
               ),
@@ -191,6 +191,7 @@ class BookPage extends ConsumerWidget {
                   ref.read(readingRepositoryProvider).deleteNote(n.id),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
+                onTap: () => _noteDialog(context, ref, book, existing: n),
                 leading: Icon(
                   n.isQuote ? Icons.format_quote : Icons.notes,
                   color: Aura.reading,
@@ -205,6 +206,14 @@ class BookPage extends ConsumerWidget {
                   DateFormat('d MMM').format(n.createdAt) +
                       (n.sessionId == null ? '' : ' · from a session'),
                   style: text.bodySmall,
+                ),
+                trailing: IconButton(
+                  tooltip: n.pinned ? 'Unpin' : 'Pin to top',
+                  icon: Icon(
+                    n.pinned ? Icons.push_pin : Icons.push_pin_outlined,
+                    color: n.pinned ? Aura.reading : null,
+                  ),
+                  onPressed: () => _togglePin(context, ref, book, n),
                 ),
               ),
             ),
@@ -275,14 +284,19 @@ class BookPage extends ConsumerWidget {
     }
   }
 
-  Future<void> _addNote(BuildContext context, WidgetRef ref, Book book) async {
-    final controller = TextEditingController();
-    var quote = false;
+  Future<void> _noteDialog(
+    BuildContext context,
+    WidgetRef ref,
+    Book book, {
+    ReadingNote? existing,
+  }) async {
+    final controller = TextEditingController(text: existing?.body ?? '');
+    var quote = existing?.isQuote ?? false;
     final ok = await showDialog<bool>(
       context: context,
       builder: (ctx) => StatefulBuilder(
         builder: (ctx, setState) => AlertDialog(
-          title: const Text('Add note'),
+          title: Text(existing == null ? 'Add note' : 'Edit note'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
@@ -315,10 +329,31 @@ class BookPage extends ConsumerWidget {
     );
     final body = controller.text.trim();
     controller.dispose();
-    if (ok == true && body.isNotEmpty) {
+    if (ok != true || body.isEmpty) return;
+    final repo = ref.read(readingRepositoryProvider);
+    if (existing == null) {
+      await repo.addNote(book.id, body, isQuote: quote);
+    } else {
+      await repo.updateNote(existing.id, body, isQuote: quote);
+    }
+  }
+
+  Future<void> _togglePin(
+    BuildContext context,
+    WidgetRef ref,
+    Book book,
+    ReadingNote n,
+  ) async {
+    try {
       await ref
           .read(readingRepositoryProvider)
-          .addNote(book.id, body, isQuote: quote);
+          .setPinned(book.id, n.id, !n.pinned);
+    } on MaxPinnedNotesException catch (e) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(e.toString())),
+        );
+      }
     }
   }
 }

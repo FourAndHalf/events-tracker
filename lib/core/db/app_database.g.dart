@@ -4181,6 +4181,19 @@ class $ReadingNotesTable extends ReadingNotes
     ),
     defaultValue: const Constant(false),
   );
+  static const VerificationMeta _pinnedMeta = const VerificationMeta('pinned');
+  @override
+  late final GeneratedColumn<bool> pinned = GeneratedColumn<bool>(
+    'pinned',
+    aliasedName,
+    false,
+    type: DriftSqlType.bool,
+    requiredDuringInsert: false,
+    defaultConstraints: GeneratedColumn.constraintIsAlways(
+      'CHECK ("pinned" IN (0, 1))',
+    ),
+    defaultValue: const Constant(false),
+  );
   static const VerificationMeta _createdAtMeta = const VerificationMeta(
     'createdAt',
   );
@@ -4199,6 +4212,7 @@ class $ReadingNotesTable extends ReadingNotes
     sessionId,
     body,
     isQuote,
+    pinned,
     createdAt,
   ];
   @override
@@ -4244,6 +4258,12 @@ class $ReadingNotesTable extends ReadingNotes
         isQuote.isAcceptableOrUnknown(data['is_quote']!, _isQuoteMeta),
       );
     }
+    if (data.containsKey('pinned')) {
+      context.handle(
+        _pinnedMeta,
+        pinned.isAcceptableOrUnknown(data['pinned']!, _pinnedMeta),
+      );
+    }
     if (data.containsKey('created_at')) {
       context.handle(
         _createdAtMeta,
@@ -4281,6 +4301,10 @@ class $ReadingNotesTable extends ReadingNotes
         DriftSqlType.bool,
         data['${effectivePrefix}is_quote'],
       )!,
+      pinned: attachedDatabase.typeMapping.read(
+        DriftSqlType.bool,
+        data['${effectivePrefix}pinned'],
+      )!,
       createdAt: attachedDatabase.typeMapping.read(
         DriftSqlType.dateTime,
         data['${effectivePrefix}created_at'],
@@ -4300,6 +4324,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
   final int? sessionId;
   final String body;
   final bool isQuote;
+  final bool pinned;
   final DateTime createdAt;
   const ReadingNote({
     required this.id,
@@ -4307,6 +4332,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
     this.sessionId,
     required this.body,
     required this.isQuote,
+    required this.pinned,
     required this.createdAt,
   });
   @override
@@ -4319,6 +4345,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
     }
     map['body'] = Variable<String>(body);
     map['is_quote'] = Variable<bool>(isQuote);
+    map['pinned'] = Variable<bool>(pinned);
     map['created_at'] = Variable<DateTime>(createdAt);
     return map;
   }
@@ -4332,6 +4359,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
           : Value(sessionId),
       body: Value(body),
       isQuote: Value(isQuote),
+      pinned: Value(pinned),
       createdAt: Value(createdAt),
     );
   }
@@ -4347,6 +4375,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
       sessionId: serializer.fromJson<int?>(json['sessionId']),
       body: serializer.fromJson<String>(json['body']),
       isQuote: serializer.fromJson<bool>(json['isQuote']),
+      pinned: serializer.fromJson<bool>(json['pinned']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
     );
   }
@@ -4359,6 +4388,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
       'sessionId': serializer.toJson<int?>(sessionId),
       'body': serializer.toJson<String>(body),
       'isQuote': serializer.toJson<bool>(isQuote),
+      'pinned': serializer.toJson<bool>(pinned),
       'createdAt': serializer.toJson<DateTime>(createdAt),
     };
   }
@@ -4369,6 +4399,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
     Value<int?> sessionId = const Value.absent(),
     String? body,
     bool? isQuote,
+    bool? pinned,
     DateTime? createdAt,
   }) => ReadingNote(
     id: id ?? this.id,
@@ -4376,6 +4407,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
     sessionId: sessionId.present ? sessionId.value : this.sessionId,
     body: body ?? this.body,
     isQuote: isQuote ?? this.isQuote,
+    pinned: pinned ?? this.pinned,
     createdAt: createdAt ?? this.createdAt,
   );
   ReadingNote copyWithCompanion(ReadingNotesCompanion data) {
@@ -4385,6 +4417,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
       sessionId: data.sessionId.present ? data.sessionId.value : this.sessionId,
       body: data.body.present ? data.body.value : this.body,
       isQuote: data.isQuote.present ? data.isQuote.value : this.isQuote,
+      pinned: data.pinned.present ? data.pinned.value : this.pinned,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
     );
   }
@@ -4397,6 +4430,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
           ..write('sessionId: $sessionId, ')
           ..write('body: $body, ')
           ..write('isQuote: $isQuote, ')
+          ..write('pinned: $pinned, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -4404,7 +4438,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
 
   @override
   int get hashCode =>
-      Object.hash(id, bookId, sessionId, body, isQuote, createdAt);
+      Object.hash(id, bookId, sessionId, body, isQuote, pinned, createdAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -4414,6 +4448,7 @@ class ReadingNote extends DataClass implements Insertable<ReadingNote> {
           other.sessionId == this.sessionId &&
           other.body == this.body &&
           other.isQuote == this.isQuote &&
+          other.pinned == this.pinned &&
           other.createdAt == this.createdAt);
 }
 
@@ -4423,6 +4458,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
   final Value<int?> sessionId;
   final Value<String> body;
   final Value<bool> isQuote;
+  final Value<bool> pinned;
   final Value<DateTime> createdAt;
   const ReadingNotesCompanion({
     this.id = const Value.absent(),
@@ -4430,6 +4466,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
     this.sessionId = const Value.absent(),
     this.body = const Value.absent(),
     this.isQuote = const Value.absent(),
+    this.pinned = const Value.absent(),
     this.createdAt = const Value.absent(),
   });
   ReadingNotesCompanion.insert({
@@ -4438,6 +4475,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
     this.sessionId = const Value.absent(),
     required String body,
     this.isQuote = const Value.absent(),
+    this.pinned = const Value.absent(),
     required DateTime createdAt,
   }) : bookId = Value(bookId),
        body = Value(body),
@@ -4448,6 +4486,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
     Expression<int>? sessionId,
     Expression<String>? body,
     Expression<bool>? isQuote,
+    Expression<bool>? pinned,
     Expression<DateTime>? createdAt,
   }) {
     return RawValuesInsertable({
@@ -4456,6 +4495,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
       if (sessionId != null) 'session_id': sessionId,
       if (body != null) 'body': body,
       if (isQuote != null) 'is_quote': isQuote,
+      if (pinned != null) 'pinned': pinned,
       if (createdAt != null) 'created_at': createdAt,
     });
   }
@@ -4466,6 +4506,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
     Value<int?>? sessionId,
     Value<String>? body,
     Value<bool>? isQuote,
+    Value<bool>? pinned,
     Value<DateTime>? createdAt,
   }) {
     return ReadingNotesCompanion(
@@ -4474,6 +4515,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
       sessionId: sessionId ?? this.sessionId,
       body: body ?? this.body,
       isQuote: isQuote ?? this.isQuote,
+      pinned: pinned ?? this.pinned,
       createdAt: createdAt ?? this.createdAt,
     );
   }
@@ -4496,6 +4538,9 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
     if (isQuote.present) {
       map['is_quote'] = Variable<bool>(isQuote.value);
     }
+    if (pinned.present) {
+      map['pinned'] = Variable<bool>(pinned.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -4510,6 +4555,7 @@ class ReadingNotesCompanion extends UpdateCompanion<ReadingNote> {
           ..write('sessionId: $sessionId, ')
           ..write('body: $body, ')
           ..write('isQuote: $isQuote, ')
+          ..write('pinned: $pinned, ')
           ..write('createdAt: $createdAt')
           ..write(')'))
         .toString();
@@ -10652,6 +10698,7 @@ typedef $$ReadingNotesTableCreateCompanionBuilder =
       Value<int?> sessionId,
       required String body,
       Value<bool> isQuote,
+      Value<bool> pinned,
       required DateTime createdAt,
     });
 typedef $$ReadingNotesTableUpdateCompanionBuilder =
@@ -10661,6 +10708,7 @@ typedef $$ReadingNotesTableUpdateCompanionBuilder =
       Value<int?> sessionId,
       Value<String> body,
       Value<bool> isQuote,
+      Value<bool> pinned,
       Value<DateTime> createdAt,
     });
 
@@ -10725,6 +10773,11 @@ class $$ReadingNotesTableFilterComposer
 
   ColumnFilters<bool> get isQuote => $composableBuilder(
     column: $table.isQuote,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<bool> get pinned => $composableBuilder(
+    column: $table.pinned,
     builder: (column) => ColumnFilters(column),
   );
 
@@ -10804,6 +10857,11 @@ class $$ReadingNotesTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
+  ColumnOrderings<bool> get pinned => $composableBuilder(
+    column: $table.pinned,
+    builder: (column) => ColumnOrderings(column),
+  );
+
   ColumnOrderings<DateTime> get createdAt => $composableBuilder(
     column: $table.createdAt,
     builder: (column) => ColumnOrderings(column),
@@ -10873,6 +10931,9 @@ class $$ReadingNotesTableAnnotationComposer
 
   GeneratedColumn<bool> get isQuote =>
       $composableBuilder(column: $table.isQuote, builder: (column) => column);
+
+  GeneratedColumn<bool> get pinned =>
+      $composableBuilder(column: $table.pinned, builder: (column) => column);
 
   GeneratedColumn<DateTime> get createdAt =>
       $composableBuilder(column: $table.createdAt, builder: (column) => column);
@@ -10957,6 +11018,7 @@ class $$ReadingNotesTableTableManager
                 Value<int?> sessionId = const Value.absent(),
                 Value<String> body = const Value.absent(),
                 Value<bool> isQuote = const Value.absent(),
+                Value<bool> pinned = const Value.absent(),
                 Value<DateTime> createdAt = const Value.absent(),
               }) => ReadingNotesCompanion(
                 id: id,
@@ -10964,6 +11026,7 @@ class $$ReadingNotesTableTableManager
                 sessionId: sessionId,
                 body: body,
                 isQuote: isQuote,
+                pinned: pinned,
                 createdAt: createdAt,
               ),
           createCompanionCallback:
@@ -10973,6 +11036,7 @@ class $$ReadingNotesTableTableManager
                 Value<int?> sessionId = const Value.absent(),
                 required String body,
                 Value<bool> isQuote = const Value.absent(),
+                Value<bool> pinned = const Value.absent(),
                 required DateTime createdAt,
               }) => ReadingNotesCompanion.insert(
                 id: id,
@@ -10980,6 +11044,7 @@ class $$ReadingNotesTableTableManager
                 sessionId: sessionId,
                 body: body,
                 isQuote: isQuote,
+                pinned: pinned,
                 createdAt: createdAt,
               ),
           withReferenceMapper: (p0) => p0
