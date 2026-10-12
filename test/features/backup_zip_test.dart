@@ -102,6 +102,8 @@ void main() {
       service: BackupService(dst),
       tmp: Directory(p.join(tmp.path, 'unpack')),
       mediaRoot: root,
+      coversRoot: Directory(p.join(tmp.path, 'covers')),
+      receiptsRoot: Directory(p.join(tmp.path, 'receipts')),
     );
 
     final event = await dst.select(dst.memoryEvents).getSingle();
@@ -149,12 +151,72 @@ void main() {
       service: BackupService(dst),
       tmp: Directory(p.join(tmp.path, 'unpack')),
       mediaRoot: Directory(p.join(tmp.path, 'dst')),
+      coversRoot: Directory(p.join(tmp.path, 'covers')),
+      receiptsRoot: Directory(p.join(tmp.path, 'receipts')),
     );
     expect(oldFile.existsSync(), isFalse);
     expect((await dst.select(dst.memoryEvents).getSingle()).title, 'Goa trip');
     final media = await dst.select(dst.memoryMedia).getSingle();
     expect(media.isVideo, isFalse); // videos were left out
     expect(File(media.path).existsSync(), isTrue);
+  });
+
+  test('full round trip restores book covers and expense receipts', () async {
+    final cover = await write('app/cover.jpg', [1, 1, 1]);
+    final receipt = await write('app/receipt.jpg', [2, 2, 2]);
+    final bookId = await src
+        .into(src.books)
+        .insert(
+          BooksCompanion.insert(
+            title: 'Dune',
+            coverPath: Value(cover.path),
+          ),
+        );
+    final categoryId = await src
+        .into(src.categories)
+        .insert(CategoriesCompanion.insert(name: 'Food'));
+    await src
+        .into(src.expenses)
+        .insert(
+          ExpensesCompanion.insert(
+            amountCents: 500,
+            categoryId: categoryId,
+            date: DateTime(2026),
+            paymentMethod: 'Cash',
+            receiptPath: Value(receipt.path),
+          ),
+        );
+
+    final zip = await writeBackupZip(
+      await BackupService(src).readAll(),
+      p.join(tmp.path, 'backup.zip'),
+      includeVideos: false,
+    );
+
+    final dst = AppDatabase(NativeDatabase.memory());
+    addTearDown(dst.close);
+    final coversRoot = Directory(p.join(tmp.path, 'covers'));
+    final receiptsRoot = Directory(p.join(tmp.path, 'receipts'));
+    await importBackupZip(
+      zip: zip,
+      service: BackupService(dst),
+      tmp: Directory(p.join(tmp.path, 'unpack')),
+      mediaRoot: Directory(p.join(tmp.path, 'media_restored')),
+      coversRoot: coversRoot,
+      receiptsRoot: receiptsRoot,
+    );
+
+    final book = (await dst.select(dst.books).get()).firstWhere(
+      (b) => b.id == bookId,
+    );
+    expect(book.coverPath, isNotNull);
+    expect(book.coverPath!.startsWith(coversRoot.path), isTrue);
+    expect(await File(book.coverPath!).readAsBytes(), [1, 1, 1]);
+
+    final expense = await dst.select(dst.expenses).getSingle();
+    expect(expense.receiptPath, isNotNull);
+    expect(expense.receiptPath!.startsWith(receiptsRoot.path), isTrue);
+    expect(await File(expense.receiptPath!).readAsBytes(), [2, 2, 2]);
   });
 
   test('a zip without backup.json is rejected and leaves data alone', () async {
@@ -167,6 +229,8 @@ void main() {
         service: BackupService(dst),
         tmp: Directory(p.join(tmp.path, 'unpack')),
         mediaRoot: Directory(p.join(tmp.path, 'x')),
+        coversRoot: Directory(p.join(tmp.path, 'covers')),
+        receiptsRoot: Directory(p.join(tmp.path, 'receipts')),
       ),
       throwsA(anything),
     );

@@ -48,16 +48,38 @@ ZipPlan planZip(BackupData d, {required bool includeVideos}) {
           ? e.copyWith(coverMediaId: const Value(null))
           : e,
   ];
+  final books = [
+    for (final b in d.books)
+      if (b.coverPath == null)
+        b
+      else
+        b.copyWith(
+          coverPath: Value(
+            _addFile(files, b.coverPath!, 'covers'),
+          ),
+        ),
+  ];
+  final expenses = [
+    for (final e in d.expenses)
+      if (e.receiptPath == null)
+        e
+      else
+        e.copyWith(
+          receiptPath: Value(
+            _addFile(files, e.receiptPath!, 'receipts'),
+          ),
+        ),
+  ];
   return ZipPlan(
     BackupData(
       settings: d.settings,
       sleepSessions: d.sleepSessions,
       categories: d.categories,
-      expenses: d.expenses,
+      expenses: expenses,
       stocks: d.stocks,
       trades: d.trades,
       snapshots: d.snapshots,
-      books: d.books,
+      books: books,
       readingSessions: d.readingSessions,
       readingNotes: d.readingNotes,
       memoryCategories: d.memoryCategories,
@@ -69,6 +91,19 @@ ZipPlan planZip(BackupData d, {required bool includeVideos}) {
     ),
     files,
   );
+}
+
+/// Queues [sourcePath] to be added under [folder] in the zip and returns its
+/// zip-relative name. File names in `covers/`/`receipts/` are already unique
+/// (timestamp-based), so the source's own basename is reused.
+String _addFile(
+  List<({String source, String zipName})> files,
+  String sourcePath,
+  String folder,
+) {
+  final zipName = '$folder/${p.basename(sourcePath)}';
+  files.add((source: sourcePath, zipName: zipName));
+  return zipName;
 }
 
 /// Size of the media a backup would carry (thumbnails are negligible).
@@ -106,7 +141,8 @@ Future<File> writeBackupZip(
 }
 
 /// Restores a full backup: unpacks [zip] into [tmp], moves the media under
-/// `[mediaRoot]/<eventId>/`, replaces all data, then deletes media files of the
+/// `[mediaRoot]/<eventId>/`, book covers into [coversRoot] and expense
+/// receipts into [receiptsRoot], replaces all data, then deletes files of the
 /// data that was replaced. All-or-nothing for the database; on failure the
 /// newly copied files are removed again.
 Future<BackupData> importBackupZip({
@@ -114,6 +150,8 @@ Future<BackupData> importBackupZip({
   required BackupService service,
   required Directory tmp,
   required Directory mediaRoot,
+  required Directory coversRoot,
+  required Directory receiptsRoot,
 }) async {
   if (await tmp.exists()) await tmp.delete(recursive: true);
   await tmp.create(recursive: true);
@@ -138,6 +176,20 @@ Future<BackupData> importBackupZip({
     return dest;
   }
 
+  /// Restores a flat (non-per-entity) file, like a cover or a receipt, that
+  /// was only added to the zip when its `rel` path points inside it.
+  Future<String> placeFlat(Directory root, String rel, String tag) async {
+    if (!rel.startsWith('$tag/')) return rel;
+    await root.create(recursive: true);
+    final dest = p.join(root.path, '${stamp}_${p.basename(rel)}');
+    final src = File(p.join(tmp.path, rel));
+    if (await src.exists()) {
+      await src.copy(dest);
+      copied.add(dest);
+    }
+    return dest;
+  }
+
   try {
     final media = <MemoryMediaItem>[];
     for (final m in data.memoryMedia) {
@@ -147,17 +199,42 @@ Future<BackupData> importBackupZip({
           : await place(m, m.thumbPath!, '${m.id}_thumb');
       media.add(m.copyWith(path: path, thumbPath: Value(thumb)));
     }
-    final oldMedia = (await service.readAll()).memoryMedia;
+    final books = <Book>[];
+    for (final b in data.books) {
+      books.add(
+        b.coverPath == null
+            ? b
+            : b.copyWith(
+                coverPath: Value(
+                  await placeFlat(coversRoot, b.coverPath!, 'covers'),
+                ),
+              ),
+      );
+    }
+    final expenses = <Expense>[];
+    for (final e in data.expenses) {
+      expenses.add(
+        e.receiptPath == null
+            ? e
+            : e.copyWith(
+                receiptPath: Value(
+                  await placeFlat(receiptsRoot, e.receiptPath!, 'receipts'),
+                ),
+              ),
+      );
+    }
+    final old = await service.readAll();
+    final oldMedia = old.memoryMedia;
     await service.replaceAll(
       BackupData(
         settings: data.settings,
         sleepSessions: data.sleepSessions,
         categories: data.categories,
-        expenses: data.expenses,
+        expenses: expenses,
         stocks: data.stocks,
         trades: data.trades,
         snapshots: data.snapshots,
-        books: data.books,
+        books: books,
         readingSessions: data.readingSessions,
         readingNotes: data.readingNotes,
         memoryCategories: data.memoryCategories,
@@ -177,6 +254,18 @@ Future<BackupData> importBackupZip({
           } on FileSystemException {
             // Already gone.
           }
+        }
+      }
+    }
+    for (final path in [
+      for (final b in old.books) ?b.coverPath,
+      for (final e in old.expenses) ?e.receiptPath,
+    ]) {
+      if (!keep.contains(path)) {
+        try {
+          await File(path).delete();
+        } on FileSystemException {
+          // Already gone.
         }
       }
     }
