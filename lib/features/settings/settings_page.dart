@@ -19,6 +19,8 @@ import '../../core/widgets/aura_widgets.dart';
 import '../memories/media_logic.dart';
 import '../memories/media_storage.dart';
 import '../memories/memories_repository.dart';
+import '../money/receipt_storage.dart';
+import '../reading/cover_storage.dart';
 import 'backup_codec.dart';
 import 'backup_zip.dart';
 import 'backup_service.dart';
@@ -132,6 +134,8 @@ class SettingsPage extends ConsumerWidget {
         service: ref.read(backupServiceProvider),
         tmp: Directory(p.join((await getTemporaryDirectory()).path, 'unpack')),
         mediaRoot: await memoriesRoot(),
+        coversRoot: await coversDir(),
+        receiptsRoot: await receiptsDir(),
       );
       if (context.mounted) _toast(context, 'Backup imported');
     } on FormatException catch (e) {

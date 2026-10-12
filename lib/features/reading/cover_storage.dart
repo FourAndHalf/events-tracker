@@ -4,6 +4,11 @@ import 'package:image_picker/image_picker.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 
+/// Where book cover images are stored.
+Future<Directory> coversDir() async => Directory(
+  p.join((await getApplicationDocumentsDirectory()).path, 'covers'),
+);
+
 /// Lets the user take or choose a book cover and copies it into app storage.
 /// Returns the saved file path, or null if cancelled.
 Future<String?> pickCover(ImageSource source) async {
@@ -13,9 +18,7 @@ Future<String?> pickCover(ImageSource source) async {
     imageQuality: 85,
   );
   if (picked == null) return null;
-  final dir = Directory(
-    p.join((await getApplicationDocumentsDirectory()).path, 'covers'),
-  );
+  final dir = await coversDir();
   await dir.create(recursive: true);
   final dest = p.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}.jpg');
   await File(picked.path).copy(dest);

@@ -7,10 +7,13 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/media/image_compress.dart';
 
+/// Where expense receipt images are stored.
+Future<Directory> receiptsDir() async => Directory(
+  p.join((await getApplicationDocumentsDirectory()).path, 'receipts'),
+);
+
 Future<String> _receiptDest(String sourcePath) async {
-  final dir = Directory(
-    p.join((await getApplicationDocumentsDirectory()).path, 'receipts'),
-  );
+  final dir = await receiptsDir();
   await dir.create(recursive: true);
   final ext = p.extension(sourcePath).isEmpty ? '.jpg' : p.extension(sourcePath);
   return p.join(dir.path, '${DateTime.now().millisecondsSinceEpoch}$ext');
