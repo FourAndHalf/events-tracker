@@ -7,15 +7,8 @@ import 'package:flutter_timezone/flutter_timezone.dart';
 import 'package:timezone/data/latest_all.dart' as tz_data;
 import 'package:timezone/timezone.dart' as tz;
 
-/// Route opened when the weekly report notification is tapped.
-const reportRoute = '/invest/weekly';
-
 abstract class ReportNotifier {
-  /// Replaces any scheduled report with one at [when].
-  Future<void> schedule(DateTime when, String title, String body);
-  Future<void> cancel();
-
-  /// Schedules one notification with its own [id] (1 is the weekly report).
+  /// Schedules one notification with its own [id].
   /// Tapping it opens [route].
   Future<void> scheduleAt({
     required int id,
@@ -47,7 +40,6 @@ class LocalReportNotifier implements ReportNotifier {
   LocalReportNotifier._();
   static final instance = LocalReportNotifier._();
 
-  static const _id = 1;
   final _plugin = FlutterLocalNotificationsPlugin();
   bool _ready = false;
 
@@ -75,32 +67,6 @@ class LocalReportNotifier implements ReportNotifier {
     } catch (e) {
       debugPrint('Notifications unavailable: $e');
       return null;
-    }
-  }
-
-  @override
-  Future<void> schedule(DateTime when, String title, String body) async {
-    if (!_ready) return;
-    try {
-      await _plugin.zonedSchedule(
-        id: _id,
-        title: title,
-        body: body,
-        scheduledDate: tz.TZDateTime.from(when, tz.local),
-        notificationDetails: const NotificationDetails(
-          android: AndroidNotificationDetails(
-            'weekly_report',
-            'Weekly investing report',
-            channelDescription: 'Sunday-evening summary of your investing week',
-            importance: Importance.defaultImportance,
-          ),
-        ),
-        // Inexact: no special "alarms" permission needed; may arrive a little late.
-        androidScheduleMode: AndroidScheduleMode.inexactAllowWhileIdle,
-        payload: reportRoute,
-      );
-    } catch (e) {
-      debugPrint('Could not schedule report: $e');
     }
   }
 
@@ -187,16 +153,6 @@ class LocalReportNotifier implements ReportNotifier {
       }
     } catch (e) {
       debugPrint('Could not cancel reminders: $e');
-    }
-  }
-
-  @override
-  Future<void> cancel() async {
-    if (!_ready) return;
-    try {
-      await _plugin.cancel(id: _id);
-    } catch (e) {
-      debugPrint('Could not cancel report: $e');
     }
   }
 

@@ -11,10 +11,6 @@ void main() {
       parseWidgetUri(Uri.parse('events://read-toggle')),
       WidgetAction.readToggle,
     );
-    expect(
-      parseWidgetUri(Uri.parse('events://add-expense')),
-      WidgetAction.addExpense,
-    );
   });
 
   test('anything else is ignored', () {

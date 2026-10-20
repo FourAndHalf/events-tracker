@@ -6,10 +6,7 @@ import 'package:home_widget/home_widget.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/db/settings_repository.dart';
-import '../../core/money/money_format.dart';
 import '../../core/router/app_router.dart';
-import '../money/budget_logic.dart';
-import '../money/money_repository.dart';
 import '../reading/book_actions.dart';
 import '../reading/book_progress.dart';
 import '../reading/reading_logic.dart';
@@ -30,14 +27,10 @@ final widgetSyncProvider = Provider<void>((ref) {
   final sleepSessions = ref.watch(sleepListProvider).value;
   final readingSessions = ref.watch(readingSessionsProvider).value;
   final books = ref.watch(booksProvider).value;
-  final expenses = ref.watch(expensesProvider).value;
-  final categories = ref.watch(categoriesProvider).value;
   final settings = ref.watch(settingsProvider).value;
   if (sleepSessions == null ||
       readingSessions == null ||
       books == null ||
-      expenses == null ||
-      categories == null ||
       settings == null) {
     return;
   }
@@ -63,19 +56,6 @@ final widgetSyncProvider = Provider<void>((ref) {
   final stats = sessionStats(readingSessions, now);
   final pagesToday = pagesPerDay(stats)[dayOf(now)] ?? 0;
   final pagesPercent = pageGoalPercent(pagesToday, settings.dailyPageGoal);
-
-  final sym = settings.currencySymbol;
-  final spentToday = sumCents(expenses.where((e) => sameDay(e.date, now)));
-  final spentMonth = sumCents(expenses.where((e) => sameMonth(e.date, now)));
-  final budget = categories
-      .where((c) => !c.archived)
-      .fold<int>(0, (a, c) => a + (c.budgetCents ?? 0));
-  final level = budgetLevel(spentMonth, budget);
-  final spendStatus = switch (level) {
-    BudgetLevel.ok => budget == 0 ? 'No budget' : 'On Track',
-    BudgetLevel.warn => 'Near Limit',
-    BudgetLevel.over => 'Over Budget',
-  };
 
   unawaited(() async {
     try {
@@ -106,19 +86,6 @@ final widgetSyncProvider = Provider<void>((ref) {
             : page == null
             ? runningBook.title
             : '${runningBook.title} • p. $page',
-      );
-      await HomeWidget.saveWidgetData<String>(
-        'spend_label',
-        '${formatMoney(spentToday, sym)} spent today',
-      );
-      await HomeWidget.saveWidgetData<String>(
-        'spend_of_budget_label',
-        budget == 0 ? 'no budget set' : 'of ${formatMoney(budget, sym)} budget',
-      );
-      await HomeWidget.saveWidgetData<String>('spend_status', spendStatus);
-      await HomeWidget.saveWidgetData<String>(
-        'spend_percent',
-        '${budgetPercent(spentMonth, budget).round()}%',
       );
       await HomeWidget.updateWidget(androidName: _androidWidget);
     } catch (e) {
@@ -188,9 +155,6 @@ BuildContext? _navContext() =>
 /// Does what a widget button promises, then shows where it happened.
 Future<void> runWidgetAction(WidgetAction action, WidgetRef ref) async {
   switch (action) {
-    case WidgetAction.addExpense:
-      appRouter.go('/');
-      appRouter.push('/money/add');
     case WidgetAction.sleepToggle:
       final repo = ref.read(sleepRepositoryProvider);
       final open = await repo.watchOpen().first;

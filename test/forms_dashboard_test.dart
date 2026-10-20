@@ -1,4 +1,3 @@
-import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
 import 'package:events_tracker/core/db/providers.dart';
@@ -34,65 +33,7 @@ Future<void> _close(WidgetTester tester, AppDatabase db) async {
   await tester.runAsync(db.close);
 }
 
-Future<void> _tapVisible(WidgetTester tester, Finder f) async {
-  // A message left on screen would cover the button.
-  tester
-      .state<ScaffoldMessengerState>(find.byType(ScaffoldMessenger).first)
-      .removeCurrentSnackBar();
-  await tester.pump();
-  await tester.scrollUntilVisible(
-    f,
-    200,
-    scrollable: find.byType(Scrollable).first,
-  );
-  await tester.ensureVisible(f);
-  await tester.pump();
-  await tester.tap(f);
-}
-
 void main() {
-  testWidgets(
-    'expense form validates, saves cents, and warns when over budget',
-    (tester) async {
-      final db = AppDatabase(NativeDatabase.memory());
-      await tester.runAsync(
-        () => (db.update(db.categories)..where((c) => c.id.equals(1))).write(
-          const CategoriesCompanion(budgetCents: Value(1000)),
-        ),
-      );
-      await _boot(tester, db, '/money/add');
-
-      await _tapVisible(tester, find.text('Save'));
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.textContaining('Enter an amount'), findsOneWidget);
-
-      await tester.drag(find.byType(Scrollable).first, const Offset(0, 2000));
-      await tester.pump(const Duration(milliseconds: 300));
-      await tester.enterText(find.byType(TextField).first, '12.50');
-      await _tapVisible(tester, find.text('Save'));
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('Choose a category'), findsOneWidget);
-
-      await tester.scrollUntilVisible(
-        find.widgetWithText(ChoiceChip, 'Food'),
-        -200,
-        scrollable: find.byType(Scrollable).first,
-      );
-      await tester.tap(find.widgetWithText(ChoiceChip, 'Food'));
-      await tester.pump(const Duration(milliseconds: 300));
-      await _tapVisible(tester, find.text('Save'));
-      await tester.pump(const Duration(milliseconds: 300));
-      await _settle(tester);
-
-      final saved = await tester.runAsync(() => db.select(db.expenses).get());
-      expect(saved!.single.amountCents, 1250); // integer cents, not 12.5
-      expect(saved.single.categoryId, 1);
-      await _settle(tester);
-      expect(find.textContaining('over budget'), findsOneWidget);
-      await _close(tester, db);
-    },
-  );
-
   testWidgets(
     'dashboard sleep button starts the night, then wakes with a prompt',
     (tester) async {
@@ -133,7 +74,6 @@ void main() {
     for (final t in [
       'Trackers: add a habit or a timer',
       'Reading: add your first book',
-      'Investing: record your first trade',
       'Memories: add a birthday or a moment to remember',
     ]) {
       await tester.scrollUntilVisible(

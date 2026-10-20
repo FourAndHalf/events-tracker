@@ -2,7 +2,6 @@ import '../../core/db/app_database.dart';
 
 /// Notification ids: 10 bedtime, 11 expenses, 100 + tracker id for trackers.
 const bedtimeReminderId = 10;
-const expenseReminderId = 11;
 const trackerReminderBase = 100;
 const trackerReminderEnd = 1000;
 
@@ -40,14 +39,6 @@ List<DailyReminder> planDailyReminders(Setting s, Iterable<Tracker> trackers) =>
           title: 'Wind down for bed',
           body: 'Bedtime is in ${s.bedtimeReminderLeadMinutes} minutes',
           route: '/sleep',
-        ),
-      if (s.expenseReminderEnabled)
-        DailyReminder(
-          id: expenseReminderId,
-          minutes: s.expenseReminderMinutes,
-          title: 'Log today\'s expenses',
-          body: 'Take a minute to add what you spent',
-          route: '/money/add',
         ),
       for (final t in trackers)
         if (!t.archived &&

@@ -18,7 +18,7 @@ void main() {
     await tester.pump(const Duration(seconds: 2)); // let the splash finish
     await tester.pump();
 
-    // Home: app name in header, settings icon, only Sleep and Money tabs.
+    // Home: app name in header and settings icon.
     expect(find.text('Events'), findsOneWidget);
     expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
 
@@ -28,7 +28,7 @@ void main() {
     await tester.pageBack();
     await tester.pump(const Duration(milliseconds: 500));
 
-    await tester.tap(find.text('Money'));
+    await tester.tap(find.text('Read'));
     await tester.pump(const Duration(milliseconds: 500));
     expect(find.byTooltip('Home'), findsOneWidget);
 

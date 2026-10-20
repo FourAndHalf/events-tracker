@@ -15,10 +15,6 @@ class FakeNotifier implements ReportNotifier {
       <({int id, DateTime when, String title, String body, String route})>[];
   final cancelledRanges = <(int, int)>[];
   @override
-  Future<void> schedule(DateTime when, String title, String body) async {}
-  @override
-  Future<void> cancel() async {}
-  @override
   Future<bool> requestPermission() async => true;
   @override
   Future<void> scheduleAt({
