@@ -98,6 +98,7 @@ flutter:
 
   assets:
     - assets/icon/splash_logo.png
+    - assets/icon/icon_foreground.png
 
   fonts:
     - family: JetBrainsMono

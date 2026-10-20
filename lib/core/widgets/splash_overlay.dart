@@ -73,7 +73,7 @@ class _SplashOverlayState extends State<SplashOverlay>
                     child: Transform.scale(
                       scale: scale,
                       child: Image.asset(
-                        'assets/icon/splash_logo.png',
+                        'assets/icon/icon_foreground.png',
                         width: 160,
                         height: 160,
                       ),
