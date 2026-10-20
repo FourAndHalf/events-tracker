@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
-        android:padding="10dp"
+        android:padding="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/widget_button_bg">
@@ -26,22 +26,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0%"
-                android:textColor="#818CF8"
-                android:textStyle="bold"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="13sp" />
             <TextView
                 android:id="@+id/sleep_hours_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0h 00m"
-                android:textColor="#E2E8F0"
-                android:textStyle="bold"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="16sp" />
             <TextView
+                android:fontFamily="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Sleep logged"
-                android:textColor="#64748B"
+                android:textColor="@color/widget_muted"
                 android:textSize="10sp" />
         </LinearLayout>
         <LinearLayout
@@ -51,18 +52,19 @@
             android:orientation="vertical"
             android:gravity="end">
             <TextView
+                android:fontFamily="monospace"
                 android:id="@+id/sleep_state"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Awake"
-                android:textColor="#64748B"
+                android:textColor="@color/widget_muted"
                 android:textSize="10sp" />
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Track Sleep"
-                android:textColor="#818CF8"
-                android:textStyle="bold"
+                android:text="Track sleep"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>
@@ -73,7 +75,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="6dp"
-        android:padding="10dp"
+        android:padding="12dp"
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:background="@drawable/widget_button_bg">
@@ -87,22 +89,23 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0%"
-                android:textColor="#06B6D4"
-                android:textStyle="bold"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="13sp" />
             <TextView
                 android:id="@+id/pages_label"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0/0p"
-                android:textColor="#E2E8F0"
-                android:textStyle="bold"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="16sp" />
             <TextView
+                android:fontFamily="monospace"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Pages today"
-                android:textColor="#64748B"
+                android:textColor="@color/widget_muted"
                 android:textSize="10sp" />
         </LinearLayout>
         <LinearLayout
@@ -112,11 +115,12 @@
             android:orientation="vertical"
             android:gravity="end">
             <TextView
+                android:fontFamily="monospace"
                 android:id="@+id/read_state"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Idle"
-                android:textColor="#64748B"
+                android:textColor="@color/widget_muted"
                 android:textSize="10sp"
                 android:gravity="end"
                 android:maxLines="1"
@@ -124,9 +128,9 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reading Timer"
-                android:textColor="#06B6D4"
-                android:textStyle="bold"
+                android:text="Reading timer"
+                android:textColor="@color/widget_ink"
+                android:fontFamily="monospace"
                 android:textSize="14sp" />
         </LinearLayout>
     </LinearLayout>

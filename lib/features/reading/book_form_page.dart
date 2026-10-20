@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'book_widgets.dart';
 import 'cover_storage.dart';
 import 'reading_logic.dart';
@@ -119,24 +119,12 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
 
   Future<void> _delete() async {
     final b = _existing!;
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete this book?'),
-        content: const Text('Its reading sessions and notes are deleted too.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    final ok = await confirmAction(
+      context,
+      title: 'Delete this book?',
+      message: 'Its reading sessions and notes are deleted too.',
     );
-    if (ok != true) return;
+    if (!ok) return;
     final cover = await ref.read(readingRepositoryProvider).deleteBook(b);
     await deleteCover(cover);
     if (mounted) context.go('/read');
@@ -168,15 +156,15 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
         title: Text(widget.id == null ? 'Add book' : 'Edit book'),
         actions: [
           if (widget.id != null)
-            IconButton(
+            PearlIconButton(
               tooltip: 'Delete',
               onPressed: _delete,
-              icon: const Icon(Icons.delete_outline),
+              icon: Icons.delete_outline,
             ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           Row(
             children: [
@@ -190,19 +178,19 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
                     PillButton(
                       label: 'Camera',
                       icon: Icons.photo_camera_outlined,
-                      ghost: true,
+                      variant: PillVariant.secondary,
                       onPressed: () => _addCover(ImageSource.camera),
                     ),
                     PillButton(
                       label: 'Gallery',
                       icon: Icons.photo_outlined,
-                      ghost: true,
+                      variant: PillVariant.secondary,
                       onPressed: () => _addCover(ImageSource.gallery),
                     ),
                     if (_cover != null)
                       PillButton(
                         label: 'Remove',
-                        ghost: true,
+                        variant: PillVariant.destructive,
                         onPressed: () => setState(() => _cover = null),
                       ),
                   ],
@@ -243,8 +231,7 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
           ),
           if (_status == BookStatus.finished) ...[
             const SizedBox(height: 16),
-            const Overline('Rating'),
-            const SizedBox(height: 4),
+            const SectionTitle('Rating'),
             Align(
               alignment: Alignment.centerLeft,
               child: RatingStars(
@@ -254,7 +241,7 @@ class _BookFormPageState extends ConsumerState<BookFormPage> {
             ),
           ],
           const SizedBox(height: 24),
-          PillButton(label: 'Save', color: Aura.reading, onPressed: _save),
+          PillButton(label: 'Save', onPressed: _save),
         ],
       ),
     );

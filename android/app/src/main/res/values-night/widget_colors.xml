@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="widget_canvas">#0F0F11</color>
+    <color name="widget_module">#161618</color>
+    <color name="widget_hairline">#2C2C30</color>
+    <color name="widget_ink">#ECECEE</color>
+    <color name="widget_muted">#A0A0A6</color>
+</resources>

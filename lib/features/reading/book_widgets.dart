@@ -3,7 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'reading_logic.dart';
 
 /// Cover thumbnail, or a tinted placeholder with the title's first letter.
@@ -18,18 +19,19 @@ class BookCover extends StatelessWidget {
     final height = width * 1.5;
     final radius = BorderRadius.circular(8);
     final path = book.coverPath;
+    final c = context.pearl;
     Widget placeholder() => Container(
       width: width,
       height: height,
       decoration: BoxDecoration(
-        color: Aura.reading.withValues(alpha: 0.18),
+        color: c.inner,
         borderRadius: radius,
+        border: Border.all(color: c.hairline),
       ),
       alignment: Alignment.center,
       child: Text(
         book.title.isEmpty ? '?' : book.title.characters.first.toUpperCase(),
-        style: Theme.of(context).textTheme.titleLarge
-            ?.copyWith(color: Aura.reading),
+        style: Theme.of(context).textTheme.titleLarge?.copyWith(color: c.muted),
       ),
     );
     if (path == null) return placeholder();
@@ -46,11 +48,11 @@ class BookCover extends StatelessWidget {
   }
 }
 
-Color statusColor(BookStatus s) => switch (s) {
-  BookStatus.reading => Aura.reading,
-  BookStatus.finished => Aura.gain,
-  BookStatus.abandoned => Aura.textMuted,
-  BookStatus.wantToRead => Aura.sleep,
+BadgeTone statusTone(BookStatus s) => switch (s) {
+  BookStatus.reading => BadgeTone.info,
+  BookStatus.finished => BadgeTone.positive,
+  BookStatus.abandoned => BadgeTone.neutral,
+  BookStatus.wantToRead => BadgeTone.neutral,
 };
 
 class RatingStars extends StatelessWidget {
@@ -70,7 +72,9 @@ class RatingStars extends StatelessWidget {
             padding: const EdgeInsets.all(2),
             child: Icon(
               i <= (rating ?? 0) ? Icons.star : Icons.star_border,
-              color: Aura.moneyHi,
+              color: i <= (rating ?? 0)
+                  ? context.pearl.anchor
+                  : context.pearl.outline,
               size: onChanged == null ? 18 : 32,
             ),
           ),

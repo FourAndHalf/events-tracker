@@ -95,7 +95,7 @@ void main() {
       });
 
       await _openMemories(tester, db);
-      expect(find.text('Coming up'.toUpperCase()), findsOneWidget);
+      expect(find.text('Coming up'), findsOneWidget);
       expect(find.text('in 3 days'), findsWidgets);
       expect(find.textContaining('60th birthday'), findsOneWidget);
       expect(find.text('March 2019'), findsOneWidget);
@@ -118,7 +118,7 @@ void main() {
       () => db.select(db.memoryEvents).get(),
     ); // open + seed
     await _openMemories(tester, db);
-    await tester.tap(find.text('Add'));
+    await tester.tap(find.byTooltip('Add memory'));
     await tester.pump(const Duration(milliseconds: 300));
 
     // Saving without a title is refused.
@@ -129,7 +129,7 @@ void main() {
     await tester.drag(find.byType(Scrollable).first, const Offset(0, 2000));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.enterText(find.byType(TextField).first, 'Grandpa visit');
-    await tester.tap(find.text('Month and year'));
+    await tester.tap(find.text('Month'));
     await tester.pump(const Duration(milliseconds: 300));
     await tester.enterText(find.widgetWithText(TextField, 'Year'), '2021');
     await _tapSave(tester);

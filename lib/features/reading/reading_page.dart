@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/home_button.dart';
 import 'book_progress.dart';
 import 'book_widgets.dart';
@@ -37,30 +37,29 @@ class _ReadingPageState extends ConsumerState<ReadingPage> {
         leading: const HomeButton(),
         title: const Text('Reading'),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Charts',
             onPressed: () => context.push('/read/charts'),
-            icon: const Icon(Icons.bar_chart),
+            icon: Icons.bar_chart,
           ),
-          IconButton(
+          const SizedBox(width: 8),
+          PearlIconButton(
             tooltip: 'Stats',
             onPressed: () => context.push('/read/stats'),
-            icon: const Icon(Icons.insights_outlined),
+            icon: Icons.insights_outlined,
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add book',
         onPressed: () => context.push('/read/edit'),
-        backgroundColor: Aura.reading,
-        foregroundColor: Aura.canvas,
-        icon: const Icon(Icons.add),
-        label: const Text('Book'),
+        child: const Icon(Icons.add),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
-          Aura.margin,
-          Aura.margin,
-          Aura.margin,
+          Pearl.margin,
+          Pearl.margin,
+          Pearl.margin,
           96,
         ),
         children: [
@@ -99,7 +98,7 @@ class _ReadingPageState extends ConsumerState<ReadingPage> {
               sessions: sessions.where((s) => s.bookId == b.id).toList()
                 ..sort((a, c) => a.startAt.compareTo(c.startAt)),
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Pearl.gutter),
           ],
         ],
       ),
@@ -118,7 +117,7 @@ class _BookTile extends StatelessWidget {
     final text = Theme.of(context).textTheme;
     final status = BookStatus.parse(book.status);
     final progress = progressFraction(currentPage(sessions), book.totalPages);
-    return AuraCard(
+    return Module(
       onTap: () => context.push('/read/book/${book.id}'),
       child: Row(
         children: [
@@ -134,7 +133,7 @@ class _BookTile extends StatelessWidget {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    StatusPill(label: status.label, color: statusColor(status)),
+                    StatusBadge(label: status.label, tone: statusTone(status)),
                     if (book.rating != null) ...[
                       const SizedBox(width: 8),
                       RatingStars(rating: book.rating),
@@ -143,7 +142,7 @@ class _BookTile extends StatelessWidget {
                 ),
                 if (progress != null && status == BookStatus.reading) ...[
                   const SizedBox(height: 8),
-                  AuraProgressBar(value: progress, color: Aura.reading),
+                  Meter(value: progress),
                 ],
               ],
             ),

@@ -25,7 +25,8 @@ class TrackerApp extends ConsumerWidget {
     ref.watch(widgetSyncProvider);
     return MaterialApp.router(
       title: 'Events',
-      theme: auraTheme,
+      theme: pearlLightTheme,
+      darkTheme: pearlDarkTheme,
       routerConfig: appRouter,
       builder: (context, child) =>
           WidgetLinks(child: SplashOverlay(child: child!)),

@@ -5,8 +5,8 @@ import 'package:intl/intl.dart';
 
 import '../../core/charts/series.dart';
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/charts.dart';
 import '../sleep/sleep_logic.dart';
 import 'tracker_charts.dart';
@@ -43,63 +43,42 @@ class TrackerDetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: Text(t.name),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Edit',
             onPressed: () => context.push('/trackers/edit/${t.id}'),
-            icon: const Icon(Icons.edit_outlined),
+            icon: Icons.edit_outlined,
           ),
-          IconButton(
+          const SizedBox(width: 8),
+          PearlIconButton(
             tooltip: 'Delete',
             onPressed: () async {
-              final ok = await showDialog<bool>(
-                context: context,
-                builder: (ctx) => AlertDialog(
-                  title: const Text('Delete this tracker?'),
-                  content: const Text('All its history is deleted too.'),
-                  actions: [
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, false),
-                      child: const Text('Cancel'),
-                    ),
-                    TextButton(
-                      onPressed: () => Navigator.pop(ctx, true),
-                      child: const Text('Delete'),
-                    ),
-                  ],
-                ),
+              final ok = await confirmAction(
+                context,
+                title: 'Delete this tracker?',
+                message: 'All its history is deleted too.',
               );
-              if (ok != true) return;
+              if (!ok) return;
               await repo.deleteTracker(t.id);
               if (context.mounted) context.pop();
             },
-            icon: const Icon(Icons.delete_outline),
+            icon: Icons.delete_outline,
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
-          AuraCard(
-            child: Row(
-              children: [
-                IconBadge(icon: trackerIcon(t.icon), color: Aura.habit),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: _Stat(
-                    label: 'Current streak',
-                    value: '${currentStreak(days, now)} days',
-                  ),
-                ),
-                Expanded(
-                  child: _Stat(
-                    label: 'Best streak',
-                    value: '${bestStreak(days)} days',
-                  ),
-                ),
-              ],
-            ),
+          KpiStrip(
+            leading: IconChip(icon: trackerIcon(t.icon)),
+            items: [
+              (
+                label: 'Current streak',
+                value: '${currentStreak(days, now)} days',
+              ),
+              (label: 'Best streak', value: '${bestStreak(days)} days'),
+            ],
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Pearl.gutter),
           Builder(
             builder: (context) {
               final range = lastDays(30, now);
@@ -108,7 +87,6 @@ class TrackerDetailPage extends ConsumerWidget {
                   : habitPerDay(entries, range);
               return ChartCard(
                 title: isTimer ? 'Minutes per day' : 'Days done',
-                color: Aura.habit,
                 subtitle: isTimer
                     ? '${values.fold<double>(0, (a, b) => a + b).round()} min in the last 30 days'
                     : '${(completionRate(values) * 100).round()}% of the last 30 days',
@@ -117,60 +95,71 @@ class TrackerDetailPage extends ConsumerWidget {
                     for (var i = 0; i < range.length; i++)
                       ChartBar(dayLabel(range[i], 30), values[i]),
                   ],
-                  color: Aura.habit,
                   semanticsLabel: 'Last 30 days',
                 ),
               );
             },
           ),
-          const SizedBox(height: 16),
-          if (!isTimer) ...[
-            const Overline('Last 28 days', color: Aura.habit),
-            const SizedBox(height: 4),
-            Text('Tap a day to fix it.', style: text.bodySmall),
-            const SizedBox(height: 8),
-            Wrap(
-              spacing: 6,
-              runSpacing: 6,
-              children: [
-                for (var i = 27; i >= 0; i--)
-                  Builder(
-                    builder: (context) {
-                      final d = DateTime(
-                        today.year,
-                        today.month,
-                        today.day - i,
-                      );
-                      final done = entries.any((e) => dayOf(e.day) == d);
-                      return InkWell(
-                        onTap: () => repo.toggleHabit(t.id, d),
-                        customBorder: const CircleBorder(),
-                        child: Tooltip(
-                          message: DateFormat('EEE d MMM').format(d),
-                          child: Container(
-                            width: 36,
-                            height: 36,
-                            alignment: Alignment.center,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              color: done ? Aura.habit : Aura.raised,
-                            ),
-                            child: Text(
-                              '${d.day}',
-                              style: text.labelSmall?.copyWith(
-                                color: done ? Aura.canvas : Aura.textSecondary,
-                              ),
-                            ),
-                          ),
-                        ),
-                      );
-                    },
+          const SizedBox(height: Pearl.gutter),
+          if (!isTimer)
+            Module(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const ModuleHeader(
+                    title: 'Last 28 days',
+                    subtitle: 'Tap a day to fix it.',
                   ),
-              ],
-            ),
-          ] else ...[
-            const Overline('Sessions', color: Aura.habit),
-            const SizedBox(height: 4),
+                  const SizedBox(height: 12),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: [
+                      for (var i = 27; i >= 0; i--)
+                        Builder(
+                          builder: (context) {
+                            final d = DateTime(
+                              today.year,
+                              today.month,
+                              today.day - i,
+                            );
+                            final done = entries.any((e) => dayOf(e.day) == d);
+                            return InkWell(
+                              onTap: () => repo.toggleHabit(t.id, d),
+                              customBorder: const CircleBorder(),
+                              child: Tooltip(
+                                message: DateFormat('EEE d MMM').format(d),
+                                child: Container(
+                                  width: 36,
+                                  height: 36,
+                                  alignment: Alignment.center,
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    color: done
+                                        ? context.pearl.anchor
+                                        : context.pearl.dotEmpty,
+                                  ),
+                                  child: Text(
+                                    '${d.day}',
+                                    style: text.labelSmall?.copyWith(
+                                      color: done
+                                          ? context.pearl.onAnchor
+                                          : context.pearl.muted,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                    ],
+                  ),
+                ],
+              ),
+            )
+          else ...[
+            const SizedBox(height: Pearl.spaceSm),
+            const SectionTitle('Sessions'),
             if (entries.where((e) => e.startAt != null).isEmpty)
               Text('No sessions yet.', style: text.bodySmall),
             for (final e in entries.where((e) => e.startAt != null))
@@ -179,12 +168,7 @@ class TrackerDetailPage extends ConsumerWidget {
                 direction: e.endAt == null
                     ? DismissDirection.none
                     : DismissDirection.endToStart,
-                background: Container(
-                  color: Aura.loss.withValues(alpha: 0.3),
-                  alignment: Alignment.centerRight,
-                  padding: const EdgeInsets.only(right: 16),
-                  child: const Icon(Icons.delete_outline),
-                ),
+                background: const DeleteSwipeBackground(),
                 onDismissed: (_) => repo.deleteEntry(e.id),
                 child: ListTile(
                   contentPadding: EdgeInsets.zero,
@@ -197,31 +181,12 @@ class TrackerDetailPage extends ConsumerWidget {
                         : formatDuration(
                             entryDuration(e.startAt!, e.endAt, now),
                           ),
-                    style: text.labelLarge,
                   ),
                 ),
               ),
           ],
         ],
       ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        Text(value, style: text.titleMedium),
-        Text(label, style: text.bodySmall),
-      ],
     );
   }
 }

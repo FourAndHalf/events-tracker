@@ -4,8 +4,9 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'media_logic.dart';
 import 'media_storage.dart';
 import 'media_widgets.dart';
@@ -61,67 +62,63 @@ class EventDetailPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Memory'),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Edit',
             onPressed: () => context.push('/memories/edit/${e.id}'),
-            icon: const Icon(Icons.edit_outlined),
+            icon: Icons.edit_outlined,
           ),
-          IconButton(
+          const SizedBox(width: 8),
+          PearlIconButton(
             tooltip: 'Delete',
             onPressed: () => _delete(context, ref, e),
-            icon: const Icon(Icons.delete_outline),
+            icon: Icons.delete_outline,
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
-          Text(e.title, style: text.headlineSmall),
+          Text(e.title, style: text.headlineMedium),
           const SizedBox(height: 8),
           Wrap(
             spacing: 8,
             children: [
-              StatusPill(label: catName, color: Aura.memory),
-              StatusPill(
-                label: occasion ? 'Every year' : 'One-time',
-                color: Aura.textSecondary,
-              ),
+              StatusBadge(label: catName),
+              StatusBadge(label: occasion ? 'Every year' : 'One-time'),
             ],
           ),
-          const SizedBox(height: 16),
-          AuraCard(
+          const SizedBox(height: Pearl.spaceMd),
+          Module(
+            large: true,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Overline('When', color: Aura.memory),
-                const SizedBox(height: 8),
-                Text(formatMemoryDate(e), style: text.titleLarge),
-                if (headline != null) Text(headline, style: text.bodyMedium),
+                Text('When', style: text.bodySmall),
+                const SizedBox(height: 4),
+                Text(formatMemoryDate(e), style: PearlType.metricCard),
+                if (headline != null)
+                  Text(
+                    headline,
+                    style: text.bodyMedium?.copyWith(
+                      color: context.pearl.muted,
+                    ),
+                  ),
               ],
             ),
           ),
           if (e.person != null || e.place != null) ...[
             const SizedBox(height: 12),
             if (e.person != null)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.person_outline),
-                title: Text(e.person!),
-              ),
+              NavRow(icon: Icons.person_outline, label: e.person!),
             if (e.place != null)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                leading: const Icon(Icons.place_outlined),
-                title: Text(e.place!),
-              ),
+              NavRow(icon: Icons.place_outlined, label: e.place!),
           ],
           if (e.description != null) ...[
             const SizedBox(height: 12),
             Text(e.description!, style: text.bodyMedium),
           ],
-          const SizedBox(height: 24),
-          const Overline('Photos and videos', color: Aura.memory),
-          const SizedBox(height: 8),
+          const SizedBox(height: Pearl.spaceLg),
+          const SectionTitle('Photos and videos'),
           MediaPickButtons(
             onPicked: (files) async {
               await importMedia(
@@ -156,10 +153,9 @@ class EventDetailPage extends ConsumerWidget {
                         const Positioned(
                           left: 6,
                           top: 6,
-                          child: Icon(
-                            Icons.star,
-                            size: 18,
-                            color: Aura.moneyHi,
+                          child: StatusBadge(
+                            label: 'Cover',
+                            tone: BadgeTone.champagne,
                           ),
                         ),
                     ],
@@ -186,24 +182,12 @@ class EventDetailPage extends ConsumerWidget {
     WidgetRef ref,
     MemoryEvent e,
   ) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete this memory?'),
-        content: const Text('Its photos and videos are deleted too.'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
+    final ok = await confirmAction(
+      context,
+      title: 'Delete this memory?',
+      message: 'Its photos and videos are deleted too.',
     );
-    if (ok != true) return;
+    if (!ok) return;
     final gone = await ref.read(memoriesRepositoryProvider).deleteEvent(e.id);
     await deleteFiles(gone.paths);
     if (context.mounted) context.pop();
@@ -230,6 +214,8 @@ class EventDetailPage extends ConsumerWidget {
                 onTap: () => Navigator.pop(ctx, 'cover'),
               ),
             ListTile(
+              iconColor: ctx.pearl.negative,
+              textColor: ctx.pearl.negative,
               leading: const Icon(Icons.delete_outline),
               title: const Text('Remove'),
               onTap: () => Navigator.pop(ctx, 'remove'),

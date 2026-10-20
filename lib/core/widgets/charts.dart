@@ -1,14 +1,18 @@
 import 'package:flutter/material.dart';
 
 import '../charts/series.dart';
-import '../theme/aura_colors.dart';
+import '../theme/app_theme.dart';
+import '../theme/pearl_colors.dart';
+import 'pearl_widgets.dart';
 
-/// Vertical bars with labels underneath and an optional dashed goal line.
+/// Thin vertical bars in light gray with the current (last) period in
+/// charcoal under a dark callout pill. No gridlines; a muted axis of labels
+/// with the current one in ink. An optional [goal] draws a dashed line, and
+/// bars that reach it get a small champagne marker.
 class BarChart extends StatelessWidget {
   const BarChart({
     super.key,
     required this.bars,
-    this.color = Aura.sleep,
     this.height = 160,
     this.goal,
     this.formatValue,
@@ -16,7 +20,6 @@ class BarChart extends StatelessWidget {
   });
 
   final List<ChartBar> bars;
-  final Color color;
   final double height;
   final double? goal;
   final String Function(double)? formatValue;
@@ -24,8 +27,8 @@ class BarChart extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(color: Aura.textSecondary);
+    final c = context.pearl;
+    final axis = Theme.of(context).textTheme.labelSmall;
     return Semantics(
       label: semanticsLabel,
       child: SizedBox(
@@ -33,11 +36,11 @@ class BarChart extends StatelessWidget {
         width: double.infinity,
         child: CustomPaint(
           painter: _BarPainter(
-            bars,
-            color,
-            goal,
-            formatValue,
-            style ?? const TextStyle(fontSize: 10),
+            bars: bars,
+            goal: goal,
+            formatValue: formatValue,
+            axis: axis ?? const TextStyle(fontSize: 10),
+            colors: c,
           ),
         ),
       ),
@@ -46,25 +49,32 @@ class BarChart extends StatelessWidget {
 }
 
 class _BarPainter extends CustomPainter {
-  _BarPainter(this.bars, this.color, this.goal, this.formatValue, this.style);
+  _BarPainter({
+    required this.bars,
+    required this.goal,
+    required this.formatValue,
+    required this.axis,
+    required this.colors,
+  });
 
   final List<ChartBar> bars;
-  final Color color;
   final double? goal;
   final String Function(double)? formatValue;
-  final TextStyle style;
+  final TextStyle axis;
+  final PearlColors colors;
 
-  TextPainter _text(String s, {double? maxWidth}) => TextPainter(
-    text: TextSpan(text: s, style: style),
-    textDirection: TextDirection.ltr,
-    maxLines: 1,
-  )..layout(maxWidth: maxWidth ?? double.infinity);
+  TextPainter _text(String s, TextStyle style, {double? maxWidth}) =>
+      TextPainter(
+        text: TextSpan(text: s, style: style),
+        textDirection: TextDirection.ltr,
+        maxLines: 1,
+      )..layout(maxWidth: maxWidth ?? double.infinity);
 
   @override
   void paint(Canvas canvas, Size size) {
     if (bars.isEmpty) return;
     const labelH = 18.0;
-    const topPad = 16.0;
+    const topPad = 26.0; // room for the callout pill
     final plotH = size.height - labelH - topPad;
     var maxV = bars
         .map((b) => b.value)
@@ -73,82 +83,99 @@ class _BarPainter extends CustomPainter {
     if (maxV <= 0) maxV = 1;
 
     final slot = size.width / bars.length;
-    final barW = (slot * 0.62).clamp(3.0, 40.0);
+    final barW = (slot * 0.28).clamp(3.0, 10.0);
     final base = topPad + plotH;
-    canvas.drawLine(
-      Offset(0, base),
-      Offset(size.width, base),
-      Paint()..color = Aura.rim,
-    );
+    final current = bars.length - 1;
 
     for (var i = 0; i < bars.length; i++) {
       final b = bars[i];
       final h = plotH * (b.value / maxV);
-      final x = slot * i + (slot - barW) / 2;
-      final rect = RRect.fromRectAndRadius(
-        Rect.fromLTWH(x, base - h, barW, h),
-        const Radius.circular(4),
-      );
+      final cx = slot * i + slot / 2;
       if (b.value > 0) {
-        canvas.drawRRect(rect, Paint()..color = (b.color as Color?) ?? color);
+        canvas.drawRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(cx - barW / 2, base - h, barW, h),
+            Radius.circular(barW / 2),
+          ),
+          Paint()..color = i == current ? colors.anchor : colors.barIdle,
+        );
+        if (goal != null && b.value >= goal!) {
+          canvas.drawCircle(
+            Offset(cx, base - h - 5),
+            2,
+            Paint()..color = colors.champagne,
+          );
+        }
       }
       if (b.label.isNotEmpty) {
-        final tp = _text(b.label, maxWidth: slot * 2);
-        tp.paint(canvas, Offset(slot * i + (slot - tp.width) / 2, base + 3));
-      }
-      // Value labels only when there is room for them.
-      if (formatValue != null && b.value > 0 && slot >= 34) {
-        final tp = _text(formatValue!(b.value), maxWidth: slot);
-        tp.paint(
-          canvas,
-          Offset(slot * i + (slot - tp.width) / 2, base - h - 14),
+        final tp = _text(
+          b.label,
+          axis.copyWith(color: i == current ? colors.ink : colors.muted),
+          maxWidth: slot * 2,
         );
+        tp.paint(canvas, Offset(cx - tp.width / 2, base + 4));
       }
     }
 
     if (goal != null) {
       final y = base - plotH * (goal! / maxV);
       final paint = Paint()
-        ..color = Aura.money
+        ..color = colors.outline
         ..strokeWidth = 1;
-      for (double x = 0; x < size.width; x += 8) {
-        canvas.drawLine(Offset(x, y), Offset(x + 4, y), paint);
+      for (double x = 0; x < size.width; x += 6) {
+        canvas.drawLine(Offset(x, y), Offset(x + 3, y), paint);
       }
+    }
+
+    // Dark callout over the current bar.
+    final last = bars[current];
+    if (formatValue != null && last.value > 0) {
+      final h = plotH * (last.value / maxV);
+      final tp = _text(
+        formatValue!(last.value),
+        PearlType.metricDelta.copyWith(color: colors.onAnchor),
+      );
+      final w = tp.width + 12;
+      final cx = (slot * current + slot / 2).clamp(w / 2, size.width - w / 2);
+      final top = (base - h - 24).clamp(0.0, size.height);
+      canvas.drawRRect(
+        RRect.fromRectAndRadius(
+          Rect.fromLTWH(cx - w / 2, top, w, 18),
+          const Radius.circular(9),
+        ),
+        Paint()..color = colors.anchor,
+      );
+      tp.paint(canvas, Offset(cx - tp.width / 2, top + (18 - tp.height) / 2));
     }
   }
 
   @override
   bool shouldRepaint(_BarPainter old) =>
-      old.bars != bars || old.color != color || old.goal != goal;
+      old.bars != bars || old.goal != goal || old.colors != colors;
 }
 
-/// A polyline through [points] with dots and min/max labels on the left.
+/// A 1.5px charcoal line with a faint area fill fading to transparent, min/max
+/// labels on the left and first/last labels underneath. An optional
+/// [secondary] series is drawn dashed and muted on the same scale.
 class LineChart extends StatelessWidget {
   const LineChart({
     super.key,
     required this.points,
-    this.color = Aura.invest,
     this.secondary,
-    this.secondaryColor = Aura.textMuted,
     this.height = 160,
     this.formatValue,
     this.semanticsLabel,
   });
 
   final List<ChartPoint> points;
-  final Color color;
-
-  /// Optional second series drawn behind, on the same scale (e.g. amount invested).
   final List<ChartPoint>? secondary;
-  final Color secondaryColor;
   final double height;
   final String Function(double)? formatValue;
   final String? semanticsLabel;
 
   @override
   Widget build(BuildContext context) {
-    final style = Theme.of(context).textTheme.labelSmall
-        ?.copyWith(color: Aura.textSecondary);
+    final axis = Theme.of(context).textTheme.labelSmall;
     return Semantics(
       label: semanticsLabel,
       child: SizedBox(
@@ -158,10 +185,9 @@ class LineChart extends StatelessWidget {
           painter: _LinePainter(
             points,
             secondary,
-            color,
-            secondaryColor,
             formatValue,
-            style ?? const TextStyle(fontSize: 10),
+            axis ?? const TextStyle(fontSize: 10),
+            context.pearl,
           ),
         ),
       ),
@@ -173,18 +199,16 @@ class _LinePainter extends CustomPainter {
   _LinePainter(
     this.points,
     this.secondary,
-    this.color,
-    this.secondaryColor,
     this.formatValue,
     this.style,
+    this.colors,
   );
 
   final List<ChartPoint> points;
   final List<ChartPoint>? secondary;
-  final Color color;
-  final Color secondaryColor;
   final String Function(double)? formatValue;
   final TextStyle style;
+  final PearlColors colors;
 
   TextPainter _text(String s) => TextPainter(
     text: TextSpan(text: s, style: style),
@@ -217,54 +241,75 @@ class _LinePainter extends CustomPainter {
 
     maxL.paint(canvas, const Offset(0, top - 6));
     minL.paint(canvas, Offset(0, top + plotH - 6));
-    canvas.drawLine(
-      Offset(left, top + plotH),
-      Offset(size.width, top + plotH),
-      Paint()..color = Aura.rim,
-    );
 
-    void draw(List<ChartPoint> pts, Color c) {
-      final line = Paint()
-        ..color = c
-        ..strokeWidth = 2
-        ..style = PaintingStyle.stroke
-        ..strokeJoin = StrokeJoin.round;
+    Path pathOf(List<ChartPoint> pts) {
       final path = Path();
       for (var i = 0; i < pts.length; i++) {
         final o = at(i, pts.length, pts[i].value);
-        if (i == 0) {
-          path.moveTo(o.dx, o.dy);
-        } else {
-          path.lineTo(o.dx, o.dy);
+        i == 0 ? path.moveTo(o.dx, o.dy) : path.lineTo(o.dx, o.dy);
+      }
+      return path;
+    }
+
+    final stroke = Paint()
+      ..style = PaintingStyle.stroke
+      ..strokeWidth = 1.5
+      ..strokeJoin = StrokeJoin.round
+      ..strokeCap = StrokeCap.round;
+
+    if (secondary != null && secondary!.length > 1) {
+      final metric = pathOf(secondary!).computeMetrics();
+      final dashed = Path();
+      for (final m in metric) {
+        for (double d = 0; d < m.length; d += 8) {
+          dashed.addPath(m.extractPath(d, d + 4), Offset.zero);
         }
       }
-      canvas.drawPath(path, line);
-      for (var i = 0; i < pts.length; i++) {
-        canvas.drawCircle(
-          at(i, pts.length, pts[i].value),
-          3,
-          Paint()..color = c,
-        );
-      }
+      canvas.drawPath(dashed, stroke..color = colors.outline);
     }
 
-    if (secondary != null && secondary!.isNotEmpty) {
-      draw(secondary!, secondaryColor);
-    }
-    draw(points, color);
-
-    // First and last x labels.
-    final first = _text(points.first.label);
-    first.paint(canvas, Offset(left, size.height - 14));
+    final line = pathOf(points);
     if (points.length > 1) {
-      final last = _text(points.last.label);
-      last.paint(canvas, Offset(size.width - last.width, size.height - 14));
+      final first = at(0, points.length, points.first.value);
+      final last = at(points.length - 1, points.length, points.last.value);
+      final area = Path.from(line)
+        ..lineTo(last.dx, top + plotH)
+        ..lineTo(first.dx, top + plotH)
+        ..close();
+      canvas.drawPath(
+        area,
+        Paint()
+          ..shader = LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [
+              colors.anchor.withValues(alpha: 0.08),
+              colors.anchor.withValues(alpha: 0),
+            ],
+          ).createShader(Rect.fromLTWH(0, top, size.width, plotH)),
+      );
+    }
+    canvas.drawPath(line, stroke..color = colors.anchor);
+    // Mark the latest point.
+    canvas.drawCircle(
+      at(points.length - 1, points.length, points.last.value),
+      3,
+      Paint()..color = colors.anchor,
+    );
+
+    final firstL = _text(points.first.label);
+    firstL.paint(canvas, Offset(left, size.height - 14));
+    if (points.length > 1) {
+      final lastL = _text(points.last.label);
+      lastL.paint(canvas, Offset(size.width - lastL.width, size.height - 14));
     }
   }
 
   @override
   bool shouldRepaint(_LinePainter old) =>
-      old.points != points || old.secondary != secondary;
+      old.points != points ||
+      old.secondary != secondary ||
+      old.colors != colors;
 }
 
 /// Week / Month (7 or 30 days) switch used above the charts.
@@ -275,57 +320,35 @@ class RangeToggle extends StatelessWidget {
   final ValueChanged<int> onChanged;
 
   @override
-  Widget build(BuildContext context) => SegmentedButton<int>(
-    showSelectedIcon: false,
-    segments: const [
-      ButtonSegment(value: 7, label: Text('Week')),
-      ButtonSegment(value: 30, label: Text('Month')),
-    ],
-    selected: {days},
-    onSelectionChanged: (s) => onChanged(s.first),
+  Widget build(BuildContext context) => Segmented<int>(
+    segments: const [(7, 'Week'), (30, 'Month')],
+    selected: days,
+    onChanged: onChanged,
   );
 }
 
-/// A titled card holding a chart.
+/// A module holding a chart, titled in headline-md with a muted subtitle.
 class ChartCard extends StatelessWidget {
   const ChartCard({
     super.key,
     required this.title,
     required this.child,
     this.subtitle,
-    this.color,
   });
 
   final String title;
   final String? subtitle;
-  final Color? color;
   final Widget child;
 
   @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Aura.surface,
-        borderRadius: BorderRadius.circular(Aura.cardRadius),
-        border: Border.all(color: Aura.rim),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title.toUpperCase(),
-            style: text.labelSmall?.copyWith(color: color),
-          ),
-          if (subtitle != null) ...[
-            const SizedBox(height: 4),
-            Text(subtitle!, style: text.bodySmall),
-          ],
-          const SizedBox(height: 12),
-          child,
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => Module(
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ModuleHeader(title: title, subtitle: subtitle),
+        const SizedBox(height: Pearl.spaceMd),
+        child,
+      ],
+    ),
+  );
 }

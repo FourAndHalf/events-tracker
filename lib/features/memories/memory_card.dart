@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'media_logic.dart';
 import 'media_widgets.dart';
 import 'memories_repository.dart';
@@ -27,11 +27,11 @@ class MemoryCard extends ConsumerWidget {
     final today = DateTime.now();
 
     if (events.isEmpty) {
-      return AuraCard(
+      return Module(
         onTap: () => context.push('/memories'),
         child: Row(
           children: [
-            const IconBadge(icon: Icons.cake_outlined, color: Aura.memory),
+            const IconChip(icon: Icons.cake_outlined),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -39,7 +39,7 @@ class MemoryCard extends ConsumerWidget {
                 style: text.bodyMedium,
               ),
             ),
-            const Icon(Icons.chevron_right, color: Aura.textSecondary),
+            Icon(Icons.chevron_right, color: context.pearl.muted),
           ],
         ),
       );
@@ -60,16 +60,19 @@ class MemoryCard extends ConsumerWidget {
       }
     }
 
-    return AuraCard(
+    return Module(
       onTap: () => context.push('/memories'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Expanded(child: Overline('Memories', color: Aura.memory)),
-              const Icon(Icons.chevron_right, color: Aura.textSecondary),
-            ],
+          ModuleHeader(
+            title: 'Memories',
+            subtitle: 'Coming up',
+            trailing: Icon(
+              Icons.north_east,
+              size: 18,
+              color: context.pearl.muted,
+            ),
           ),
           if (next != null) ...[
             const SizedBox(height: 8),
@@ -85,9 +88,11 @@ class MemoryCard extends ConsumerWidget {
                     ],
                   ),
                 ),
-                StatusPill(
+                StatusBadge(
                   label: countdownText(next.daysLeft),
-                  color: Aura.memory,
+                  tone: next.daysLeft == 0
+                      ? BadgeTone.champagne
+                      : BadgeTone.neutral,
                 ),
               ],
             ),
@@ -96,29 +101,31 @@ class MemoryCard extends ConsumerWidget {
             Text('No occasions coming up', style: text.bodySmall),
           ],
           if (memory != null) ...[
-            const Divider(color: Aura.rim, height: 24),
+            const SizedBox(height: 12),
             InkWell(
               onTap: () => context.push('/memories/event/${memory.id}'),
-              child: Row(
-                children: [
-                  if (memoryCover != null) ...[
-                    MediaThumb(item: memoryCover, size: 48, badge: false),
-                    const SizedBox(width: 12),
-                  ],
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Overline('On this day'),
-                        Text(memory.title, style: text.titleSmall),
-                        Text(
-                          yearsAgo(memory, today) ?? '',
-                          style: text.bodySmall,
-                        ),
-                      ],
+              child: InnerPanel(
+                child: Row(
+                  children: [
+                    if (memoryCover != null) ...[
+                      MediaThumb(item: memoryCover, size: 48, badge: false),
+                      const SizedBox(width: 12),
+                    ],
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('On this day', style: text.bodySmall),
+                          Text(memory.title, style: text.titleSmall),
+                          Text(
+                            yearsAgo(memory, today) ?? '',
+                            style: text.bodySmall,
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ),
           ],

@@ -8,7 +8,8 @@ import 'package:path_provider/path_provider.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/media/image_compress.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/pearl_colors.dart';
 import 'media_logic.dart';
 
 /// Square thumbnail of a media item (video: thumbnail + duration badge).
@@ -27,13 +28,13 @@ class MediaThumb extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final path = previewPath(item);
-    final radius = BorderRadius.circular(12);
+    final radius = BorderRadius.circular(Pearl.radiusMd);
     Widget fallback() => Container(
-      color: Aura.raised,
+      color: context.pearl.inner,
       alignment: Alignment.center,
       child: Icon(
-        item.isVideo ? Icons.videocam : Icons.broken_image_outlined,
-        color: Aura.textSecondary,
+        item.isVideo ? Icons.videocam_outlined : Icons.broken_image_outlined,
+        color: context.pearl.muted,
       ),
     );
     return SizedBox(
@@ -62,8 +63,8 @@ class MediaThumb extends StatelessWidget {
                     vertical: 2,
                   ),
                   decoration: BoxDecoration(
-                    color: Colors.black54,
-                    borderRadius: BorderRadius.circular(8),
+                    color: const Color(0xCC2A2A2D),
+                    borderRadius: BorderRadius.circular(Pearl.radiusSm),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
@@ -76,9 +77,8 @@ class MediaThumb extends StatelessWidget {
                       if (item.durationMs != null)
                         Text(
                           formatClock(item.durationMs!),
-                          style: const TextStyle(
+                          style: PearlType.metricDelta.copyWith(
                             color: Colors.white,
-                            fontSize: 11,
                           ),
                         ),
                     ],

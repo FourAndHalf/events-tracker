@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/elapsed_text.dart';
 import '../sleep/sleep_logic.dart';
 import 'book_actions.dart';
@@ -31,11 +31,11 @@ class ReadingCard extends ConsumerWidget {
         : books.where((b) => b.id == running.bookId).firstOrNull;
 
     if (books.isEmpty) {
-      return AuraCard(
+      return Module(
         onTap: () => context.go('/read'),
         child: Row(
           children: [
-            const IconBadge(icon: Icons.menu_book, color: Aura.reading),
+            const IconChip(icon: Icons.menu_book_outlined),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -43,27 +43,29 @@ class ReadingCard extends ConsumerWidget {
                 style: text.bodyMedium,
               ),
             ),
-            const Icon(Icons.chevron_right, color: Aura.textSecondary),
+            Icon(Icons.chevron_right, color: context.pearl.muted),
           ],
         ),
       );
     }
 
     if (running != null && runningBook != null) {
-      return AuraCard(
+      return Module(
         onTap: () => context.push('/read/book/${runningBook.id}'),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Overline('Reading now', color: Aura.reading),
-            const SizedBox(height: 8),
-            Text(runningBook.title, style: text.titleMedium),
+            ModuleHeader(
+              title: 'Reading now',
+              subtitle: runningBook.title,
+              trailing: const StatusBadge(label: 'Timer', tone: BadgeTone.dark),
+            ),
+            const SizedBox(height: Pearl.spaceSm),
             ElapsedText(start: running.startAt, style: text.displaySmall),
-            const SizedBox(height: 12),
+            const SizedBox(height: Pearl.spaceMd),
             PillButton(
               label: 'Stop reading',
               icon: Icons.stop,
-              color: Aura.reading,
               onPressed: () =>
                   stopSessionFlow(context, ref, running, runningBook),
             ),
@@ -75,20 +77,19 @@ class ReadingCard extends ConsumerWidget {
     final stats = sessionStats(sessions, now);
     final today = timePerDay(stats)[dayOf(now)] ?? Duration.zero;
     final streak = readingStreak(stats, now);
-    return AuraCard(
+    return Module(
       onTap: () => context.go('/read'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              const Expanded(child: Overline('Reading', color: Aura.reading)),
-              if (streak > 0)
-                StatusPill(label: '$streak day streak', color: Aura.reading),
-            ],
+          ModuleHeader(
+            title: 'Reading',
+            subtitle: 'Today',
+            trailing: streak > 0
+                ? StatusBadge(label: '$streak day streak')
+                : null,
           ),
-          const SizedBox(height: 8),
-          Text('Today', style: text.bodySmall),
+          const SizedBox(height: Pearl.spaceSm),
           Text(formatDuration(today), style: text.displaySmall),
         ],
       ),

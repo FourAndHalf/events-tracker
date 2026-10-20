@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/elapsed_text.dart';
 import '../sleep/sleep_logic.dart';
 import 'tracker_icons.dart';
@@ -70,28 +70,22 @@ class TrackerAction extends ConsumerWidget {
     final repo = ref.read(trackersRepositoryProvider);
     if (tracker.type == TrackerType.duration.name) {
       final running = state.running != null;
-      return IconButton.filled(
+      return PearlIconButton(
         tooltip: running ? 'Stop ${tracker.name}' : 'Start ${tracker.name}',
-        style: IconButton.styleFrom(
-          backgroundColor: running ? Aura.habit : Aura.raised,
-          foregroundColor: running ? Aura.canvas : Aura.text,
-        ),
+        selected: running,
         onPressed: () => running
             ? repo.stopTimer(tracker.id, DateTime.now())
             : repo.startTimer(tracker.id, DateTime.now()),
-        icon: Icon(running ? Icons.stop : Icons.play_arrow),
+        icon: running ? Icons.stop : Icons.play_arrow,
       );
     }
-    return IconButton.filled(
+    return PearlIconButton(
       tooltip: state.done
           ? 'Uncheck ${tracker.name}'
           : 'Check off ${tracker.name}',
-      style: IconButton.styleFrom(
-        backgroundColor: state.done ? Aura.habit : Aura.raised,
-        foregroundColor: state.done ? Aura.canvas : Aura.text,
-      ),
+      selected: state.done,
       onPressed: () => repo.toggleHabit(tracker.id, DateTime.now()),
-      icon: const Icon(Icons.check),
+      icon: Icons.check,
     );
   }
 }
@@ -111,18 +105,16 @@ class TrackersPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Trackers')),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add tracker',
         onPressed: () => context.push('/trackers/add'),
-        backgroundColor: Aura.habit,
-        foregroundColor: Aura.canvas,
-        icon: const Icon(Icons.add),
-        label: const Text('Tracker'),
+        child: const Icon(Icons.add),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
-          Aura.margin,
-          Aura.margin,
-          Aura.margin,
+          Pearl.margin,
+          Pearl.margin,
+          Pearl.margin,
           96,
         ),
         children: [
@@ -142,11 +134,11 @@ class TrackersPage extends ConsumerWidget {
               builder: (context) {
                 final s = trackerToday(t, entries, now);
                 final isTimer = t.type == TrackerType.duration.name;
-                return AuraCard(
+                return Module(
                   onTap: () => context.push('/trackers/${t.id}'),
                   child: Row(
                     children: [
-                      IconBadge(icon: trackerIcon(t.icon), color: Aura.habit),
+                      IconChip(icon: trackerIcon(t.icon)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(
@@ -176,7 +168,7 @@ class TrackersPage extends ConsumerWidget {
                 );
               },
             ),
-            const SizedBox(height: 8),
+            const SizedBox(height: Pearl.gutter),
           ],
         ],
       ),

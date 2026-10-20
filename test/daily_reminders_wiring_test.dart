@@ -112,7 +112,7 @@ void main() {
     await tester.tap(find.text('Bedtime reminder'));
     await tester.pump(const Duration(milliseconds: 300));
     await _settle(tester);
-    expect(find.text('30 min before'), findsOneWidget);
+    expect(find.text('30 min'), findsOneWidget);
     expect(find.textContaining('Every day at'), findsOneWidget);
     final s = await tester.runAsync(() => (db.select(db.settings)).getSingle());
     expect(s!.bedtimeReminderEnabled, isTrue);

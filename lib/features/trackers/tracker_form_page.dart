@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'tracker_icons.dart';
 import 'tracker_logic.dart';
 import 'trackers_repository.dart';
@@ -76,39 +76,32 @@ class _TrackerFormPageState extends ConsumerState<TrackerFormPage> {
         title: Text(widget.id == null ? 'New tracker' : 'Edit tracker'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           TextField(
             controller: _name,
             autofocus: widget.id == null,
             textCapitalization: TextCapitalization.sentences,
-            decoration: const InputDecoration(labelText: 'Name, e.g. Meditate'),
+            decoration: const InputDecoration(
+              labelText: 'Name',
+              hintText: 'e.g. Meditate',
+            ),
           ),
           const SizedBox(height: 20),
-          const Overline('Type'),
-          const SizedBox(height: 8),
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: const Text('Yes / No habit'),
-                selected: _type == TrackerType.habit,
-                onSelected: widget.id != null
-                    ? null
-                    : (_) => setState(() => _type = TrackerType.habit),
-              ),
-              ChoiceChip(
-                label: const Text('Timer (duration)'),
-                selected: _type == TrackerType.duration,
-                onSelected: widget.id != null
-                    ? null
-                    : (_) => setState(() => _type = TrackerType.duration),
-              ),
+          const SectionTitle('Type'),
+          Segmented<TrackerType>(
+            expand: true,
+            segments: const [
+              (TrackerType.habit, 'Yes / No habit'),
+              (TrackerType.duration, 'Timer'),
             ],
+            selected: _type,
+            onChanged: widget.id != null
+                ? null
+                : (v) => setState(() => _type = v),
           ),
           const SizedBox(height: 20),
-          const Overline('Icon'),
-          const SizedBox(height: 8),
+          const SectionTitle('Icon'),
           Wrap(
             spacing: 8,
             runSpacing: 8,
@@ -123,22 +116,26 @@ class _TrackerFormPageState extends ConsumerState<TrackerFormPage> {
                     decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       color: _icon == e.key
-                          ? Aura.habit.withValues(alpha: 0.25)
-                          : Aura.raised,
-                      border: _icon == e.key
-                          ? Border.all(color: Aura.habit)
-                          : null,
+                          ? context.pearl.anchor
+                          : context.pearl.raised,
+                      border: Border.all(
+                        color: _icon == e.key
+                            ? context.pearl.anchor
+                            : context.pearl.hairline,
+                      ),
                     ),
                     child: Icon(
                       e.value,
-                      color: _icon == e.key ? Aura.habit : Aura.textSecondary,
+                      color: _icon == e.key
+                          ? context.pearl.onAnchor
+                          : context.pearl.ink,
                     ),
                   ),
                 ),
             ],
           ),
           const SizedBox(height: 24),
-          PillButton(label: 'Save', color: Aura.habit, onPressed: _save),
+          PillButton(label: 'Save', onPressed: _save),
         ],
       ),
     );

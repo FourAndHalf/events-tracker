@@ -80,9 +80,11 @@ flutter_launcher_icons:
   adaptive_icon_monochrome: assets/icon/icon_monochrome.png
 
 flutter_native_splash:
-  color: "#0B0F17"
+  color: "#E8E8EA"
+  color_dark: "#0F0F11"
   android_12:
-    color: "#0B0F17"
+    color: "#E8E8EA"
+    color_dark: "#0F0F11"
   android: true
   ios: false
   web: false
@@ -98,14 +100,14 @@ flutter:
     - assets/icon/splash_logo.png
 
   fonts:
-    - family: PlusJakartaSans
+    - family: JetBrainsMono
       fonts:
-        - asset: assets/fonts/PlusJakartaSans.ttf
+        - asset: assets/fonts/JetBrainsMono-Regular.ttf
           weight: 400
-        - asset: assets/fonts/PlusJakartaSans.ttf
+        - asset: assets/fonts/JetBrainsMono-Medium.ttf
+          weight: 500
+        - asset: assets/fonts/JetBrainsMono-SemiBold.ttf
           weight: 600
-        - asset: assets/fonts/PlusJakartaSans.ttf
-          weight: 700
 
   # To add assets to your application, add an assets section, like this:
   # assets:

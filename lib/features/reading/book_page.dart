@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/elapsed_text.dart';
 import '../sleep/sleep_logic.dart';
 import 'book_actions.dart';
@@ -49,15 +49,15 @@ class BookPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Book'),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Edit',
             onPressed: () => context.push('/read/edit/${book.id}'),
-            icon: const Icon(Icons.edit_outlined),
+            icon: Icons.edit_outlined,
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,11 +68,16 @@ class BookPage extends ConsumerWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(book.title, style: text.headlineSmall),
+                    Text(book.title, style: text.headlineMedium),
                     if (book.author.isNotEmpty)
-                      Text(book.author, style: text.bodyMedium),
+                      Text(
+                        book.author,
+                        style: text.bodyMedium?.copyWith(
+                          color: context.pearl.muted,
+                        ),
+                      ),
                     const SizedBox(height: 8),
-                    StatusPill(label: status.label, color: statusColor(status)),
+                    StatusBadge(label: status.label, tone: statusTone(status)),
                     if (book.rating != null) ...[
                       const SizedBox(height: 8),
                       RatingStars(rating: book.rating),
@@ -83,24 +88,28 @@ class BookPage extends ConsumerWidget {
             ],
           ),
           const SizedBox(height: 16),
-          AuraCard(
+          Module(
+            large: true,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Overline('Progress', color: Aura.reading),
-                const SizedBox(height: 8),
-                Text(
-                  book.totalPages == null
+                ModuleHeader(
+                  title: 'Progress',
+                  subtitle: book.totalPages == null
                       ? (page == null ? 'No pages logged yet' : 'Page $page')
-                      : 'Page ${page ?? 0} of ${book.totalPages}'
-                            '${progress == null ? '' : ' · ${(progress * 100).round()}%'}',
-                  style: text.titleMedium,
+                      : 'Page ${page ?? 0} of ${book.totalPages}',
                 ),
                 if (progress != null) ...[
-                  const SizedBox(height: 8),
-                  AuraProgressBar(value: progress, color: Aura.reading),
+                  const SizedBox(height: Pearl.spaceMd),
+                  Center(
+                    child: Gauge(
+                      value: progress,
+                      label: '${(progress * 100).round()}%',
+                      caption: 'read',
+                    ),
+                  ),
                 ],
-                const SizedBox(height: 16),
+                const SizedBox(height: Pearl.spaceMd),
                 if (runningHere) ...[
                   ElapsedText(
                     start: running!.startAt,
@@ -110,7 +119,6 @@ class BookPage extends ConsumerWidget {
                   PillButton(
                     label: 'Stop reading',
                     icon: Icons.stop,
-                    color: Aura.reading,
                     onPressed: () =>
                         stopSessionFlow(context, ref, running, book),
                   ),
@@ -118,7 +126,6 @@ class BookPage extends ConsumerWidget {
                   PillButton(
                     label: 'Start reading',
                     icon: Icons.play_arrow,
-                    color: Aura.reading,
                     onPressed: running != null || status == BookStatus.finished
                         ? null
                         : () => startSessionFlow(context, ref, book),
@@ -134,22 +141,23 @@ class BookPage extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Pearl.gutter),
           Wrap(
             spacing: 8,
+            runSpacing: 8,
             children: [
               if (status != BookStatus.finished)
                 PillButton(
                   label: 'Mark finished',
                   icon: Icons.check,
-                  ghost: true,
+                  variant: PillVariant.secondary,
                   onPressed: () => finishBook(context, ref, book),
                 ),
               if (status != BookStatus.abandoned &&
                   status != BookStatus.finished)
                 PillButton(
                   label: 'Abandon',
-                  ghost: true,
+                  variant: PillVariant.secondary,
                   onPressed: () => ref
                       .read(readingRepositoryProvider)
                       .setStatus(book, BookStatus.abandoned),
@@ -158,43 +166,35 @@ class BookPage extends ConsumerWidget {
                   status == BookStatus.abandoned)
                 PillButton(
                   label: 'Read again',
-                  ghost: true,
+                  variant: PillVariant.secondary,
                   onPressed: () => ref
                       .read(readingRepositoryProvider)
                       .setStatus(book, BookStatus.reading),
                 ),
             ],
           ),
-          const SizedBox(height: 24),
-          Row(
-            children: [
-              const Expanded(child: Overline('Notes and quotes')),
-              TextButton.icon(
-                onPressed: () => _noteDialog(context, ref, book),
-                icon: const Icon(Icons.add),
-                label: const Text('Add'),
-              ),
-            ],
+          const SizedBox(height: Pearl.spaceLg),
+          SectionTitle(
+            'Notes and quotes',
+            trailing: TextButton.icon(
+              onPressed: () => _noteDialog(context, ref, book),
+              icon: const Icon(Icons.add, size: 18),
+              label: const Text('Add'),
+            ),
           ),
           if (notes.isEmpty) Text('Nothing yet.', style: text.bodySmall),
           for (final n in notes)
             Dismissible(
               key: ValueKey('note-${n.id}'),
               direction: DismissDirection.endToStart,
-              background: Container(
-                color: Aura.loss.withValues(alpha: 0.3),
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete_outline),
-              ),
+              background: const DeleteSwipeBackground(),
               onDismissed: (_) =>
                   ref.read(readingRepositoryProvider).deleteNote(n.id),
               child: ListTile(
                 contentPadding: EdgeInsets.zero,
                 onTap: () => _noteDialog(context, ref, book, existing: n),
-                leading: Icon(
-                  n.isQuote ? Icons.format_quote : Icons.notes,
-                  color: Aura.reading,
+                leading: IconChip(
+                  icon: n.isQuote ? Icons.format_quote : Icons.notes,
                 ),
                 title: Text(
                   n.body,
@@ -211,15 +211,14 @@ class BookPage extends ConsumerWidget {
                   tooltip: n.pinned ? 'Unpin' : 'Pin to top',
                   icon: Icon(
                     n.pinned ? Icons.push_pin : Icons.push_pin_outlined,
-                    color: n.pinned ? Aura.reading : null,
+                    color: n.pinned ? null : context.pearl.muted,
                   ),
                   onPressed: () => _togglePin(context, ref, book, n),
                 ),
               ),
             ),
-          const SizedBox(height: 24),
-          const Overline('Sessions'),
-          const SizedBox(height: 4),
+          const SizedBox(height: Pearl.spaceLg),
+          const SectionTitle('Sessions'),
           if (sessions.isEmpty) Text('No sessions yet.', style: text.bodySmall),
           for (final s in sessions.reversed)
             Dismissible(
@@ -227,12 +226,7 @@ class BookPage extends ConsumerWidget {
               direction: s.endAt == null
                   ? DismissDirection.none
                   : DismissDirection.endToStart,
-              background: Container(
-                color: Aura.loss.withValues(alpha: 0.3),
-                alignment: Alignment.centerRight,
-                padding: const EdgeInsets.only(right: 16),
-                child: const Icon(Icons.delete_outline),
-              ),
+              background: const DeleteSwipeBackground(),
               onDismissed: (_) =>
                   ref.read(readingRepositoryProvider).deleteSession(s.id),
               child: ListTile(
@@ -263,23 +257,7 @@ class BookPage extends ConsumerWidget {
     WidgetRef ref,
     ReadingSession s,
   ) async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete this session?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (ok == true) {
+    if (await confirmAction(context, title: 'Delete this session?')) {
       await ref.read(readingRepositoryProvider).deleteSession(s.id);
     }
   }
@@ -350,9 +328,8 @@ class BookPage extends ConsumerWidget {
           .setPinned(book.id, n.id, !n.pinned);
     } on MaxPinnedNotesException catch (e) {
       if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(e.toString())));
       }
     }
   }

@@ -5,8 +5,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'sleep_repository.dart';
 import 'wake_prompt.dart';
 
@@ -88,23 +88,7 @@ class _SleepEditPageState extends ConsumerState<SleepEditPage> {
   }
 
   Future<void> _delete() async {
-    final ok = await showDialog<bool>(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Delete this night?'),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, false),
-            child: const Text('Cancel'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.pop(ctx, true),
-            child: const Text('Delete'),
-          ),
-        ],
-      ),
-    );
-    if (ok != true) return;
+    if (!await confirmAction(context, title: 'Delete this night?')) return;
     await ref.read(sleepRepositoryProvider).delete(widget.id);
     if (mounted) context.pop();
   }
@@ -116,22 +100,22 @@ class _SleepEditPageState extends ConsumerState<SleepEditPage> {
       appBar: AppBar(
         title: const Text('Edit sleep'),
         actions: [
-          IconButton(
+          PearlIconButton(
+            tooltip: 'Delete',
             onPressed: _loaded ? _delete : null,
-            icon: const Icon(Icons.delete_outline),
+            icon: Icons.delete_outline,
           ),
         ],
       ),
       body: !_loaded
           ? const SizedBox.shrink()
           : ListView(
-              padding: const EdgeInsets.all(Aura.margin),
+              padding: const EdgeInsets.all(Pearl.margin),
               children: [
-                const Overline('Went to sleep'),
-                const SizedBox(height: 8),
+                const SectionTitle('Went to sleep'),
                 PillButton(
-                  ghost: true,
-                  icon: Icons.bedtime,
+                  variant: PillVariant.secondary,
+                  icon: Icons.bedtime_outlined,
                   label: fmt.format(_sleepAt),
                   onPressed: () async {
                     final d = await _pick(_sleepAt);
@@ -139,10 +123,9 @@ class _SleepEditPageState extends ConsumerState<SleepEditPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Overline('Woke up'),
-                const SizedBox(height: 8),
+                const SectionTitle('Woke up'),
                 PillButton(
-                  ghost: true,
+                  variant: PillVariant.secondary,
                   icon: Icons.wb_sunny_outlined,
                   label: _wakeAt == null
                       ? 'Not woken yet'
@@ -153,8 +136,7 @@ class _SleepEditPageState extends ConsumerState<SleepEditPage> {
                   },
                 ),
                 const SizedBox(height: 20),
-                const Overline('Quality'),
-                const SizedBox(height: 8),
+                const SectionTitle('Quality'),
                 QualityPicker(
                   value: _quality,
                   onChanged: (v) => setState(() => _quality = v),
@@ -163,7 +145,8 @@ class _SleepEditPageState extends ConsumerState<SleepEditPage> {
                 TextField(
                   controller: _note,
                   decoration: const InputDecoration(
-                    hintText: 'Note (optional)',
+                    labelText: 'Note',
+                    hintText: 'Optional',
                   ),
                   maxLines: 3,
                 ),

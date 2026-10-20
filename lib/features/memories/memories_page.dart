@@ -4,8 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'media_logic.dart';
 import 'media_widgets.dart';
 import 'memories_repository.dart';
@@ -42,30 +42,29 @@ class MemoriesPage extends ConsumerWidget {
       appBar: AppBar(
         title: const Text('Memories'),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Search',
             onPressed: () => context.push('/memories/search'),
-            icon: const Icon(Icons.search),
+            icon: Icons.search,
           ),
-          IconButton(
+          const SizedBox(width: 8),
+          PearlIconButton(
             tooltip: 'Calendar',
             onPressed: () => context.push('/memories/calendar'),
-            icon: const Icon(Icons.calendar_month_outlined),
+            icon: Icons.calendar_month_outlined,
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton.extended(
+      floatingActionButton: FloatingActionButton(
+        tooltip: 'Add memory',
         onPressed: () => context.push('/memories/add'),
-        backgroundColor: Aura.memory,
-        foregroundColor: Aura.canvas,
-        icon: const Icon(Icons.add),
-        label: const Text('Add'),
+        child: const Icon(Icons.add),
       ),
       body: ListView(
         padding: const EdgeInsets.fromLTRB(
-          Aura.margin,
-          Aura.margin,
-          Aura.margin,
+          Pearl.margin,
+          Pearl.margin,
+          Pearl.margin,
           96,
         ),
         children: [
@@ -81,34 +80,42 @@ class MemoriesPage extends ConsumerWidget {
               ),
             ),
           if (soon.isNotEmpty) ...[
-            const Overline('Coming up', color: Aura.memory),
-            const SizedBox(height: 8),
+            const SectionTitle('Coming up'),
             for (final c in soon) ...[
               _ComingUpCard(
                 item: c,
                 categoryName: catName[c.event.categoryId] ?? '',
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: Pearl.gutter),
             ],
-            const SizedBox(height: 16),
+            const SizedBox(height: Pearl.spaceMd),
           ],
           if (occasions.isNotEmpty) ...[
-            const Overline('Yearly occasions'),
-            const SizedBox(height: 4),
-            for (final e in occasions)
-              ListTile(
-                contentPadding: EdgeInsets.zero,
-                title: Text(e.title),
-                subtitle: Text(formatMemoryDate(e), style: text.bodySmall),
-                trailing: Text(
-                  countdownText(daysLeft(nextDateOf(e, today)!, today)),
-                  style: text.labelMedium,
-                ),
-                onTap: () => context.push('/memories/event/${e.id}'),
+            const SectionTitle('Yearly occasions'),
+            Module(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+              child: RowGroup(
+                inset: 0,
+                children: [
+                  for (final e in occasions)
+                    ListTile(
+                      contentPadding: EdgeInsets.zero,
+                      title: Text(e.title),
+                      subtitle: Text(
+                        formatMemoryDate(e),
+                        style: text.bodySmall,
+                      ),
+                      trailing: Text(
+                        countdownText(daysLeft(nextDateOf(e, today)!, today)),
+                      ),
+                      onTap: () => context.push('/memories/event/${e.id}'),
+                    ),
+                ],
               ),
-            const SizedBox(height: 16),
+            ),
+            const SizedBox(height: Pearl.spaceLg),
           ],
-          if (groups.isNotEmpty) const Overline('Timeline'),
+          if (groups.isNotEmpty) const SectionTitle('Timeline'),
           for (final g in groups) ...[
             Padding(
               padding: const EdgeInsets.only(top: 16, bottom: 4),
@@ -116,7 +123,7 @@ class MemoriesPage extends ConsumerWidget {
                 g.month == null
                     ? 'Sometime in ${g.year}'
                     : DateFormat('MMMM y').format(DateTime(g.year, g.month!)),
-                style: text.titleMedium,
+                style: text.bodySmall,
               ),
             ),
             for (final e in g.events)
@@ -131,10 +138,7 @@ class MemoriesPage extends ConsumerWidget {
                   [formatMemoryDate(e), ?e.place].join(' · '),
                   style: text.bodySmall,
                 ),
-                trailing: StatusPill(
-                  label: catName[e.categoryId] ?? '',
-                  color: Aura.memory,
-                ),
+                trailing: StatusBadge(label: catName[e.categoryId] ?? ''),
                 onTap: () => context.push('/memories/event/${e.id}'),
               ),
           ],
@@ -156,7 +160,7 @@ class _ComingUpCard extends StatelessWidget {
     final n = item.event.kind == MemoryKind.occasion.name
         ? ordinalCount(item.event.year, item.date.year)
         : null;
-    return AuraCard(
+    return Module(
       onTap: () => context.push('/memories/event/${item.event.id}'),
       child: Row(
         children: [
@@ -175,7 +179,10 @@ class _ComingUpCard extends StatelessWidget {
               ],
             ),
           ),
-          StatusPill(label: countdownText(item.daysLeft), color: Aura.memory),
+          StatusBadge(
+            label: countdownText(item.daysLeft),
+            tone: item.daysLeft == 0 ? BadgeTone.champagne : BadgeTone.neutral,
+          ),
         ],
       ),
     );

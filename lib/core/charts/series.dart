@@ -1,11 +1,10 @@
 import 'package:intl/intl.dart';
 
 class ChartBar {
-  const ChartBar(this.label, this.value, {this.color});
+  const ChartBar(this.label, this.value);
 
   final String label;
   final double value;
-  final Object? color; // Color, kept untyped so this file stays UI-free
 }
 
 class ChartPoint {

@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/pearl_colors.dart';
 import 'memories_repository.dart';
 import 'memory_dates.dart';
 import 'memory_search.dart';
@@ -62,7 +62,7 @@ class _SearchPageState extends ConsumerState<SearchPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Search')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           TextField(
             controller: _query,
