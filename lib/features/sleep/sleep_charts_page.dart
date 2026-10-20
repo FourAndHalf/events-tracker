@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../../core/charts/series.dart';
 import '../../core/db/app_database.dart';
 import '../../core/db/settings_repository.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/pearl_colors.dart';
 import '../../core/widgets/charts.dart';
 import 'sleep_charts.dart';
 import 'sleep_repository.dart';
@@ -39,7 +39,7 @@ class _SleepChartsPageState extends ConsumerState<SleepChartsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Sleep charts')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           Align(
             alignment: Alignment.centerLeft,
@@ -48,31 +48,25 @@ class _SleepChartsPageState extends ConsumerState<SleepChartsPage> {
               onChanged: (v) => setState(() => _days = v),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Pearl.spaceMd),
           ChartCard(
             title: 'Hours slept',
-            color: Aura.sleep,
             subtitle: nights == 0
                 ? 'No nights logged in this range'
                 : 'Average ${avg.toStringAsFixed(1)} h over $nights nights · goal ${goalHours.toStringAsFixed(1)} h',
             child: BarChart(
               bars: [
                 for (var i = 0; i < days.length; i++)
-                  ChartBar(
-                    dayLabel(days[i], _days),
-                    hours[i],
-                    color: hours[i] >= goalHours ? Aura.gain : Aura.sleep,
-                  ),
+                  ChartBar(dayLabel(days[i], _days), hours[i]),
               ],
               goal: goalHours,
               formatValue: (v) => v.toStringAsFixed(1),
               semanticsLabel: 'Hours slept per day',
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Pearl.gutter),
           ChartCard(
             title: 'Bedtime consistency',
-            color: Aura.sleep,
             subtitle: consistency == null
                 ? 'No nights logged in this range'
                 : 'Average ${clockOf(consistency.average)} · varies by about ${consistency.spread.round()} min'
@@ -90,7 +84,6 @@ class _SleepChartsPageState extends ConsumerState<SleepChartsPage> {
                           b.minutes.toDouble(),
                         ),
                     ],
-                    color: Aura.sleep,
                     formatValue: clockOf,
                     semanticsLabel: 'Bedtime per night',
                   ),

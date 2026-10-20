@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/elapsed_text.dart';
 import '../sleep/sleep_logic.dart';
 import 'tracker_icons.dart';
@@ -28,11 +28,11 @@ class TrackerCard extends ConsumerWidget {
     final now = DateTime.now();
 
     if (trackers.isEmpty) {
-      return AuraCard(
+      return Module(
         onTap: () => context.push('/trackers'),
         child: Row(
           children: [
-            const IconBadge(icon: Icons.checklist, color: Aura.habit),
+            const IconChip(icon: Icons.checklist),
             const SizedBox(width: 12),
             Expanded(
               child: Text(
@@ -40,23 +40,23 @@ class TrackerCard extends ConsumerWidget {
                 style: text.bodyMedium,
               ),
             ),
-            const Icon(Icons.chevron_right, color: Aura.textSecondary),
+            Icon(Icons.chevron_right, color: context.pearl.muted),
           ],
         ),
       );
     }
 
-    return AuraCard(
+    return Module(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          InkWell(
-            onTap: () => context.push('/trackers'),
-            child: const Row(
-              children: [
-                Expanded(child: Overline('Trackers', color: Aura.habit)),
-                Icon(Icons.chevron_right, color: Aura.textSecondary),
-              ],
+          ModuleHeader(
+            title: 'Trackers',
+            subtitle: 'Today',
+            trailing: PillButton(
+              label: 'View all',
+              variant: PillVariant.secondary,
+              onPressed: () => context.push('/trackers'),
             ),
           ),
           const SizedBox(height: 8),
@@ -69,7 +69,7 @@ class TrackerCard extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 4),
                   child: Row(
                     children: [
-                      Icon(trackerIcon(t.icon), color: Aura.habit),
+                      IconChip(icon: trackerIcon(t.icon)),
                       const SizedBox(width: 12),
                       Expanded(
                         child: Column(

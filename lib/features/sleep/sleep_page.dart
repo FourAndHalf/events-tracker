@@ -5,8 +5,9 @@ import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/db/settings_repository.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../../core/widgets/home_button.dart';
 import 'sleep_logic.dart';
 import 'sleep_repository.dart';
@@ -26,20 +27,19 @@ class SleepPage extends ConsumerWidget {
         leading: const HomeButton(),
         title: const Text('Sleep'),
         actions: [
-          IconButton(
+          PearlIconButton(
             tooltip: 'Charts',
             onPressed: () => context.push('/sleep/charts'),
-            icon: const Icon(Icons.bar_chart),
+            icon: Icons.bar_chart,
           ),
         ],
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           const SleepToggleCard(),
-          const SizedBox(height: 24),
-          const Overline('History'),
-          const SizedBox(height: 8),
+          const SizedBox(height: Pearl.spaceLg),
+          const SectionTitle('History'),
           if (sessions.isEmpty)
             Padding(
               padding: const EdgeInsets.all(24),
@@ -52,7 +52,7 @@ class SleepPage extends ConsumerWidget {
             ),
           for (final s in sessions)
             Padding(
-              padding: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.only(bottom: Pearl.gutter),
               child: _SessionTile(
                 session: s,
                 settings: settings,
@@ -70,23 +70,8 @@ Future<void> _confirmDelete(
   WidgetRef ref,
   SleepSession s,
 ) async {
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Delete this night?'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Delete'),
-        ),
-      ],
-    ),
-  );
-  if (ok == true) await ref.read(sleepRepositoryProvider).delete(s.id);
+  final ok = await confirmAction(context, title: 'Delete this night?');
+  if (ok) await ref.read(sleepRepositoryProvider).delete(s.id);
 }
 
 class _SessionTile extends StatelessWidget {
@@ -110,7 +95,7 @@ class _SessionTile extends StatelessWidget {
     String title;
     if (wake == null) {
       title = 'In progress';
-      badge = const StatusPill(label: 'Sleeping', color: Aura.sleep);
+      badge = const StatusBadge(label: 'Sleeping', tone: BadgeTone.dark);
     } else {
       title = formatDuration(sleepDuration(session.sleepAt, wake));
       final hit =
@@ -121,13 +106,13 @@ class _SessionTile extends StatelessWidget {
             goalMinutes: settings!.sleepGoalMinutes,
             targetBedtimeMinutes: settings!.targetBedtimeMinutes,
           );
-      badge = StatusPill(
+      badge = StatusBadge(
         label: hit ? 'Hit' : 'Miss',
-        color: hit ? Aura.habit : Aura.money,
+        tone: hit ? BadgeTone.positive : BadgeTone.warning,
       );
     }
 
-    return AuraCard(
+    return Module(
       onTap: () => context.push('/sleep/edit/${session.id}'),
       child: Row(
         children: [
@@ -140,7 +125,7 @@ class _SessionTile extends StatelessWidget {
                   style: text.bodySmall,
                 ),
                 const SizedBox(height: 2),
-                Text(title, style: text.titleMedium),
+                Text(title, style: PearlType.metricCard),
                 Text(
                   '${timeFmt.format(session.sleepAt)} → ${wake == null ? '…' : timeFmt.format(wake)}'
                   '${session.quality == null ? '' : '  ·  Quality ${session.quality}/5'}',

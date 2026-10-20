@@ -18,13 +18,13 @@ void main() {
     await tester.pump(const Duration(seconds: 2)); // let the splash finish
     await tester.pump();
 
-    // Home: app name in header and settings icon.
-    expect(find.text('Events'), findsOneWidget);
+    // Home: greeting in header and settings icon.
+    expect(find.textContaining('Good '), findsOneWidget);
     expect(find.byIcon(Icons.settings_outlined), findsOneWidget);
 
     await tester.tap(find.byIcon(Icons.settings_outlined));
     await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Sleep goal'.toUpperCase()), findsOneWidget);
+    expect(find.text('Sleep goal'), findsOneWidget);
     await tester.pageBack();
     await tester.pump(const Duration(milliseconds: 500));
 
@@ -34,7 +34,7 @@ void main() {
 
     await tester.tap(find.byTooltip('Home'));
     await tester.pump(const Duration(milliseconds: 500));
-    expect(find.text('Events'), findsOneWidget);
+    expect(find.textContaining('Good '), findsOneWidget);
 
     // Unmount so provider streams close, then close the database for real.
     await tester.pumpWidget(const SizedBox());

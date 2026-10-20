@@ -2,14 +2,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/elapsed_text.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'sleep_repository.dart';
 import 'wake_prompt.dart';
 
 /// Big one-tap "Going to sleep" / "I'm awake" card.
 class SleepToggleCard extends ConsumerWidget {
-  const SleepToggleCard({super.key});
+  const SleepToggleCard({super.key, this.hero = false});
+
+  /// The dashboard's hero module: xl radius and the pearl wash.
+  final bool hero;
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -30,25 +34,42 @@ class SleepToggleCard extends ConsumerWidget {
       }
     }
 
-    return AuraCard(
-      borderColor: asleep ? Aura.sleep.withValues(alpha: 0.5) : Aura.rim,
+    final text = Theme.of(context).textTheme;
+    return Module(
+      large: hero,
+      gradient: hero ? context.pearl.heroGradient : null,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Overline(asleep ? 'Sleeping' : 'Rest & sleep', color: Aura.sleep),
-          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  asleep ? 'Sleeping' : 'Rest and sleep',
+                  style: text.titleMedium,
+                ),
+              ),
+              if (asleep)
+                const StatusBadge(label: 'In progress', tone: BadgeTone.dark),
+            ],
+          ),
+          const SizedBox(height: Pearl.spaceSm),
+          if (asleep)
+            ElapsedText(start: open.sleepAt, style: text.displaySmall)
+          else
+            Text('Ready for bed?', style: text.headlineMedium),
           Text(
             asleep
                 ? 'Since ${DateFormat.jm().format(open.sleepAt)}'
-                : 'Ready for bed?',
-            style: Theme.of(context).textTheme.titleLarge,
+                : 'One tap when you turn in',
+            style: text.bodySmall,
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Pearl.spaceMd),
           SizedBox(
             width: double.infinity,
             child: PillButton(
               label: asleep ? "I'm awake" : 'Going to sleep',
-              icon: asleep ? Icons.wb_sunny_outlined : Icons.bedtime,
+              icon: asleep ? Icons.wb_sunny_outlined : Icons.bedtime_outlined,
               onPressed: onTap,
             ),
           ),
@@ -57,8 +78,11 @@ class SleepToggleCard extends ConsumerWidget {
             Align(
               alignment: Alignment.centerRight,
               child: TextButton.icon(
+                style: TextButton.styleFrom(
+                  foregroundColor: context.pearl.negative,
+                ),
                 onPressed: () => _confirmDelete(context, ref, open.id),
-                icon: const Icon(Icons.delete_outline),
+                icon: const Icon(Icons.delete_outline, size: 18),
                 label: const Text('Delete this sleep session'),
               ),
             ),
@@ -69,27 +93,11 @@ class SleepToggleCard extends ConsumerWidget {
   }
 }
 
-Future<void> _confirmDelete(
-  BuildContext context,
-  WidgetRef ref,
-  int id,
-) async {
-  final ok = await showDialog<bool>(
-    context: context,
-    builder: (ctx) => AlertDialog(
-      title: const Text('Delete this sleep session?'),
-      content: const Text('This will remove the active sleep session.'),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, false),
-          child: const Text('Cancel'),
-        ),
-        TextButton(
-          onPressed: () => Navigator.pop(ctx, true),
-          child: const Text('Delete'),
-        ),
-      ],
-    ),
+Future<void> _confirmDelete(BuildContext context, WidgetRef ref, int id) async {
+  final ok = await confirmAction(
+    context,
+    title: 'Delete this sleep session?',
+    message: 'This will remove the active sleep session.',
   );
-  if (ok == true) await ref.read(sleepRepositoryProvider).delete(id);
+  if (ok) await ref.read(sleepRepositoryProvider).delete(id);
 }

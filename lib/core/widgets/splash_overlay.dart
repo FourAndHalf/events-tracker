@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../theme/aura_colors.dart';
+import '../theme/pearl_colors.dart';
 
 /// Shows the app icon centred on the canvas, then fades and scales it away to
 /// reveal [child] (the home page). Matches the native splash, so there is no jump.
@@ -68,7 +68,7 @@ class _SplashOverlayState extends State<SplashOverlay>
               child: Opacity(
                 opacity: 1 - t,
                 child: ColoredBox(
-                  color: Aura.canvas,
+                  color: context.pearl.canvas,
                   child: Center(
                     child: Transform.scale(
                       scale: scale,

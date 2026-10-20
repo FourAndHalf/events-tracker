@@ -53,11 +53,7 @@ ZipPlan planZip(BackupData d, {required bool includeVideos}) {
       if (b.coverPath == null)
         b
       else
-        b.copyWith(
-          coverPath: Value(
-            _addFile(files, b.coverPath!, 'covers'),
-          ),
-        ),
+        b.copyWith(coverPath: Value(_addFile(files, b.coverPath!, 'covers'))),
   ];
   final expenses = [
     for (final e in d.expenses)
@@ -65,9 +61,7 @@ ZipPlan planZip(BackupData d, {required bool includeVideos}) {
         e
       else
         e.copyWith(
-          receiptPath: Value(
-            _addFile(files, e.receiptPath!, 'receipts'),
-          ),
+          receiptPath: Value(_addFile(files, e.receiptPath!, 'receipts')),
         ),
   ];
   return ZipPlan(

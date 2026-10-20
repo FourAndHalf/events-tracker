@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../core/charts/series.dart';
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/pearl_colors.dart';
 import '../../core/widgets/charts.dart';
 import 'book_progress.dart';
 import 'reading_repository.dart';
@@ -39,7 +39,7 @@ class _ReadingChartsPageState extends ConsumerState<ReadingChartsPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Reading charts')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           Align(
             alignment: Alignment.centerLeft,
@@ -48,32 +48,28 @@ class _ReadingChartsPageState extends ConsumerState<ReadingChartsPage> {
               onChanged: (v) => setState(() => _days = v),
             ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Pearl.spaceMd),
           ChartCard(
             title: 'Minutes read',
-            color: Aura.reading,
             subtitle: '$totalMin min in the last $_days days',
             child: BarChart(
               bars: [
                 for (var i = 0; i < days.length; i++)
                   ChartBar(dayLabel(days[i], _days), minutes[i]),
               ],
-              color: Aura.reading,
               formatValue: (v) => v.round().toString(),
               semanticsLabel: 'Minutes read per day',
             ),
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: Pearl.gutter),
           ChartCard(
             title: 'Pages read',
-            color: Aura.reading,
             subtitle: '$totalPages pages in the last $_days days',
             child: BarChart(
               bars: [
                 for (var i = 0; i < days.length; i++)
                   ChartBar(dayLabel(days[i], _days), pageValues[i]),
               ],
-              color: Aura.reading,
               formatValue: (v) => v.round().toString(),
               semanticsLabel: 'Pages read per day',
             ),

@@ -6,8 +6,8 @@ import '../../core/db/app_database.dart';
 import '../../core/db/providers.dart';
 import '../../core/db/settings_repository.dart';
 import '../../core/notifications/report_notifier.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../trackers/trackers_repository.dart';
 import 'daily_reminders.dart';
 
@@ -43,11 +43,10 @@ class RemindersPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Reminders')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
-          const Overline('Bedtime', color: Aura.sleep),
-          const SizedBox(height: 8),
-          AuraCard(
+          const SectionTitle('Bedtime'),
+          Module(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -71,30 +70,27 @@ class RemindersPage extends ConsumerWidget {
                 if (s.bedtimeReminderEnabled) ...[
                   Text('How early', style: text.bodySmall),
                   const SizedBox(height: 8),
-                  Wrap(
-                    spacing: 8,
-                    children: [
-                      for (final m in const [15, 30, 60])
-                        ChoiceChip(
-                          label: Text('$m min before'),
-                          selected: s.bedtimeReminderLeadMinutes == m,
-                          onSelected: (_) => updateSettings(
-                            db,
-                            SettingsCompanion(
-                              bedtimeReminderLeadMinutes: Value(m),
-                            ),
-                          ),
-                        ),
+                  Segmented<int>(
+                    expand: true,
+                    segments: const [
+                      (15, '15 min'),
+                      (30, '30 min'),
+                      (60, '60 min'),
                     ],
+                    selected: s.bedtimeReminderLeadMinutes,
+                    onChanged: (m) => updateSettings(
+                      db,
+                      SettingsCompanion(bedtimeReminderLeadMinutes: Value(m)),
+                    ),
                   ),
+                  const SizedBox(height: 8),
                 ],
               ],
             ),
           ),
-          const SizedBox(height: 24),
-          const Overline('Trackers', color: Aura.habit),
-          const SizedBox(height: 8),
-          AuraCard(
+          const SizedBox(height: Pearl.spaceLg),
+          const SectionTitle('Trackers'),
+          Module(
             child: trackers.isEmpty
                 ? Text('No trackers yet.', style: text.bodySmall)
                 : Column(
@@ -110,7 +106,6 @@ class RemindersPage extends ConsumerWidget {
                                 t.reminderMinutes == null
                                     ? 'Off'
                                     : _clock(context, t.reminderMinutes!),
-                                style: text.labelLarge,
                               ),
                               if (t.reminderMinutes != null)
                                 IconButton(
@@ -143,7 +138,7 @@ class RemindersPage extends ConsumerWidget {
                     ],
                   ),
           ),
-          const SizedBox(height: 24),
+          const SizedBox(height: Pearl.spaceLg),
           Text(
             'Reminders for birthdays and memories are set on each memory. '
             'Times can arrive a little late because the app avoids the exact-alarm permission.',

@@ -113,7 +113,7 @@ void main() {
     final db = AppDatabase(NativeDatabase.memory());
     await tester.runAsync(() => db.select(db.trackers).get());
     await _boot(tester, db, at: '/trackers');
-    await tester.tap(find.text('Tracker'));
+    await tester.tap(find.byTooltip('Add tracker'));
     await tester.pump(const Duration(milliseconds: 300));
 
     await tester.tap(find.text('Save'));

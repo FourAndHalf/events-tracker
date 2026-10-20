@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 
 typedef WakeAnswer = ({int? quality, String? note});
 
@@ -45,7 +46,10 @@ class _WakePromptState extends State<_WakePrompt> {
           const SizedBox(height: 16),
           TextField(
             controller: _note,
-            decoration: const InputDecoration(hintText: 'Note (optional)'),
+            decoration: const InputDecoration(
+              labelText: 'Note',
+              hintText: 'Optional',
+            ),
             maxLines: 2,
           ),
         ],
@@ -82,25 +86,28 @@ class QualityPicker extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.pearl;
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         for (var i = 1; i <= 5; i++)
           GestureDetector(
             onTap: () => onChanged(value == i ? null : i),
-            child: Container(
+            child: AnimatedContainer(
+              duration: Pearl.motion,
               width: 44,
               height: 44,
               alignment: Alignment.center,
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
-                color: value == i ? Aura.sleep : Aura.input,
-                border: Border.all(color: value == i ? Aura.sleep : Aura.rim),
+                color: value == i ? c.anchor : c.raised,
+                border: Border.all(color: value == i ? c.anchor : c.hairline),
               ),
               child: Text(
                 '$i',
-                style: Theme.of(context).textTheme.labelLarge
-                    ?.copyWith(color: value == i ? Aura.canvas : Aura.text),
+                style: PearlType.metricTable.copyWith(
+                  color: value == i ? c.onAnchor : c.ink,
+                ),
               ),
             ),
           ),

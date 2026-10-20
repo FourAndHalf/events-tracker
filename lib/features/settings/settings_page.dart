@@ -14,8 +14,8 @@ import '../../core/db/providers.dart';
 import '../../core/db/settings_repository.dart';
 import '../../core/notifications/report_notifier.dart';
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../memories/media_logic.dart';
 import '../memories/media_storage.dart';
 import '../memories/memories_repository.dart';
@@ -199,14 +199,18 @@ class SettingsPage extends ConsumerWidget {
       body: s == null
           ? const SizedBox.shrink()
           : ListView(
-              padding: const EdgeInsets.all(Aura.margin),
+              padding: const EdgeInsets.all(Pearl.margin),
               children: [
-                const Overline('Sleep goal'),
-                const SizedBox(height: 8),
-                AuraCard(
+                const SectionTitle('Sleep goal'),
+                Module(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: Column(
                     children: [
-                      _Row(
+                      NavRow(
+                        icon: Icons.bedtime_outlined,
                         label: 'Target sleep',
                         value:
                             '${(s.sleepGoalMinutes / 60).toStringAsFixed(1)} h',
@@ -235,8 +239,9 @@ class SettingsPage extends ConsumerWidget {
                           }
                         },
                       ),
-                      const Divider(color: Aura.rim),
-                      _Row(
+                      const Divider(indent: 48),
+                      NavRow(
+                        icon: Icons.schedule,
                         label: 'Target bedtime',
                         value: TimeOfDay(
                           hour: s.targetBedtimeMinutes ~/ 60,
@@ -264,44 +269,41 @@ class SettingsPage extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Overline('Reminders'),
-                const SizedBox(height: 8),
-                AuraCard(
-                  child: _Row(
+                const SizedBox(height: Pearl.spaceLg),
+                const SectionTitle('Reminders'),
+                Module(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
+                  child: NavRow(
+                    icon: Icons.notifications_none,
                     label: 'Bedtime and trackers',
                     value: 'Manage',
                     onTap: () => context.push('/settings/reminders'),
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Overline('Memories'),
-                const SizedBox(height: 8),
-                AuraCard(
+                const SizedBox(height: Pearl.spaceLg),
+                const SectionTitle('Memories'),
+                Module(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: Column(
                     children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: Text(
-                              'Photos and videos stored',
-                              style: Theme.of(context).textTheme.bodyLarge,
-                            ),
+                      NavRow(
+                        icon: Icons.photo_library_outlined,
+                        label: 'Photos and videos stored',
+                        value: formatBytes(
+                          totalMediaBytes(
+                            ref.watch(memoryMediaProvider).value ?? const [],
                           ),
-                          Text(
-                            formatBytes(
-                              totalMediaBytes(
-                                ref.watch(memoryMediaProvider).value ??
-                                    const [],
-                              ),
-                            ),
-                            style: Theme.of(context).textTheme.labelLarge
-                                ?.copyWith(color: Aura.memory),
-                          ),
-                        ],
+                        ),
                       ),
-                      const Divider(color: Aura.rim),
-                      _Row(
+                      const Divider(indent: 48),
+                      NavRow(
+                        icon: Icons.alarm,
                         label: 'Reminder time',
                         value: TimeOfDay(
                           hour: s.memoryRemindMinutes ~/ 60,
@@ -348,25 +350,31 @@ class SettingsPage extends ConsumerWidget {
                     ],
                   ),
                 ),
-                const SizedBox(height: 24),
-                const Overline('Backup'),
-                const SizedBox(height: 8),
-                AuraCard(
+                const SizedBox(height: Pearl.spaceLg),
+                const SectionTitle('Backup'),
+                Module(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 4,
+                  ),
                   child: Column(
                     children: [
-                      _Row(
+                      NavRow(
+                        icon: Icons.ios_share,
                         label: 'Export data (JSON + CSV)',
                         value: 'Share',
                         onTap: () => _export(context, ref),
                       ),
-                      const Divider(color: Aura.rim),
-                      _Row(
+                      const Divider(indent: 48),
+                      NavRow(
+                        icon: Icons.archive_outlined,
                         label: 'Full backup with photos (.zip)',
                         value: 'Share',
                         onTap: () => _exportZip(context, ref),
                       ),
-                      const Divider(color: Aura.rim),
-                      _Row(
+                      const Divider(indent: 48),
+                      NavRow(
+                        icon: Icons.download_outlined,
                         label: 'Import backup (JSON or .zip)',
                         value: 'Choose file',
                         onTap: () => _import(context, ref),
@@ -376,36 +384,6 @@ class SettingsPage extends ConsumerWidget {
                 ),
               ],
             ),
-    );
-  }
-}
-
-class _Row extends StatelessWidget {
-  const _Row({required this.label, required this.value, required this.onTap});
-
-  final String label;
-  final String value;
-  final VoidCallback onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8),
-        child: Row(
-          children: [
-            Expanded(
-              child: Text(label, style: Theme.of(context).textTheme.bodyLarge),
-            ),
-            Text(
-              value,
-              style: Theme.of(context).textTheme.labelLarge
-                  ?.copyWith(color: Aura.sleep),
-            ),
-          ],
-        ),
-      ),
     );
   }
 }

@@ -4,7 +4,8 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'memories_repository.dart';
 import 'memory_dates.dart';
 import 'memory_search.dart';
@@ -40,14 +41,14 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
     return Scaffold(
       appBar: AppBar(title: const Text('Calendar')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
           Row(
             children: [
-              IconButton(
+              PearlIconButton(
                 tooltip: 'Previous month',
                 onPressed: () => _shift(-1),
-                icon: const Icon(Icons.chevron_left),
+                icon: Icons.chevron_left,
               ),
               Expanded(
                 child: Text(
@@ -56,47 +57,58 @@ class _CalendarPageState extends ConsumerState<CalendarPage> {
                   style: text.titleMedium,
                 ),
               ),
-              IconButton(
+              PearlIconButton(
                 tooltip: 'Next month',
                 onPressed: () => _shift(1),
-                icon: const Icon(Icons.chevron_right),
+                icon: Icons.chevron_right,
               ),
             ],
           ),
-          Row(
-            children: [
-              for (final d in const ['M', 'T', 'W', 'T', 'F', 'S', 'S'])
-                Expanded(
-                  child: Center(child: Text(d, style: text.labelSmall)),
+          const SizedBox(height: 12),
+          Module(
+            child: Column(
+              children: [
+                Row(
+                  children: [
+                    for (final d in const ['M', 'T', 'W', 'T', 'F', 'S', 'S'])
+                      Expanded(
+                        child: Center(child: Text(d, style: text.labelSmall)),
+                      ),
+                  ],
                 ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          GridView.count(
-            crossAxisCount: 7,
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            children: [
-              for (var i = 0; i < blanks; i++) const SizedBox.shrink(),
-              for (var d = 1; d <= days; d++)
-                _DayCell(
-                  day: d,
-                  marked: marks.containsKey(d),
-                  selected:
-                      _selected.year == _month.year &&
-                      _selected.month == _month.month &&
-                      _selected.day == d,
-                  today:
-                      now.year == _month.year &&
-                      now.month == _month.month &&
-                      now.day == d,
-                  onTap: () => setState(
-                    () => _selected = DateTime(_month.year, _month.month, d),
-                  ),
+                const SizedBox(height: 4),
+                GridView.count(
+                  crossAxisCount: 7,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  children: [
+                    for (var i = 0; i < blanks; i++) const SizedBox.shrink(),
+                    for (var d = 1; d <= days; d++)
+                      _DayCell(
+                        day: d,
+                        marked: marks.containsKey(d),
+                        selected:
+                            _selected.year == _month.year &&
+                            _selected.month == _month.month &&
+                            _selected.day == d,
+                        today:
+                            now.year == _month.year &&
+                            now.month == _month.month &&
+                            now.day == d,
+                        onTap: () => setState(
+                          () => _selected = DateTime(
+                            _month.year,
+                            _month.month,
+                            d,
+                          ),
+                        ),
+                      ),
+                  ],
                 ),
-            ],
+              ],
+            ),
           ),
-          const SizedBox(height: 16),
+          const SizedBox(height: Pearl.spaceLg),
           Text(
             DateFormat('EEEE d MMMM').format(_selected),
             style: text.titleMedium,
@@ -141,25 +153,26 @@ class _DayCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final c = context.pearl;
+    final fg = selected ? c.onAnchor : c.ink;
     return InkWell(
       onTap: onTap,
       customBorder: const CircleBorder(),
-      child: Container(
+      child: AnimatedContainer(
+        duration: Pearl.motion,
         margin: const EdgeInsets.all(3),
         decoration: BoxDecoration(
           shape: BoxShape.circle,
-          color: selected ? Aura.memory.withValues(alpha: 0.25) : null,
-          border: today ? Border.all(color: Aura.memory) : null,
+          color: selected ? c.anchor : null,
+          border: today && !selected ? Border.all(color: c.ink) : null,
         ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text('$day'),
+            Text('$day', style: TextStyle(color: fg)),
             SizedBox(
               height: 6,
-              child: marked
-                  ? const Icon(Icons.circle, size: 5, color: Aura.memory)
-                  : null,
+              child: marked ? Icon(Icons.circle, size: 5, color: fg) : null,
             ),
           ],
         ),

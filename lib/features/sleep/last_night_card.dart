@@ -3,8 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/settings_repository.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'sleep_logic.dart';
 import 'sleep_repository.dart';
 
@@ -19,10 +19,10 @@ class LastNightCard extends ConsumerWidget {
     final text = Theme.of(context).textTheme;
 
     if (last == null || settings == null) {
-      return AuraCard(
+      return Module(
         child: Row(
           children: [
-            const IconBadge(icon: Icons.bedtime, color: Aura.sleep),
+            const IconChip(icon: Icons.bedtime_outlined),
             const SizedBox(width: 12),
             Text('No sleep logged yet', style: text.bodyMedium),
           ],
@@ -38,10 +38,10 @@ class LastNightCard extends ConsumerWidget {
       goalMinutes: settings.sleepGoalMinutes,
       targetBedtimeMinutes: settings.targetBedtimeMinutes,
     );
-    return AuraCard(
+    return Module(
       child: Row(
         children: [
-          const IconBadge(icon: Icons.bedtime, color: Aura.sleep),
+          const IconChip(icon: Icons.bedtime_outlined),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -53,13 +53,10 @@ class LastNightCard extends ConsumerWidget {
                   children: [
                     Text(
                       '${formatDuration(dur)} sleep',
-                      style: text.labelLarge,
+                      style: PearlType.metricTable,
                     ),
                     if (last.quality != null)
-                      StatusPill(
-                        label: 'Quality ${last.quality}/5',
-                        color: Aura.habit,
-                      ),
+                      StatusBadge(label: 'Quality ${last.quality}/5'),
                   ],
                 ),
                 Text(
@@ -69,9 +66,9 @@ class LastNightCard extends ConsumerWidget {
               ],
             ),
           ),
-          StatusPill(
+          StatusBadge(
             label: hit ? 'Goal hit' : 'Missed',
-            color: hit ? Aura.habit : Aura.money,
+            tone: hit ? BadgeTone.positive : BadgeTone.warning,
           ),
         ],
       ),

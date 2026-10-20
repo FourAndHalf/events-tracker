@@ -7,8 +7,8 @@ import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/notifications/report_notifier.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import 'media_storage.dart';
 import 'media_widgets.dart';
 import 'memories_repository.dart';
@@ -249,22 +249,16 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
         title: Text(widget.id == null ? 'Add memory' : 'Edit memory'),
       ),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
-          Wrap(
-            spacing: 8,
-            children: [
-              ChoiceChip(
-                label: const Text('Happened once'),
-                selected: !occasion,
-                onSelected: (_) => setState(() => _kind = MemoryKind.oneTime),
-              ),
-              ChoiceChip(
-                label: const Text('Repeats every year'),
-                selected: occasion,
-                onSelected: (_) => setState(() => _kind = MemoryKind.occasion),
-              ),
+          Segmented<MemoryKind>(
+            expand: true,
+            segments: const [
+              (MemoryKind.oneTime, 'Happened once'),
+              (MemoryKind.occasion, 'Every year'),
             ],
+            selected: _kind,
+            onChanged: (v) => setState(() => _kind = v),
           ),
           const SizedBox(height: 16),
           TextField(
@@ -295,20 +289,15 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
           ),
           const SizedBox(height: 16),
           if (!occasion) ...[
-            Wrap(
-              spacing: 8,
-              children: [
-                for (final (p, label) in [
-                  (DatePrecision.day, 'Exact date'),
-                  (DatePrecision.month, 'Month and year'),
-                  (DatePrecision.year, 'Year only'),
-                ])
-                  ChoiceChip(
-                    label: Text(label),
-                    selected: _precision == p,
-                    onSelected: (_) => setState(() => _precision = p),
-                  ),
+            Segmented<DatePrecision>(
+              expand: true,
+              segments: const [
+                (DatePrecision.day, 'Exact date'),
+                (DatePrecision.month, 'Month'),
+                (DatePrecision.year, 'Year'),
               ],
+              selected: _precision,
+              onChanged: (v) => setState(() => _precision = v),
             ),
             const SizedBox(height: 12),
           ],
@@ -378,7 +367,7 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
           ),
           if (precision == DatePrecision.day) ...[
             const SizedBox(height: 16),
-            const Overline('Reminders'),
+            const SectionTitle('Reminders'),
             SwitchListTile(
               contentPadding: EdgeInsets.zero,
               title: const Text('On the day'),
@@ -400,8 +389,7 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
             ),
           ],
           const SizedBox(height: 16),
-          const Overline('Photos and videos'),
-          const SizedBox(height: 8),
+          const SectionTitle('Photos and videos'),
           MediaPickButtons(
             onPicked: (files) async => setState(() => _pending.addAll(files)),
           ),
@@ -423,7 +411,7 @@ class _EventFormPageState extends ConsumerState<EventFormPage> {
               ),
             ),
           const SizedBox(height: 24),
-          PillButton(label: 'Save', color: Aura.memory, onPressed: _save),
+          PillButton(label: 'Save', onPressed: _save),
         ],
       ),
     );

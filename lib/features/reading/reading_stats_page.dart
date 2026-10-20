@@ -3,8 +3,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
-import '../../core/theme/aura_colors.dart';
-import '../../core/widgets/aura_widgets.dart';
+import '../../core/theme/app_theme.dart';
+import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/pearl_widgets.dart';
 import '../sleep/sleep_logic.dart';
 import 'book_progress.dart';
 import 'reading_repository.dart';
@@ -42,38 +43,24 @@ class ReadingStatsPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(title: const Text('Reading stats')),
       body: ListView(
-        padding: const EdgeInsets.all(Aura.margin),
+        padding: const EdgeInsets.all(Pearl.margin),
         children: [
-          AuraCard(
-            child: Row(
-              children: [
-                Expanded(
-                  child: _Stat(
-                    label: 'Streak',
-                    value: '${readingStreak(stats, now)} days',
-                  ),
-                ),
-                Expanded(
-                  child: _Stat(
-                    label: 'This week',
-                    value: formatDuration(perWeek[thisWeek] ?? Duration.zero),
-                  ),
-                ),
-                Expanded(
-                  child: _Stat(
-                    label: 'Pages today',
-                    value: '${pages[today] ?? 0}',
-                  ),
-                ),
-              ],
-            ),
+          KpiStrip(
+            items: [
+              (label: 'Streak', value: '${readingStreak(stats, now)} days'),
+              (
+                label: 'This week',
+                value: formatDuration(perWeek[thisWeek] ?? Duration.zero),
+              ),
+              (label: 'Pages today', value: '${pages[today] ?? 0}'),
+            ],
           ),
-          const SizedBox(height: 12),
-          AuraCard(
+          const SizedBox(height: Pearl.gutter),
+          Module(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Overline('Last 7 days', color: Aura.reading),
+                const ModuleHeader(title: 'Last 7 days'),
                 const SizedBox(height: 12),
                 for (final d in days)
                   Padding(
@@ -88,11 +75,10 @@ class ReadingStatsPage extends ConsumerWidget {
                           ),
                         ),
                         Expanded(
-                          child: AuraProgressBar(
+                          child: Meter(
                             value: maxMinutes == 0
                                 ? 0
                                 : (perDay[d]?.inMinutes ?? 0) / maxMinutes,
-                            color: Aura.reading,
                           ),
                         ),
                         SizedBox(
@@ -101,7 +87,7 @@ class ReadingStatsPage extends ConsumerWidget {
                             '${formatDuration(perDay[d] ?? Duration.zero)}'
                             ' · ${pages[d] ?? 0}p',
                             textAlign: TextAlign.end,
-                            style: text.bodySmall,
+                            style: PearlType.metricTable,
                           ),
                         ),
                       ],
@@ -110,47 +96,25 @@ class ReadingStatsPage extends ConsumerWidget {
               ],
             ),
           ),
-          const SizedBox(height: 12),
-          AuraCard(
+          const SizedBox(height: Pearl.gutter),
+          Module(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Overline('Weeks', color: Aura.reading),
+                const ModuleHeader(title: 'Weeks'),
                 const SizedBox(height: 8),
                 for (final w in weeks)
                   ListTile(
                     contentPadding: EdgeInsets.zero,
                     dense: true,
                     title: Text('Week of ${DateFormat('d MMM').format(w)}'),
-                    trailing: Text(
-                      formatDuration(perWeek[w] ?? Duration.zero),
-                      style: text.labelLarge,
-                    ),
+                    trailing: Text(formatDuration(perWeek[w] ?? Duration.zero)),
                   ),
               ],
             ),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _Stat extends StatelessWidget {
-  const _Stat({required this.label, required this.value});
-
-  final String label;
-  final String value;
-
-  @override
-  Widget build(BuildContext context) {
-    final text = Theme.of(context).textTheme;
-    return Column(
-      children: [
-        Text(value, style: text.titleMedium),
-        const SizedBox(height: 2),
-        Text(label, style: text.bodySmall),
-      ],
     );
   }
 }

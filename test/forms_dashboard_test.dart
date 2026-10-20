@@ -49,7 +49,7 @@ void main() {
       await tester.pump(const Duration(milliseconds: 300));
       await _settle(tester);
       expect(find.text("I'm awake"), findsOneWidget);
-      expect(find.text('Sleeping'.toUpperCase()), findsOneWidget);
+      expect(find.text('Sleeping'), findsOneWidget);
 
       await tester.tap(find.text("I'm awake"));
       await tester.pump(const Duration(milliseconds: 300));
