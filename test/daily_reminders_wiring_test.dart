@@ -16,10 +16,6 @@ class FakeNotifier implements ReportNotifier {
   final daily = <({int id, int minutes, String route})>[];
   final cancelled = <(int, int)>[];
   @override
-  Future<void> schedule(DateTime when, String title, String body) async {}
-  @override
-  Future<void> cancel() async {}
-  @override
   Future<bool> requestPermission() async => true;
   @override
   Future<void> scheduleAt({
@@ -85,12 +81,11 @@ void main() {
     await _settle(tester);
     await _settle(tester);
 
-    expect(n.daily.map((r) => r.id).toSet(), {10, 11, 101});
+    expect(n.daily.map((r) => r.id).toSet(), {10, 101});
     expect(
       n.daily.firstWhere((r) => r.id == 10).minutes,
       1350,
     ); // 23:00 - 30 min
-    expect(n.daily.firstWhere((r) => r.id == 11).route, '/money/add');
     expect(n.daily.firstWhere((r) => r.id == 101).route, '/trackers/1');
     expect(n.cancelled, isNotEmpty);
 

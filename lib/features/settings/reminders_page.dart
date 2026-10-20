@@ -92,53 +92,6 @@ class RemindersPage extends ConsumerWidget {
             ),
           ),
           const SizedBox(height: 24),
-          const Overline('Money', color: Aura.money),
-          const SizedBox(height: 8),
-          AuraCard(
-            child: Column(
-              children: [
-                SwitchListTile(
-                  contentPadding: EdgeInsets.zero,
-                  title: const Text('Log today\'s expenses'),
-                  subtitle: const Text(
-                    'A daily reminder to add what you spent',
-                  ),
-                  value: s.expenseReminderEnabled,
-                  onChanged: (v) async {
-                    if (v) await ask();
-                    await updateSettings(
-                      db,
-                      SettingsCompanion(expenseReminderEnabled: Value(v)),
-                    );
-                  },
-                ),
-                if (s.expenseReminderEnabled) ...[
-                  const Divider(color: Aura.rim),
-                  ListTile(
-                    contentPadding: EdgeInsets.zero,
-                    title: const Text('Time'),
-                    trailing: Text(
-                      _clock(context, s.expenseReminderMinutes),
-                      style: text.labelLarge,
-                    ),
-                    onTap: () async {
-                      final m = await _pickTime(
-                        context,
-                        s.expenseReminderMinutes,
-                      );
-                      if (m != null) {
-                        await updateSettings(
-                          db,
-                          SettingsCompanion(expenseReminderMinutes: Value(m)),
-                        );
-                      }
-                    },
-                  ),
-                ],
-              ],
-            ),
-          ),
-          const SizedBox(height: 24),
           const Overline('Trackers', color: Aura.habit),
           const SizedBox(height: 8),
           AuraCard(

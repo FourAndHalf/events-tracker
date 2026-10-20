@@ -49,14 +49,13 @@ void main() {
     expect(planDailyReminders(settings(), [tracker(1)]), isEmpty);
   });
 
-  test('bedtime and expense reminders use their settings', () {
+  test('bedtime reminders use their settings', () {
     final r = planDailyReminders(
-      settings(bed: true, lead: 15, exp: true, expAt: 1200),
+      settings(bed: true, lead: 15),
       [],
     );
     expect(r.map((x) => (x.id, x.minutes, x.route)), [
       (bedtimeReminderId, 1365, '/sleep'),
-      (expenseReminderId, 1200, '/money/add'),
     ]);
     expect(r.first.body, contains('15 minutes'));
   });

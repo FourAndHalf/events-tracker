@@ -7,7 +7,7 @@ import '../../core/notifications/report_notifier.dart';
 import '../trackers/trackers_repository.dart';
 import 'daily_reminders.dart';
 
-/// Keeps the daily reminders (bedtime, expenses, trackers) in step with the
+/// Keeps the daily reminders (bedtime and trackers) in step with the
 /// settings and trackers: any change cancels and reschedules them all.
 final dailyReminderSchedulerProvider = Provider<void>((ref) {
   final settings = ref.watch(settingsProvider).value;
@@ -16,7 +16,7 @@ final dailyReminderSchedulerProvider = Provider<void>((ref) {
   final notifier = ref.read(reportNotifierProvider);
   final plan = planDailyReminders(settings, trackers);
   unawaited(() async {
-    await notifier.cancelRange(bedtimeReminderId, expenseReminderId + 1);
+    await notifier.cancelRange(bedtimeReminderId, trackerReminderBase);
     await notifier.cancelRange(trackerReminderBase, trackerReminderEnd);
     for (final r in plan) {
       await notifier.scheduleDaily(

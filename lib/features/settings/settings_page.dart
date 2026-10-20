@@ -25,8 +25,6 @@ import 'backup_codec.dart';
 import 'backup_zip.dart';
 import 'backup_service.dart';
 
-const _currencies = ['₹', r'$', '€', '£', '¥'];
-
 class SettingsPage extends ConsumerWidget {
   const SettingsPage({super.key});
 
@@ -195,7 +193,6 @@ class SettingsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final s = ref.watch(settingsProvider).value;
     final db = ref.read(databaseProvider);
-    final text = Theme.of(context).textTheme;
 
     return Scaffold(
       appBar: AppBar(title: const Text('Settings')),
@@ -268,40 +265,13 @@ class SettingsPage extends ConsumerWidget {
                   ),
                 ),
                 const SizedBox(height: 24),
-                const Overline('Currency'),
-                const SizedBox(height: 8),
-                Wrap(
-                  spacing: 8,
-                  children: [
-                    for (final c in _currencies)
-                      ChoiceChip(
-                        label: Text(c, style: text.labelLarge),
-                        selected: s.currencySymbol == c,
-                        onSelected: (_) => updateSettings(
-                          db,
-                          SettingsCompanion(currencySymbol: Value(c)),
-                        ),
-                      ),
-                  ],
-                ),
-                const SizedBox(height: 24),
                 const Overline('Reminders'),
                 const SizedBox(height: 8),
                 AuraCard(
                   child: _Row(
-                    label: 'Bedtime, expenses, trackers',
+                    label: 'Bedtime and trackers',
                     value: 'Manage',
                     onTap: () => context.push('/settings/reminders'),
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Overline('Money'),
-                const SizedBox(height: 8),
-                AuraCard(
-                  child: _Row(
-                    label: 'Categories & budgets',
-                    value: 'Manage',
-                    onTap: () => context.push('/money/categories'),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -375,62 +345,6 @@ class SettingsPage extends ConsumerWidget {
                           );
                         },
                       ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 24),
-                const Overline('Investing'),
-                const SizedBox(height: 8),
-                AuraCard(
-                  child: Column(
-                    children: [
-                      SwitchListTile(
-                        contentPadding: EdgeInsets.zero,
-                        title: const Text('Sunday weekly report'),
-                        subtitle: const Text(
-                          'A notification with your week in numbers',
-                        ),
-                        value: s.weeklyReportEnabled,
-                        onChanged: (v) async {
-                          if (v) {
-                            await ref
-                                .read(reportNotifierProvider)
-                                .requestPermission();
-                          }
-                          await updateSettings(
-                            db,
-                            SettingsCompanion(weeklyReportEnabled: Value(v)),
-                          );
-                        },
-                      ),
-                      if (s.weeklyReportEnabled) ...[
-                        const Divider(color: Aura.rim),
-                        _Row(
-                          label: 'Notification time (Sunday)',
-                          value: TimeOfDay(
-                            hour: s.weeklyReportMinutes ~/ 60,
-                            minute: s.weeklyReportMinutes % 60,
-                          ).format(context),
-                          onTap: () async {
-                            final t = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay(
-                                hour: s.weeklyReportMinutes ~/ 60,
-                                minute: s.weeklyReportMinutes % 60,
-                              ),
-                            );
-                            if (t == null) return;
-                            await updateSettings(
-                              db,
-                              SettingsCompanion(
-                                weeklyReportMinutes: Value(
-                                  t.hour * 60 + t.minute,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      ],
                     ],
                   ),
                 ),

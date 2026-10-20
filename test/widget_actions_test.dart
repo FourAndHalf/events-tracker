@@ -69,18 +69,6 @@ void main() {
     },
   );
 
-  testWidgets('widget "expense" button opens the add-expense form', (
-    tester,
-  ) async {
-    final db = AppDatabase(NativeDatabase.memory());
-    await tester.runAsync(() => db.select(db.settings).get());
-    final ref = await _boot(tester, db);
-    await tester.runAsync(() => runWidgetAction(WidgetAction.addExpense, ref));
-    await tester.pump(const Duration(milliseconds: 400));
-    expect(find.text('Add expense'), findsWidgets);
-    await _close(tester, db);
-  });
-
   testWidgets(
     'widget "read" button resumes the last book, then offers to stop',
     (tester) async {
