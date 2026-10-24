@@ -6,30 +6,28 @@
     android:padding="8dp"
     android:background="@drawable/widget_bg">
 
-    <TextView
+    <ImageView
         android:id="@+id/btn_sleep"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginBottom="4dp"
-        android:gravity="center"
-        android:text="+ Sleep"
-        android:textColor="@color/widget_ink"
-        android:fontFamily="monospace"
-        android:textSize="14sp"
+        android:src="@drawable/ic_widget_awake"
+        android:contentDescription="Sleep"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
         android:background="@drawable/widget_button_bg" />
 
-    <TextView
+    <ImageView
         android:id="@+id/btn_read"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
         android:layout_marginTop="4dp"
-        android:gravity="center"
-        android:text="+ Read"
-        android:textColor="@color/widget_ink"
-        android:fontFamily="monospace"
-        android:textSize="14sp"
+        android:src="@drawable/ic_widget_read"
+        android:contentDescription="Add reading session"
+        android:scaleType="fitCenter"
+        android:padding="10dp"
         android:background="@drawable/widget_button_bg" />
 
 </LinearLayout>

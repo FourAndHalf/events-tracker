@@ -10,7 +10,9 @@ import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
  * 2x1 home-screen widget with two buttons (QuickAddWidget2x2Provider stacks them). Each opens the app on a link like
- * events://add-sleep, which the Flutter side turns into the action.
+ * events://add-sleep, which the Flutter side turns into the action. The sleep
+ * button shows zzz while a sleep session is open and a sun otherwise (the app
+ * writes sleep_asleep, see widget_bridge.dart).
  */
 open class QuickAddWidgetProvider : HomeWidgetProvider() {
     protected open val layout = R.layout.widget_quick_add
@@ -23,6 +25,11 @@ open class QuickAddWidgetProvider : HomeWidgetProvider() {
     ) {
         for (id in appWidgetIds) {
             val views = RemoteViews(context.packageName, layout).apply {
+                setImageViewResource(
+                    R.id.btn_sleep,
+                    if (widgetData.getBoolean("sleep_asleep", false)) R.drawable.ic_widget_asleep
+                    else R.drawable.ic_widget_awake,
+                )
                 setOnClickPendingIntent(R.id.btn_sleep, launch(context, "events://add-sleep"))
                 setOnClickPendingIntent(R.id.btn_read, launch(context, "events://add-read"))
             }
