@@ -12,9 +12,11 @@ Outputs (all next to this script):
   splash_logo.png      in-app splash / header logo: the rounded square
 
 Run from this directory with: python3 generate_icon.py
+Requires: numpy, pillow, scipy
 """
 import numpy as np
 from PIL import Image, ImageDraw
+from scipy import ndimage
 
 SOURCE = "app_icon.png"
 CANVAS = 1024
@@ -29,6 +31,13 @@ LUM_LO = 64
 LUM_HI = 88
 # Ignore a margin just inside the square's edge so its rim never reads as mark.
 EDGE_MARGIN = 40
+# Bright blobs (glare/gloss on the background) whose centroid sits further than
+# this from the square's centre are discarded; the mark itself always clusters
+# near the middle.
+STRAY_BLOB_RADIUS = 250
+# Small glints (specular highlights in the background gaps between strokes)
+# are dropped; every real stroke/dot in the mark is much bigger than this.
+MIN_BLOB_SIZE = 5000
 
 # Size of the mark's longer side as a fraction of the 1024 canvas. The
 # foreground is inset a further 16% by ic_launcher.xml, so it stays inside
@@ -63,11 +72,36 @@ def _cut_square(src):
     return out
 
 
+def _drop_stray_blobs(lum):
+    """Zero out bright regions (e.g. a glossy highlight) not part of the mark.
+
+    The mark is one cluster of arcs/dot near the square's centre; anything
+    bright but centred far from there is background glare, not the mark.
+    """
+    x0, y0, x1, y1 = SQUARE
+    cx, cy = (x0 + x1) / 2, (y0 + y1) / 2
+    core = lum >= LUM_HI
+    labeled, n = ndimage.label(core, structure=np.ones((3, 3)))
+    keep = np.zeros_like(core)
+    for i in range(1, n + 1):
+        component = labeled == i
+        if component.sum() < MIN_BLOB_SIZE:
+            continue
+        ys, xs = np.where(component)
+        centroid_dist = ((xs.mean() - cx) ** 2 + (ys.mean() - cy) ** 2) ** 0.5
+        if centroid_dist <= STRAY_BLOB_RADIUS:
+            keep |= component
+    # Dilate so the soft antialiased edge around each kept blob survives too.
+    keep = ndimage.binary_dilation(keep, iterations=15)
+    return keep
+
+
 def _extract_mark(src):
     """The light mark on transparency, cropped tight to its content."""
     rgb = np.asarray(src.convert("RGB")).astype(np.float32)
     lum = rgb.mean(axis=2)
     alpha = np.clip((lum - LUM_LO) / (LUM_HI - LUM_LO), 0, 1)
+    alpha *= _drop_stray_blobs(lum)
     x0, y0, x1, y1 = SQUARE
     inner = np.asarray(
         _square_mask(
