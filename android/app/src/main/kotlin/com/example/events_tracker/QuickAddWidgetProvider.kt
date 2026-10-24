@@ -9,10 +9,12 @@ import es.antonborri.home_widget.HomeWidgetLaunchIntent
 import es.antonborri.home_widget.HomeWidgetProvider
 
 /**
- * 2x1 home-screen widget with two buttons. Each opens the app on a link like
+ * 2x1 home-screen widget with two buttons (QuickAddWidget2x2Provider stacks them). Each opens the app on a link like
  * events://add-sleep, which the Flutter side turns into the action.
  */
-class QuickAddWidgetProvider : HomeWidgetProvider() {
+open class QuickAddWidgetProvider : HomeWidgetProvider() {
+    protected open val layout = R.layout.widget_quick_add
+
     override fun onUpdate(
         context: Context,
         appWidgetManager: AppWidgetManager,
@@ -20,7 +22,7 @@ class QuickAddWidgetProvider : HomeWidgetProvider() {
         widgetData: SharedPreferences,
     ) {
         for (id in appWidgetIds) {
-            val views = RemoteViews(context.packageName, R.layout.widget_quick_add).apply {
+            val views = RemoteViews(context.packageName, layout).apply {
                 setOnClickPendingIntent(R.id.btn_sleep, launch(context, "events://add-sleep"))
                 setOnClickPendingIntent(R.id.btn_read, launch(context, "events://add-read"))
             }
