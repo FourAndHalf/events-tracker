@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 
 import '../../core/db/app_database.dart';
 import '../../core/theme/pearl_colors.dart';
+import '../../core/widgets/home_button.dart';
 import '../../core/widgets/pearl_widgets.dart';
 import 'media_logic.dart';
 import 'media_widgets.dart';
@@ -40,6 +41,7 @@ class MemoriesPage extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
+        leading: const HomeButton(),
         title: const Text('Memories'),
         actions: [
           PearlIconButton(
