@@ -67,41 +67,16 @@ final appRouter = GoRouter(
                   ],
                 ),
                 GoRoute(
-                  path: 'memories',
-                  builder: (_, _) => const MemoriesPage(),
+                  path: 'sleep',
+                  builder: (_, _) => const SleepPage(),
                   routes: [
                     GoRoute(
-                      path: 'add',
-                      builder: (_, _) => const EventFormPage(),
+                      path: 'charts',
+                      builder: (_, _) => const SleepChartsPage(),
                     ),
                     GoRoute(
                       path: 'edit/:id',
-                      builder: (_, state) => EventFormPage(
-                        id: int.parse(state.pathParameters['id']!),
-                      ),
-                    ),
-                    GoRoute(
-                      path: 'calendar',
-                      builder: (_, _) => const CalendarPage(),
-                    ),
-                    GoRoute(
-                      path: 'search',
-                      builder: (_, _) => const SearchPage(),
-                    ),
-                    GoRoute(
-                      path: 'viewer/:id',
-                      builder: (_, state) => MediaViewerPage(
-                        eventId: int.parse(state.pathParameters['id']!),
-                        initialIndex:
-                            int.tryParse(
-                              state.uri.queryParameters['index'] ?? '',
-                            ) ??
-                            0,
-                      ),
-                    ),
-                    GoRoute(
-                      path: 'event/:id',
-                      builder: (_, state) => EventDetailPage(
+                      builder: (_, state) => SleepEditPage(
                         id: int.parse(state.pathParameters['id']!),
                       ),
                     ),
@@ -114,17 +89,36 @@ final appRouter = GoRouter(
         StatefulShellBranch(
           routes: [
             GoRoute(
-              path: '/sleep',
-              builder: (_, _) => const SleepPage(),
+              path: '/memories',
+              builder: (_, _) => const MemoriesPage(),
               routes: [
-                GoRoute(
-                  path: 'charts',
-                  builder: (_, _) => const SleepChartsPage(),
-                ),
+                GoRoute(path: 'add', builder: (_, _) => const EventFormPage()),
                 GoRoute(
                   path: 'edit/:id',
                   builder: (_, state) =>
-                      SleepEditPage(id: int.parse(state.pathParameters['id']!)),
+                      EventFormPage(id: int.parse(state.pathParameters['id']!)),
+                ),
+                GoRoute(
+                  path: 'calendar',
+                  builder: (_, _) => const CalendarPage(),
+                ),
+                GoRoute(path: 'search', builder: (_, _) => const SearchPage()),
+                GoRoute(
+                  path: 'viewer/:id',
+                  builder: (_, state) => MediaViewerPage(
+                    eventId: int.parse(state.pathParameters['id']!),
+                    initialIndex:
+                        int.tryParse(
+                          state.uri.queryParameters['index'] ?? '',
+                        ) ??
+                        0,
+                  ),
+                ),
+                GoRoute(
+                  path: 'event/:id',
+                  builder: (_, state) => EventDetailPage(
+                    id: int.parse(state.pathParameters['id']!),
+                  ),
                 ),
               ],
             ),

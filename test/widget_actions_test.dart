@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:drift/drift.dart' show Value;
 import 'package:drift/native.dart';
 import 'package:events_tracker/core/db/app_database.dart';
@@ -40,76 +38,54 @@ Future<void> _close(WidgetTester tester, AppDatabase db) async {
 }
 
 void main() {
-  testWidgets(
-    'widget "sleep" button starts sleep, then wakes with the quality prompt',
-    (tester) async {
-      final db = AppDatabase(NativeDatabase.memory());
-      await tester.runAsync(() => db.select(db.settings).get());
-      final ref = await _boot(tester, db);
+  testWidgets('widget "sleep" button starts a session, never wakes one', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    await tester.runAsync(() => db.select(db.settings).get());
+    final ref = await _boot(tester, db);
 
-      await tester.runAsync(
-        () => runWidgetAction(WidgetAction.sleepToggle, ref),
-      );
+    for (var i = 0; i < 2; i++) {
+      await tester.runAsync(() => runWidgetAction(WidgetAction.addSleep, ref));
       await _settle(tester);
-      var rows = await tester.runAsync(() => db.select(db.sleepSessions).get());
-      expect(rows!.single.wakeAt, isNull);
+    }
+    final rows = await tester.runAsync(() => db.select(db.sleepSessions).get());
+    expect(rows!.single.wakeAt, isNull);
 
-      unawaited(runWidgetAction(WidgetAction.sleepToggle, ref));
-      await tester.runAsync(
-        () => Future.delayed(const Duration(milliseconds: 400)),
+    await _close(tester, db);
+  });
+
+  testWidgets('widget "read" button resumes the last book, never stops it', (
+    tester,
+  ) async {
+    final db = AppDatabase(NativeDatabase.memory());
+    late int bookId;
+    await tester.runAsync(() async {
+      final repo = ReadingRepository(db);
+      bookId = await repo.addBook(
+        BooksCompanion.insert(title: 'Dune', status: const Value('reading')),
       );
-      await tester.pump(const Duration(milliseconds: 300));
-      expect(find.text('How did you sleep?'), findsOneWidget);
-      rows = await tester.runAsync(() => db.select(db.sleepSessions).get());
-      expect(rows!.single.wakeAt, isNotNull);
-      await tester.tap(find.text('Skip'));
-      await tester.pump(const Duration(milliseconds: 300));
-
-      await _close(tester, db);
-    },
-  );
-
-  testWidgets(
-    'widget "read" button resumes the last book, then offers to stop',
-    (tester) async {
-      final db = AppDatabase(NativeDatabase.memory());
-      late int bookId;
-      await tester.runAsync(() async {
-        final repo = ReadingRepository(db);
-        bookId = await repo.addBook(
-          BooksCompanion.insert(title: 'Dune', status: const Value('reading')),
-        );
-        final s = await repo.startSession(
-          bookId,
-          DateTime.now().subtract(const Duration(days: 1)),
-        );
-        await repo.stopSession(
-          s,
-          DateTime.now().subtract(const Duration(days: 1, hours: -1)),
-          endPage: 10,
-        );
-      });
-      final ref = await _boot(tester, db);
-
-      await tester.runAsync(
-        () => runWidgetAction(WidgetAction.readToggle, ref),
+      final s = await repo.startSession(
+        bookId,
+        DateTime.now().subtract(const Duration(days: 1)),
       );
+      await repo.stopSession(
+        s,
+        DateTime.now().subtract(const Duration(days: 1, hours: -1)),
+        endPage: 10,
+      );
+    });
+    final ref = await _boot(tester, db);
+
+    for (var i = 0; i < 2; i++) {
+      await tester.runAsync(() => runWidgetAction(WidgetAction.addRead, ref));
       await _settle(tester);
-      final running = await tester.runAsync(
-        () => ReadingRepository(db).runningSession(),
-      );
-      expect(running?.bookId, bookId);
+    }
+    final running = await tester.runAsync(
+      () => ReadingRepository(db).runningSession(),
+    );
+    expect(running?.bookId, bookId);
 
-      unawaited(runWidgetAction(WidgetAction.readToggle, ref));
-      await tester.runAsync(
-        () => Future.delayed(const Duration(milliseconds: 900)),
-      );
-      await tester.pump(const Duration(milliseconds: 400));
-      expect(find.text('Stop reading'), findsWidgets);
-      await tester.tap(find.text('Keep reading'));
-      await tester.pump(const Duration(milliseconds: 300));
-
-      await _close(tester, db);
-    },
-  );
+    await _close(tester, db);
+  });
 }

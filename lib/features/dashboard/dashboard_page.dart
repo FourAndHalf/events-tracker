@@ -46,9 +46,9 @@ class DashboardPage extends StatelessWidget {
                   ),
                 ),
                 PearlIconButton(
-                  tooltip: 'Memories',
-                  onPressed: () => context.push('/memories'),
-                  icon: Icons.cake_outlined,
+                  tooltip: 'Sleep',
+                  onPressed: () => context.push('/sleep'),
+                  icon: Icons.bedtime_outlined,
                 ),
                 const SizedBox(width: 8),
                 PearlIconButton(

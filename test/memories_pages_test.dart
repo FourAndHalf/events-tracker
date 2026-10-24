@@ -26,7 +26,7 @@ Future<void> _openMemories(WidgetTester tester, AppDatabase db) async {
   );
   await tester.pump(const Duration(seconds: 2)); // splash
   await _settle(tester);
-  await tester.tap(find.byTooltip('Memories'));
+  await tester.tap(find.text('Events'));
   await tester.pump(const Duration(milliseconds: 300));
   await _settle(tester);
 }

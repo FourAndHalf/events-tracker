@@ -22,7 +22,6 @@ class TrackerApp extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     ref.watch(memoryReminderSchedulerProvider);
     ref.watch(dailyReminderSchedulerProvider);
-    ref.watch(widgetSyncProvider);
     return MaterialApp.router(
       title: 'Events',
       theme: pearlLightTheme,

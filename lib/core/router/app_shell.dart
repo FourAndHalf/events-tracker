@@ -5,7 +5,7 @@ import 'package:go_router/go_router.dart';
 
 import '../theme/pearl_colors.dart';
 
-/// Branch indexes: 0 home (no tab), 1 sleep, 2 read.
+/// Branch indexes: 0 home (no tab), 1 events, 2 read.
 class AppShell extends StatelessWidget {
   const AppShell({super.key, required this.shell});
 
@@ -36,8 +36,8 @@ class AppShell extends StatelessWidget {
                 child: Row(
                   children: [
                     _Tab(
-                      icon: Icons.bedtime_outlined,
-                      label: 'Sleep',
+                      icon: Icons.cake_outlined,
+                      label: 'Events',
                       selected: i == 1,
                       onTap: () => shell.goBranch(1, initialLocation: i == 1),
                     ),

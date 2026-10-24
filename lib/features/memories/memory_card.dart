@@ -28,7 +28,7 @@ class MemoryCard extends ConsumerWidget {
 
     if (events.isEmpty) {
       return Module(
-        onTap: () => context.push('/memories'),
+        onTap: () => context.go('/memories'),
         child: Row(
           children: [
             const IconChip(icon: Icons.cake_outlined),
@@ -61,7 +61,7 @@ class MemoryCard extends ConsumerWidget {
     }
 
     return Module(
-      onTap: () => context.push('/memories'),
+      onTap: () => context.go('/memories'),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

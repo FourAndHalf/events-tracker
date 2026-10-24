@@ -1,4 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="widget_description">Sleep and reading shortcuts</string>
+    <string name="widget_description">Add a sleep or reading session</string>
 </resources>
