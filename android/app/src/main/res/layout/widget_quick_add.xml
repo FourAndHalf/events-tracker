@@ -3,31 +3,37 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="horizontal"
-    android:padding="8dp"
+    android:padding="6dp"
     android:background="@drawable/widget_bg">
 
-    <ImageView
+    <FrameLayout
         android:id="@+id/btn_sleep"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginEnd="4dp"
-        android:src="@drawable/ic_widget_awake"
-        android:contentDescription="Sleep"
-        android:scaleType="fitCenter"
-        android:padding="10dp"
-        android:background="@drawable/widget_button_bg" />
+        android:layout_marginEnd="3dp"
+        android:background="@drawable/widget_button_filled_bg">
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_widget_sleep"
+            android:contentDescription="Add sleep session" />
+    </FrameLayout>
 
-    <ImageView
+    <FrameLayout
         android:id="@+id/btn_read"
         android:layout_width="0dp"
         android:layout_height="match_parent"
         android:layout_weight="1"
-        android:layout_marginStart="4dp"
-        android:src="@drawable/ic_widget_read"
-        android:contentDescription="Add reading session"
-        android:scaleType="fitCenter"
-        android:padding="10dp"
-        android:background="@drawable/widget_button_bg" />
+        android:layout_marginStart="3dp"
+        android:background="@drawable/widget_button_bg">
+        <ImageView
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_gravity="center"
+            android:src="@drawable/ic_widget_read"
+            android:contentDescription="Add reading session" />
+    </FrameLayout>
 
 </LinearLayout>
