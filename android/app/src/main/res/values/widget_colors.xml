@@ -3,7 +3,8 @@
 <resources>
     <color name="widget_canvas">#E8E8EA</color>
     <color name="widget_module">#F1F1F3</color>
-    <color name="widget_hairline">#DADADD</color>
     <color name="widget_ink">#1C1C1E</color>
     <color name="widget_muted">#626267</color>
+    <color name="widget_anchor">#2A2A2D</color>
+    <color name="widget_on_anchor">#FFFFFF</color>
 </resources>

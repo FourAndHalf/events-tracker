@@ -11,27 +11,6 @@ import '../reading/reading_repository.dart';
 import '../sleep/sleep_repository.dart';
 import 'widget_logic.dart';
 
-/// Tells the widgets whether you are asleep so the sleep button can show it.
-/// Wrapped: a widget problem must never break the app (and tests run without
-/// the plugin).
-final widgetSyncProvider = Provider<void>((ref) {
-  final open = ref.watch(openSleepProvider);
-  if (!open.hasValue) return;
-  final asleep = open.value != null;
-  unawaited(() async {
-    try {
-      await HomeWidget.saveWidgetData<bool>('sleep_asleep', asleep);
-      for (final name in _androidWidgets) {
-        await HomeWidget.updateWidget(androidName: name);
-      }
-    } catch (e) {
-      debugPrint('Widget not updated: $e');
-    }
-  }());
-});
-
-const _androidWidgets = ['QuickAddWidgetProvider', 'QuickAddWidget2x2Provider'];
-
 /// Listens for widget button taps (while running, and the tap that started the
 /// app) and performs the action.
 class WidgetLinks extends ConsumerStatefulWidget {
